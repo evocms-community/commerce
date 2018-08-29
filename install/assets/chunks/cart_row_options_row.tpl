@@ -5,6 +5,7 @@
  * 
  * @category	chunk
  * @internal    @modx_category Commerce
+ * @internal    @overwrite false
  * @internal    @installset base
  */
 <span data-key="[+e.key+]">[+option+]</span><br>

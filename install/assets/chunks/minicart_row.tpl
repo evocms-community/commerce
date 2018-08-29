@@ -5,6 +5,7 @@
  * 
  * @category	chunk
  * @internal    @modx_category Commerce
+ * @internal    @overwrite false
  * @internal    @installset base
  */
 <tr data-id="[+id+]" data-commerce-row="[+row+]">
