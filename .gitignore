@@ -1,0 +1,9 @@
+/*
+!/.gitignore
+!/install
+!/README*
+/assets/*
+/assets/plugins/*
+!/assets
+!/assets/plugins
+!/assets/plugins/commerce
