@@ -13,12 +13,33 @@
 
 $modx->clearCache('full');
 
-// do install
+$tableEventnames = $modx->getFullTableName('system_eventnames');
+$tablePlugins    = $modx->getFullTablename('site_plugins');
+$tableEvents     = $modx->getFullTablename('site_plugin_events');
+
+$events = [
+    'OnInitializeCommerce',
+    'OnCollectSubtotals',
+    'OnRegisterDelivery',
+    'OnRegisterPayments',
+    'OnBeforeAddCartItem',
+    'OnBeforeProcessOrder',
+    'OnProcessOrder',
+];
+
+foreach ($events as $event) {
+    $query = $this->modx->db->select('*', $tableEventnames, "`name` = '$event'");
+
+    if (!$this->modx->db->getRecordCount($query)) {
+        $this->modx->db->insert([
+            'name'      => $event,
+            'service'   => 6,
+            'groupname' => 'Commerce',
+        ], $tableEventnames);
+    }
+}
 
 // remove installer
-$tablePlugins = $modx->getFullTablename('site_plugins');
-$tableEvents  = $modx->getFullTablename('site_plugin_events');
-
 $query = $modx->db->select('id', $tablePlugins, "`name` = 'CommerceInstall'");
 
 if ($id = $modx->db->getValue($query)) {
