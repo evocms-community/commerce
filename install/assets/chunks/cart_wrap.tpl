@@ -25,7 +25,7 @@
 
 				<tr>
 					<td class="text-xs-right" colspan="4">ИТОГО:</td>
-					<td class="text-xs-right">[+total_fmt+]</td>
+					<td class="text-xs-right">[[PriceFormat? &price=`[+total+]`]]</td>
 				</tr>
 			</tfoot>
 
@@ -44,7 +44,7 @@
 
 	[[if? &is=`[+count+]:>:0` &then=`
 		<div class="text-xs-right">
-			<p><a href="[~11~]">Оформить заказ</a></p>
+			<p><a href="[~1~]">Оформить заказ</a></p>
 		</div>
 	`]]
 </div>

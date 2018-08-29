@@ -11,6 +11,8 @@
  * @internal    @installset base
 */
 
+$modx->clearCache('full');
+
 // do install
 
 // remove installer

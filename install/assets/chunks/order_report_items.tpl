@@ -21,5 +21,5 @@
 
 <tr>
 	<td class="text-xs-right" colspan="4">ИТОГО:</td>
-	<td class="text-xs-right">[+total_fmt+]</td>
+	<td class="text-xs-right">[[PriceFormat? &price=`[+total+]`]]</td>
 </tr>

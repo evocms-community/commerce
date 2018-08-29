@@ -26,8 +26,8 @@
 		<button type="button" data-commerce-action="remove">Remove</button>
 		
 	<td class="text-xs-right">
-		[+price_fmt+]
+		[[PriceFormat? &price=`[+price+]`]]
 		
 	<td class="text-xs-right">
-		[+total_fmt+]
+		[[PriceFormat? &price=`[+total+]`]]
 </tr>

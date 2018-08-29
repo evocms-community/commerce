@@ -12,7 +12,7 @@
 	<div class="commerce-cart minicart dropdown" data-commerce-cart="[+hash+]">
 		<div class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 			Корзина<br>
-			[+count+] товар(ов) на [+total_fmt+]
+			[+count+] товар(ов) на [[PriceFormat? &price=`[+total+]`]]
 		</div>
 	
 		<div class="dropdown-menu">
@@ -29,7 +29,7 @@
 				<tfoot>
 					<tr>
 						<td colspan="3">ИТОГО:</td>
-						<td class="text-xs-right">[+total_fmt+]</td>
+						<td class="text-xs-right">[[PriceFormat? &price=`[+total+]`]]</td>
 					</tr>
 				</tfoot>
 
@@ -40,8 +40,8 @@
 
 			<div class="dropdown-divider"></div>
 
-			<a class="dropdown-item" href="[~10~]">Перейти в корзину</a>
-			<a class="dropdown-item" href="[~11~]">Оформить заказ</a>
+			<a class="dropdown-item" href="[~1~]">Перейти в корзину</a>
+			<a class="dropdown-item" href="[~1~]">Оформить заказ</a>
 		</div>
 	</div>
 ` &else=`
