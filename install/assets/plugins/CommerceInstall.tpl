@@ -1,6 +1,6 @@
 //<?php
 /**
- * Commerce
+ * CommerceInstall
  * 
  * Commerce solution installer
  *
@@ -28,10 +28,10 @@ $events = [
 ];
 
 foreach ($events as $event) {
-    $query = $this->modx->db->select('*', $tableEventnames, "`name` = '$event'");
+    $query = $modx->db->select('*', $tableEventnames, "`name` = '$event'");
 
-    if (!$this->modx->db->getRecordCount($query)) {
-        $this->modx->db->insert([
+    if (!$modx->db->getRecordCount($query)) {
+        $modx->db->insert([
             'name'      => $event,
             'service'   => 6,
             'groupname' => 'Commerce',

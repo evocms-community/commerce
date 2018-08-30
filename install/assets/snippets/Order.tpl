@@ -16,8 +16,6 @@ $lang = $modx->commerce->getUserLanguage('order');
 
 $params = array_merge([
     'formid'                => 'order',
-    'controller'            => 'OrderController',
-    'dir'                   => 'assets/plugins/commerce/src/Controllers/',
     'parseDocumentSource'   => 1,
     'formTpl'               => 'order_form',
     'deliveryTpl'           => 'order_form_delivery',
@@ -47,6 +45,9 @@ $params = array_merge([
             ],
         ],
     ],
-], $params);
+], $params, [
+    'controller' => 'Order',
+    'dir'        => 'assets/plugins/commerce/src/Controllers/',
+]);
     
 return $modx->runSnippet('FormLister', $params);
