@@ -1,7 +1,5 @@
 <?php
 
-require_once __DIR__ . '/../../../../snippets/DocLister/core/controller/site_content.php';
-
 class CartDocLister extends site_contentDocLister
 {
     public function getDocs($tvlist = '')

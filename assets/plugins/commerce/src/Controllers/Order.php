@@ -2,7 +2,7 @@
 
 namespace FormLister;
 
-class OrderController extends Form
+class Order extends Form
 {
     public function render()
     {
