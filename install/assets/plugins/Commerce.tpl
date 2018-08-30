@@ -37,10 +37,10 @@ if ($e->name == 'OnPageNotFound') {
                 try {
                     echo $modx->commerce->runAction($_POST['action'], isset($_POST['data']) ? $_POST['data'] : []);
                     exit;
-                } catch (Exception $e) {
-                    $modx->logEvent(0, 3, $e->getMessage());
-                } catch (TypeError $e) {
-                    $modx->logEvent(0, 3, $e->getMessage());
+                } catch (Exception $exception) {
+                    $modx->logEvent(0, 3, $exception->getMessage());
+                } catch (TypeError $exception) {
+                    $modx->logEvent(0, 3, $exception->getMessage());
                 }
             }
 
