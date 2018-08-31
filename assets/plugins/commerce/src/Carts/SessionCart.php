@@ -22,7 +22,7 @@ class SessionCart extends SimpleCart implements \Commerce\Interfaces\Cart
     public function add($id, $name, $count = 1, $price = 0, $options = [], $meta = null)
     {
         $item = compact('id', 'name', 'count', 'price', 'options', 'meta');
-        $this->modx->invokeEvent('OnBeforeAddingCartItem', ['item' => &$item]);
+        $this->modx->invokeEvent('OnBeforeCartItemAdding', ['item' => &$item]);
         extract($item);
 
         $row = parent::add($id, $name, $count, $price, $options, $meta);
@@ -33,7 +33,7 @@ class SessionCart extends SimpleCart implements \Commerce\Interfaces\Cart
 
     public function update($row, array $attributes = [])
     {
-        if ($result = parent::update($row, $aatributes)) {
+        if ($result = parent::update($row, $attributes)) {
             $this->storeItems();
         }
 

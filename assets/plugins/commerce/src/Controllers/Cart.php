@@ -44,9 +44,6 @@ class CartDocLister extends site_contentDocLister
                 if (isset($tv[$doc['docid']])) {
                     $this->_docs[$hash] = array_merge($doc, $tv[$doc['docid']]);
                 }
-
-                $this->_docs[$hash]['hash'] = $doc['id'];
-                $this->_docs[$hash]['id'] = $doc['docid'];
             }
         }
 
@@ -60,10 +57,6 @@ class CartDocLister extends site_contentDocLister
 
     protected function getDocList()
     {
-        $this->config->setConfig([
-            'selectFields' => $this->getCFGDef('selectFields', 'c.*') . ', c.id AS docid, hashes.hash AS id',
-        ]);
-
         $items = $this->getCFGDef('items');
         $join = [];
 
@@ -71,7 +64,13 @@ class CartDocLister extends site_contentDocLister
             $join[] = "SELECT " . $item['id'] . " AS id, '$row' AS `hash`";
         }
 
-        $this->setFiltersJoin('JOIN (' . implode(' UNION ', $join) . ') hashes ON c.id = hashes.id');
+        if (!empty($join)) {
+            $this->setFiltersJoin('JOIN (' . implode(' UNION ', $join) . ') hashes ON c.id = hashes.id');
+
+            $this->config->setConfig([
+                'selectFields' => $this->getCFGDef('selectFields', 'c.*') . ', c.id AS docid, hashes.hash AS id',
+            ]);
+        }
 
         return parent::getDocList();
     }

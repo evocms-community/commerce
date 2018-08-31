@@ -19,6 +19,7 @@
 
 <table>
 	[!Cart?
+        &instance=`order`
 		&tpl=`order_report_items_row`
 		&ownerTPL=`order_report_items`
 	!]

@@ -3,32 +3,27 @@
 namespace Commerce;
 
 use Interfaces\Cart;
+use Interfaces\Processor;
 
 class Commerce
 {
+    use SettingsTrait;
+
     const VERSION = 'v0.1.0';
 
     private $modx;
     private $cart;
+    private $processor;
 
-    const SERVICE_PAYMENT  = 1;
-    const SERVICE_DELIVERY = 2;
-    const SERVICE_SUBTOTAL = 3;
-
-    private $serviceTypes = [
-        self::SERVICE_PAYMENT  => 'Payments',
-        self::SERVICE_DELIVERY => 'Delivery',
-        self::SERVICE_SUBTOTAL => 'Subtotal',
-    ];
-
-    private $services = [];
+    private $payments;
 
     private $lexicon;
     private $lang = [];
 
-    public function __construct($modx)
+    public function __construct($modx, array $params)
     {
         $this->modx = $modx;
+        $this->setSettings($params);
 
         $this->lexicon = new \Helpers\Lexicon($modx, [
             'langDir' => 'assets/plugins/commerce/lang/',
@@ -38,8 +33,10 @@ class Commerce
         $modx->invokeEvent('OnInitializeCommerce');
 
         if (!($this->cart instanceof Cart)) {
-            $this->cart = new DefaultCart($modx);
+            $this->cart = new Carts\DocListerCart($modx);
         }
+
+        CartsManager::getManager()->addCart('products', $this->cart);
     }
 
     public function getCart()
@@ -61,42 +58,72 @@ class Commerce
         return self::VERSION;
     }
 
-    public function registerService($type, $code, $title, $processor)
+    public function registerPayment($code, $title, $processor)
     {
-        if (!isset($this->services[$type])) {
-            $this->services[$type] = [];
+        if (is_null($this->payments)) {
+            $this->payments = [];
         }
 
-        if (isset($this->services[$type][$code])) {
-            throw new \Exception('Service with code "' . print_r($code, true) . '" already registered!');
+        if (isset($this->payments[$code])) {
+            throw new \Exception('Payment with code "' . print_r($code, true) . '" already registered!');
         }
 
-        $this->services[$type][$code] = [
+        $this->payments[$code] = [
             'title'     => $title,
             'processor' => $processor,
         ];
     }
 
-    public function getServices($type)
+    public function getPayments()
     {
-        if (!isset($this->services[$type])) {
-            if (isset($this->serviceTypes[$type])) {
-                $eventType = $this->serviceTypes[$type];
-                $this->modx->invokeEvent('OnRegister' . $eventType);
-            }
+        if (is_null($this->payments)) {
+            $this->modx->invokeEvent('OnRegisterPayments');
 
-            if (!isset($this->services[$type])) {
-                $this->services[$type] = [];
+            if (is_null($this->payments)) {
+                $this->payments = [];
             }
         }
 
-        return $this->services[$type];
+        return $this->payments;
+    }
+
+    public function getPayment($code)
+    {
+        $payments = $this->getPayments();
+
+        if (!isset($payments[$code])) {
+            throw new \Exception('Payment with code "' . $code . '" not registered!');
+        }
+
+        return $payments[$code];
     }
 
     public function getUserLanguage($instance = 'common')
     {
         $this->lang = array_merge($this->lang, $this->lexicon->loadLang($instance));
         return $this->lang;
+    }
+
+    public function setProcessor(Processor $processor)
+    {
+        if ($this->processor instanceof Processor) {
+            throw new \Exception('Processor already set!');
+        }
+
+        $this->processor = $processor;
+    }
+
+    public function loadProcessor()
+    {
+        if (is_null($this->processor)) {
+            $this->modx->invokeEvent('OnInitializeOrderProcessor');
+
+            if (!($this->processor instanceof Processor)) {
+                $this->processor = new Processors\SimpleProcessor($this->modx);
+            }
+        }
+
+        return $this->processor;
     }
 
     public function runAction($action, array $data = [])

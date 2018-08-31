@@ -16,10 +16,10 @@ if (!class_exists('Commerce\\Commerce')) {
     require_once MODX_BASE_PATH . 'assets/plugins/commerce/autoload.php';
 }
 
-$e = &$modx->Event;
+$e = $modx->Event;
 
 if (in_array($e->name, ['OnWebPageInit', 'OnManagerPageInit', 'OnPageNotFound'])) {
-    $modx->commerce = new \Commerce\Commerce($modx);
+    $modx->commerce = new \Commerce\Commerce($modx, $params);
 
     if ($modx->Event->name == 'OnWebPageInit') {
         $modx->regClientScript('assets/plugins/commerce/js/commerce.js', [

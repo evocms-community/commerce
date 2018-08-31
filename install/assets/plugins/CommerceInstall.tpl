@@ -22,9 +22,11 @@ $events = [
     'OnCollectSubtotals',
     'OnRegisterDelivery',
     'OnRegisterPayments',
-    'OnBeforeAddCartItem',
-    'OnBeforeProcessOrder',
-    'OnProcessOrder',
+    'OnBeforeCartItemAdding',
+    'OnBeforeOrderProcessing',
+    'OnOrderProcessed',
+    'OnBeforeOrderSaving',
+    'OnOrderSaved',
 ];
 
 foreach ($events as $event) {
@@ -38,6 +40,8 @@ foreach ($events as $event) {
         ], $tableEventnames);
     }
 }
+
+// TODO store all parameters in main plugin, link plugins and snippets
 
 // remove installer
 $query = $modx->db->select('id', $tablePlugins, "`name` = 'CommerceInstall'");
