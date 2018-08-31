@@ -43,6 +43,16 @@
                     }, 'json');
                 })(event, data, initiator);
             }
+        },
+
+        updateCarts: function() {
+            $('[data-commerce-cart]').each(function() {
+                (function($cart) {
+                    $.post('commerce/cart/contents', {hash: $cart.attr('data-commerce-cart')}, function(response) {
+                        $cart.replaceWith(response);
+                    });
+                })($(this));
+            });
         }
     };
 
@@ -124,13 +134,7 @@
 
     $(document).on('action-complete.commerce', function(e, data) {
         if (data.response.status == 'success') {
-            $('[data-commerce-cart]').each(function(i, cart) {
-                (function($cart) {
-                    $.post('commerce/cart/contents', {hash: $cart.attr('data-commerce-cart')}, function(response) {
-                        $cart.replaceWith(response);
-                    });
-                })($(cart));
-            });
+            Commerce.updateCarts();
         }
     });
 
