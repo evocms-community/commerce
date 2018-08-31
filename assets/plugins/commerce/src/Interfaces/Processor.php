@@ -4,9 +4,9 @@ namespace Commerce\Interfaces;
 
 interface Processor
 {
-    public function create(array $items, array $fields);
+    public function createOrder(array $items, array $fields);
 
-    public function get();
+    public function getOrder();
 
     public function processPayment();
 }

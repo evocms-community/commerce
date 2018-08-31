@@ -6,7 +6,7 @@ class Payment implements \Commerce\Interfaces\Payment
 {
     use \Commerce\SettingsTrait;
 
-    private $modx;
+    protected $modx;
     protected $lang;
 
     public function __construct($modx, array $params = [])
@@ -38,16 +38,16 @@ class Payment implements \Commerce\Interfaces\Payment
 
     public function handleCallback()
     {
+        return false;
+    }
+
+    public function handleSuccess()
+    {
         return true;
     }
 
-    public function handleSuccess($redirectUrl)
+    public function handleError()
     {
-        $this->modx->sendForward($redirectUrl);
-    }
-
-    public function handleError($redirectUrl)
-    {
-        $this->modx->sendForward($redirectUrl);
+        return true;
     }
 }

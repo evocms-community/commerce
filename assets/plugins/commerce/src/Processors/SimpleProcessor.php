@@ -14,7 +14,7 @@ class SimpleProcessor implements \Commerce\Interfaces\Processor
     protected $tableStatuses = 'commerce_order_statuses';
     protected $tableProducts = 'commerce_order_products';
     protected $tableHistory  = 'commerce_order_history';
-    
+
     public function __construct($modx)
     {
         $this->modx = $modx;
@@ -24,7 +24,7 @@ class SimpleProcessor implements \Commerce\Interfaces\Processor
         $this->tableHistory  = $modx->getFullTablename($this->tableHistory);
     }
 
-    public function create(array $items, array $fields)
+    public function createOrder(array $items, array $fields)
     {
         $total = 0;
 
@@ -69,7 +69,7 @@ class SimpleProcessor implements \Commerce\Interfaces\Processor
             $this->modx->db->insert([
                 'order_id'   => $order_id,
                 'product_id' => (int)$item['id'],
-                'title'      => $this->modx->db->escape($item['title']),
+                'title'      => $this->modx->db->escape($item['name']),
                 'price'      => (float)$item['price'],
                 'count'      => (float)$item['count'],
                 'options'    => !empty($item['options']) ? $this->modx->db->escape(json_encode($item['options'], JSON_UNESCAPED_UNICODE)) : null,
@@ -97,7 +97,7 @@ class SimpleProcessor implements \Commerce\Interfaces\Processor
             'total'     => &$total,
         ]);
 
-        $this->load($order_id);
+        $this->loadOrder($order_id);
         $this->getCart();
     }
 
@@ -117,10 +117,10 @@ class SimpleProcessor implements \Commerce\Interfaces\Processor
         }
     }
 
-    public function get()
+    public function getOrder()
     {
         if (!empty($this->order) && !empty($this->order_id)) {
-            $this->load($this->order_id);
+            $this->loadOrder($this->order_id);
         }
 
         if (!empty($this->order)) {
@@ -130,10 +130,10 @@ class SimpleProcessor implements \Commerce\Interfaces\Processor
         return null;
     }
 
-    public function load($order_id)
+    public function loadOrder($order_id)
     {
         $query = $this->modx->db->select('*', $this->tableOrders, "`id` = '" . (int)$order_id . "'");
-        
+
         if ($this->modx->db->getRecordCount($query)) {
             $this->order = $this->modx->db->getRow($query);
             $this->order['fields'] = json_decode($this->order['fields'], true);
@@ -147,7 +147,7 @@ class SimpleProcessor implements \Commerce\Interfaces\Processor
     public function getCart()
     {
         if (is_null($this->cart)) {
-            $this->cart = new \Commerce\Carts\DocListerOrderCart($modx);
+            $this->cart = new \Commerce\Carts\DocListerOrderCart($this->modx);
             \Commerce\CartsManager::getManager()->addCart('order', $this->cart);
 
             if (!empty($this->order_id)) {
@@ -156,17 +156,16 @@ class SimpleProcessor implements \Commerce\Interfaces\Processor
                 $subtotals = [];
 
                 while ($item = $this->modx->db->getRow($query)) {
-                    $item['options'] = json_decode($item['options'], true);
-                    $item['meta'] = json_decode($item['meta'], true);
-                    
+                    $item['options'] = !empty($item['options']) ? json_decode($item['options'], true) : [];
+                    $item['meta'] = !empty($item['meta']) ? json_decode($item['meta'], true) : [];
+
                     if (!is_null($item['product_id'])) {
-                        $items[] = $item;
+                        $this->cart->add($item['id'], $item['title'], $item['count'], $item['price'], $item['options'], $item['meta']);
                     } else {
                         $subtotals[] = $item;
                     }
                 }
 
-                $this->cart->setItems($items);
                 $this->cart->setSubtotals($subtotals);
             }
         }
@@ -176,13 +175,13 @@ class SimpleProcessor implements \Commerce\Interfaces\Processor
 
     public function processPayment()
     {
-        $order = $this->get();
+        $order = $this->getOrder();
 
         if (!empty($order['fields']['payment_method'])) {
             $payment = $this->modx->commerce->getPayment($order['fields']['payment_method']);
 
             $link = $payment['processor']->getPaymentLink();
-var_dump($link);
+
             if ($link !== false) {
                 $this->setConfig(['redirectTo' => $link]);
             } else {

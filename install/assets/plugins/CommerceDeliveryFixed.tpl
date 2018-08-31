@@ -1,7 +1,7 @@
 //<?php
 /**
  * CommerceDeliveryFixed
- * 
+ *
  * Simple delivery
  *
  * @category    plugin
@@ -26,16 +26,16 @@ switch ($e->name) {
             'title' => $params['title'],
             'price' => $params['price'],
         ];
-        
+
         break;
     }
-        
+
     case 'OnRegisterDelivery': {
         $params['rows']['fixed'] = [
             'title' => $params['title'],
             'price' => $params['price'],
         ];
-        
+
         break;
     }
 }

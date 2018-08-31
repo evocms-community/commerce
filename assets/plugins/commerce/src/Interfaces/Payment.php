@@ -14,7 +14,7 @@ interface Payment
 
     public function handleCallback();
 
-    public function handleSuccess($redirectUrl);
+    public function handleSuccess();
 
-    public function handleError($redirectUrl);
+    public function handleError();
 }

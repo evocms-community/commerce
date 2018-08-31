@@ -71,7 +71,7 @@ class Order extends Form
         }
 
         $processor = $this->modx->commerce->loadProcessor();
-        $processor->create($items, $this->getFormData('fields'));
+        $processor->createOrder($items, $this->getFormData('fields'));
 
         parent::process();
 

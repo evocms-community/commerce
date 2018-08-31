@@ -126,6 +126,68 @@ class Commerce
         return $this->processor;
     }
 
+    public function processRoute($route)
+    {
+        if (preg_match('/^commerce\/([a-z-_]+?)\/([a-z-]+?)$/', $route, $parts)) {
+            $payment = $this->getPayment($parts[1]);
+
+            if (is_null($payment)) {
+                return;
+            }
+
+            switch ($parts[2]) {
+                case 'payment-process': {
+                    if ($payment['processor']->handleCallback()) {
+                        exit;
+                    }
+                    break;
+                }
+
+                case 'payment-success': {
+                    if ($payment['processor']->handleSuccess()) {
+                        $this->modx->sendRedirect($params['success_payment_page_id']);
+                        exit;
+                    }
+                    break;
+                }
+
+                case 'payment-failed': {
+                    if ($payment['processor']->handleError()) {
+                        $this->modx->sendRedirect($params['failed_payment_page_id']);
+                        exit;
+                    }
+                    break;
+                }
+            }
+        } else {
+            switch ($route) {
+                case 'commerce/action': {
+                    if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action']) && is_string($_POST['action']) && preg_match('/^[a-z]+\/[a-z]+$/', $_POST['action'])) {
+                        try {
+                            echo $this->runAction($_POST['action'], isset($_POST['data']) ? $_POST['data'] : []);
+                            exit;
+                        } catch (\Exception $exc) {
+                            $this->modx->logEvent(0, 3, $exc->getMessage());
+                            throw $exc;
+                        } catch (\TypeError $exc) {
+                            $this->modx->logEvent(0, 3, $exc->getMessage());
+                            throw $exc;
+                        }
+                    }
+                    break;
+                }
+
+                case 'commerce/cart/contents': {
+                    echo $this->modx->runSnippet('Cart', [
+                        'useSavedParams' => true,
+                        'hash' => $_POST['hash'],
+                    ]);
+                    exit;
+                }
+            }
+        }
+    }
+
     public function runAction($action, array $data = [])
     {
         $response = [
@@ -137,12 +199,12 @@ class Commerce
 // TODO: validation!
                 $data = array_merge(['id' => 0, 'name' => 'Noname', 'count' => 1, 'price' => 0, 'options' => [], 'meta' => []], $data);
                 $row = $this->cart->add($data['id'], $data['name'], $data['count'], $data['price'], $data['options'], $data['meta']);
-                
+
                 $response = [
                     'status' => 'success',
                     'row'    => $row,
                 ];
-                
+
                 break;
             }
 

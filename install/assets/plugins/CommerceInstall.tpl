@@ -1,12 +1,12 @@
 //<?php
 /**
  * CommerceInstall
- * 
+ *
  * Commerce solution installer
  *
  * @category    plugin
  * @author      mnoskov
- * @internal    @events OnWebPageInit,OnManagerPageInit,OnPageNotFound 
+ * @internal    @events OnWebPageInit,OnManagerPageInit,OnPageNotFound
  * @internal    @modx_category Commerce
  * @internal    @installset base
 */
