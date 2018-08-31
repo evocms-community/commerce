@@ -11,4 +11,9 @@
  * @internal    @installset base
 */
 
-return $modx->commerce->getCart()->render($params);
+$instance = isset($instance) ? $instance : 'products';
+$cart = Commerce\CartsManager::getManager()->getCart($instance);
+
+if (!is_null($cart) && method_exists($cart, 'render')) {
+    return $cart->render($params);
+}
