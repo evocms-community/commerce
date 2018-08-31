@@ -128,6 +128,32 @@ class Commerce
 
     public function processRoute($route)
     {
+        switch ($route) {
+            case 'commerce/action': {
+                if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action']) && is_string($_POST['action']) && preg_match('/^[a-z]+\/[a-z]+$/', $_POST['action'])) {
+                    try {
+                        echo $this->runAction($_POST['action'], isset($_POST['data']) ? $_POST['data'] : []);
+                        exit;
+                    } catch (\Exception $exc) {
+                        $this->modx->logEvent(0, 3, $exc->getMessage());
+                        throw $exc;
+                    } catch (\TypeError $exc) {
+                        $this->modx->logEvent(0, 3, $exc->getMessage());
+                        throw $exc;
+                    }
+                }
+                break;
+            }
+
+            case 'commerce/cart/contents': {
+                echo $this->modx->runSnippet('Cart', [
+                    'useSavedParams' => true,
+                    'hash' => $_POST['hash'],
+                ]);
+                exit;
+            }
+        }
+
         if (preg_match('/^commerce\/([a-z-_]+?)\/([a-z-]+?)$/', $route, $parts)) {
             $payment = $this->getPayment($parts[1]);
 
@@ -157,32 +183,6 @@ class Commerce
                         exit;
                     }
                     break;
-                }
-            }
-        } else {
-            switch ($route) {
-                case 'commerce/action': {
-                    if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action']) && is_string($_POST['action']) && preg_match('/^[a-z]+\/[a-z]+$/', $_POST['action'])) {
-                        try {
-                            echo $this->runAction($_POST['action'], isset($_POST['data']) ? $_POST['data'] : []);
-                            exit;
-                        } catch (\Exception $exc) {
-                            $this->modx->logEvent(0, 3, $exc->getMessage());
-                            throw $exc;
-                        } catch (\TypeError $exc) {
-                            $this->modx->logEvent(0, 3, $exc->getMessage());
-                            throw $exc;
-                        }
-                    }
-                    break;
-                }
-
-                case 'commerce/cart/contents': {
-                    echo $this->modx->runSnippet('Cart', [
-                        'useSavedParams' => true,
-                        'hash' => $_POST['hash'],
-                    ]);
-                    exit;
                 }
             }
         }
