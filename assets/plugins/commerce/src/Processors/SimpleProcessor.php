@@ -160,7 +160,7 @@ class SimpleProcessor implements \Commerce\Interfaces\Processor
                     $item['meta'] = !empty($item['meta']) ? json_decode($item['meta'], true) : [];
 
                     if (!is_null($item['product_id'])) {
-                        $this->cart->add($item['id'], $item['title'], $item['count'], $item['price'], $item['options'], $item['meta']);
+                        $this->cart->add($item['product_id'], $item['title'], $item['count'], $item['price'], $item['options'], $item['meta']);
                     } else {
                         $subtotals[] = $item;
                     }
@@ -173,7 +173,7 @@ class SimpleProcessor implements \Commerce\Interfaces\Processor
         return $this->cart;
     }
 
-    public function processPayment()
+    public function processPayment($form)
     {
         $order = $this->getOrder();
 
@@ -182,11 +182,17 @@ class SimpleProcessor implements \Commerce\Interfaces\Processor
 
             $link = $payment['processor']->getPaymentLink();
 
-            if ($link !== false) {
-                $this->setConfig(['redirectTo' => $link]);
+            if (!empty($link)) {
+                $form->config->setConfig(['redirectTo' => $link]);
             } else {
                 $markup = $payment['processor']->getPaymentMarkup();
-                $this->setconfig(['successTpl' => $markup]);
+
+                if (!empty($markup)) {
+                    $form->config->setConfig(['successTpl' => $markup]);
+                } else {
+                    $lang = $this->modx->commerce->getUserLanguage('payments');
+                    $form->config->setConfig(['successTpl' => $lang['payments.error_initialization']]);
+                }
             }
         }
     }

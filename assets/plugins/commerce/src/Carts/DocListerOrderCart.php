@@ -9,7 +9,6 @@ class DocListerOrderCart extends SimpleCart implements \Commerce\Interfaces\Cart
     private $modx;
 
     protected $subtotals = [];
-    protected $total;
 
     public function __construct($modx)
     {
@@ -24,6 +23,9 @@ class DocListerOrderCart extends SimpleCart implements \Commerce\Interfaces\Cart
     protected function getSubtotals(array &$rows, &$total)
     {
         $rows = $this->subtotals;
-        $total = $this->total;
+
+        foreach ($rows as $row) {
+            $total += $row['price'];
+        }
     }
 }

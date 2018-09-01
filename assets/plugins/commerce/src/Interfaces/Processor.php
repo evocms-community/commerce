@@ -8,5 +8,5 @@ interface Processor
 
     public function getOrder();
 
-    public function processPayment();
+    public function processPayment($form);
 }

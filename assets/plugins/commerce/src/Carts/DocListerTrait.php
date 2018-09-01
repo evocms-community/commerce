@@ -12,9 +12,9 @@ trait DocListerTrait
         if (isset($this->items[$data['hash']])) {
             $data = array_merge($data, $this->items[$data['hash']]);
         }
-        
+
         $data['total'] = $data['price'] * $data['count'];
-        
+
         $total += $data['total'];
         $count += $data['count'];
         
@@ -49,7 +49,7 @@ trait DocListerTrait
         $placeholders['subtotals'] = $this->renderSubtotals($e->getStore('total'), $DL, $e);
         $placeholders['total']     = $e->getStore('total');
         $placeholders['count']     = $e->getStore('count');
-        
+
         return $placeholders;
     }
 
@@ -97,7 +97,7 @@ trait DocListerTrait
         $params['prepare'][]     = [$this, 'prepareCartRow'];
         $params['prepare'][]     = [$this, 'prepareCartRowOptions'];
         $params['prepareWrap'][] = [$this, 'prepareCartOuter'];
-        
+
         $params['theme'] = isset($params['theme']) ? $params['theme'] : '';
 
         $docids = [];

@@ -76,7 +76,7 @@ class Order extends Form
         parent::process();
 
         $this->modx->invokeEvent('OnOrderProcessed', $params);
-        $processor->processPayment();
+        $processor->processPayment($this);
     }
 
     public function postProcess()

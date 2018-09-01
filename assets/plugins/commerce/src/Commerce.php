@@ -230,6 +230,6 @@ class Commerce
 
     public function formatPrice($price)
     {
-        return number_format($price, 2, ',', ' ') . ' руб.';
+        return number_format(floatval($price), 2, ',', ' ') . ' руб.';
     }
 }
