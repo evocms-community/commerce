@@ -38,4 +38,9 @@ class CartsManager
 
         return null;
     }
+
+    public function has($name)
+    {
+        return isset($this->carts[$name]);
+    }
 }

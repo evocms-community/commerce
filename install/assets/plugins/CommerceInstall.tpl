@@ -23,10 +23,12 @@ $events = [
     'OnRegisterDelivery',
     'OnRegisterPayments',
     'OnBeforeCartItemAdding',
+    'OnOrderRawDataChanged',
     'OnBeforeOrderProcessing',
-    'OnOrderProcessed',
+    'OnBeforePaymentProcess',
     'OnBeforeOrderSaving',
     'OnOrderSaved',
+    'OnOrderProcessed',
 ];
 
 foreach ($events as $event) {

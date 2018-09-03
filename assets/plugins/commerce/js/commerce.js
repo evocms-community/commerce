@@ -53,6 +53,14 @@
                     });
                 })($(this));
             });
+        },
+
+        updateOrderData: function($form) {
+            $.post('commerce/data/update', $form.serializeObject(), function(response) {
+                if (response.status == 'success') {
+                    Commerce.updateCarts();
+                }
+            });
         }
     };
 

@@ -7,6 +7,19 @@ class SimpleCart implements \Commerce\Interfaces\Cart
     protected $items = [];
     protected $instance;
 
+    public function getTotal()
+    {
+        $total = 0;
+
+        if (!empty($this->items)) {
+            foreach ($this->items as $item) {
+                $total += $item['price'] * $item['count'];
+            }
+        }
+
+        return $total;
+    }
+
     public function getItems()
     {
         return $this->items;

@@ -36,7 +36,14 @@ class Commerce
             $this->cart = new Carts\DocListerCart($modx);
         }
 
-        CartsManager::getManager()->addCart('products', $this->cart);
+        $cartsManager = CartsManager::getManager();
+        $cartsManager->addCart('products', $this->cart);
+
+        foreach (['wishlist', 'comparison'] as $cart) {
+            if (!$cartsManager->has($cart)) {
+                $cartsManager->addCart($cart, new Carts\DocListerItemsList($modx, $cart));
+            }
+        }
     }
 
     public function getCart()
@@ -146,11 +153,23 @@ class Commerce
             }
 
             case 'commerce/cart/contents': {
-                echo $this->modx->runSnippet('Cart', [
-                    'useSavedParams' => true,
-                    'hash' => $_POST['hash'],
-                ]);
+                $params = [];
+                $hash = $_POST['hash'];
+
+                if (!empty($_SESSION['commerce.cart-' . $hash])) {
+                    $params = unserialize($_SESSION['commerce.cart-' . $hash]);
+                }
+
+                echo $this->modx->runSnippet('Cart', $params);
                 exit;
+            }
+
+            case 'commerce/data/update': {
+                if ($_SERVER['REQUEST_METHOD'] == 'POST' && !empty($_POST)) {
+                    $this->modx->invokeEvent('OnOrderRawDataChanged', ['data' => $_POST]);
+                    exit;
+                }
+                break;
             }
         }
 
@@ -194,34 +213,43 @@ class Commerce
             'status' => 'failed',
         ];
 
-        switch ($action) {
-            case 'cart/add': {
+        $instance = 'products';
+        if (isset($data['instance']) && is_string($data['instance'])) {
+            $instance = $data['instance'];
+        }
+
+        $cart = CartsManager::getManager()->getCart($instance);
+
+        if (!is_null($cart)) {
+            switch ($action) {
+                case 'cart/add': {
 // TODO: validation!
-                $data = array_merge(['id' => 0, 'name' => 'Noname', 'count' => 1, 'price' => 0, 'options' => [], 'meta' => []], $data);
-                $row = $this->cart->add($data['id'], $data['name'], $data['count'], $data['price'], $data['options'], $data['meta']);
+                    $data = array_merge(['id' => 0, 'name' => 'Noname', 'count' => 1, 'price' => 0, 'options' => [], 'meta' => []], $data);
+                    $row = $cart->add($data['id'], $data['name'], $data['count'], $data['price'], $data['options'], $data['meta']);
 
-                $response = [
-                    'status' => 'success',
-                    'row'    => $row,
-                ];
+                    $response = [
+                        'status' => 'success',
+                        'row'    => $row,
+                    ];
 
-                break;
-            }
-
-            case 'cart/update': {
-// TODO: validation!
-                if ($this->cart->update($data['row'], $data['attributes'])) {
-                    $response['status'] = 'success';
+                    break;
                 }
 
-                break;
-            }
+                case 'cart/update': {
+// TODO: validation!
+                    if ($cart->update($data['row'], $data['attributes'])) {
+                        $response['status'] = 'success';
+                    }
 
-            case 'cart/remove': {
-                if ($this->cart->remove($data['row'])) {
-                    $response['status'] = 'success';
+                    break;
                 }
-                break;
+
+                case 'cart/remove': {
+                    if ($cart->remove($data['row'])) {
+                        $response['status'] = 'success';
+                    }
+                    break;
+                }
             }
         }
 

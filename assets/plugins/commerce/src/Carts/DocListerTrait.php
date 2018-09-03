@@ -62,11 +62,11 @@ trait DocListerTrait
         $this->getSubTotals($rows, $total);
 
         foreach ($rows as $row) {
-            $result .= $DLTemplate->parseChunk('cart_subtotals_row', $row);
+            $result .= $DLTemplate->parseChunk($DL->getCFGDef('subtotalsRowTpl'), $row);
         }
 
         if (!empty($result)) {
-            $result = $DLTemplate->parseChunk('cart_subtotals', [
+            $result = $DLTemplate->parseChunk($DL->getCFGDef('subtotalsTpl'), [
                 'wrap' => $result,
             ]);
         }
@@ -77,11 +77,6 @@ trait DocListerTrait
 
     public function render(array $params)
     {
-        if (!empty($params['useSavedParams']) && !empty($params['hash'])) {
-            unset($params['useSavedParams']);
-            $params = $this->restoreRenderingParams($params['hash']);
-        }
-
         $params['hash'] = $this->storeRenderingParams($params);
 
         foreach (['prepare', 'prepareWrap'] as $prepare) {
@@ -98,19 +93,12 @@ trait DocListerTrait
         $params['prepare'][]     = [$this, 'prepareCartRowOptions'];
         $params['prepareWrap'][] = [$this, 'prepareCartOuter'];
 
-        $params['theme'] = isset($params['theme']) ? $params['theme'] : '';
-
         $docids = [];
         foreach ($this->items as $item) {
             $docids[] = $item['id'];
         }
 
-        return $this->modx->runSnippet('DocLister', array_merge([
-            'tpl'        => $params['theme'] . 'cart_row',
-            'optionsTpl' => $params['theme'] . 'cart_row_options_row',
-            'ownerTPL'   => $params['theme'] . 'cart_wrap',
-            'noneTPL'    => $params['theme'] . 'cart_wrap_empty',
-        ], $params, [
+        return $this->modx->runSnippet('DocLister', array_merge($params, [
             'controller' => 'Cart',
             'dir'        => 'assets/plugins/commerce/src/Controllers/',
             'sortType'   => 'doclist',
@@ -127,16 +115,5 @@ trait DocListerTrait
         $_SESSION['commerce.cart-' . $hash] = serialize($params);
 
         return $hash;
-    }
-
-    protected function restoreRenderingParams($hash)
-    {
-        $result = [];
-
-        if (!empty($_SESSION['commerce.cart-' . $hash])) {
-            $result = unserialize($_SESSION['commerce.cart-' . $hash]);
-        }
-
-        return $result;
     }
 }

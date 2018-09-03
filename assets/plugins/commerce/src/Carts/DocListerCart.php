@@ -9,8 +9,9 @@ class DocListerCart extends SessionCart implements \Commerce\Interfaces\Cart
     protected function getSubtotals(array &$rows, &$total)
     {
         $this->modx->invokeEvent('OnCollectSubtotals', [
-            'rows'  => &$rows,
-            'total' => &$total,
+            'rows'     => &$rows,
+            'total'    => &$total,
+            'instance' => $this->instance,
         ]);
     }
 }

@@ -14,11 +14,14 @@ spl_autoload_register(function ($class) {
             'Commerce\\Carts\\DocListerTrait'       => '/src/Carts/DocListerTrait.php',
             'Commerce\\Carts\\DocListerCart'        => '/src/Carts/DocListerCart.php',
             'Commerce\\Carts\\DocListerOrderCart'   => '/src/Carts/DocListerOrderCart.php',
+            'Commerce\\Carts\\DocListerItemsList'   => '/src/Carts/DocListerItemsList.php',
             'Commerce\\Carts\\SessionCart'          => '/src/Carts/SessionCart.php',
             'Commerce\\Carts\\SimpleCart'           => '/src/Carts/SimpleCart.php',
             'Commerce\\Payments\\Payment'           => '/src/Payments/Payment.php',
-            'Commerce\\Payments\\SberbankPayment'   => '/src/Payments/SberbankPayment.php',
             'Commerce\\Processors\\SimpleProcessor' => '/src/Processors/SimpleProcessor.php',
+
+            'Commerce\\Payments\\SberbankPayment'    => '/src/Payments/SberbankPayment.php',
+            'Commerce\\Payments\\YandexkassaPayment' => '/src/Payments/YandexkassaPayment.php',
 
             'FormLister\\Order'     => '/src/Controllers/Order.php',
             'FormLister\\Form'      => '/../../snippets/FormLister/core/controller/Form.php',

@@ -28,4 +28,15 @@ class DocListerOrderCart extends SimpleCart implements \Commerce\Interfaces\Cart
             $total += $row['price'];
         }
     }
+
+    public function getTotal()
+    {
+        $total = parent::getTotal();
+
+        foreach ($this->subtotals as $subtotal) {
+            $total += $subtotal['price'];
+        }
+
+        return $total;
+    }
 }

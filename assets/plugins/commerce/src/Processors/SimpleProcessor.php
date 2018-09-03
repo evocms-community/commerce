@@ -180,6 +180,11 @@ class SimpleProcessor implements \Commerce\Interfaces\Processor
         if (!empty($order['fields']['payment_method'])) {
             $payment = $this->modx->commerce->getPayment($order['fields']['payment_method']);
 
+            $this->modx->invokeEvent('OnBeforePaymentProcess', [
+                'order'   => &$order,
+                'payment' => $payment,
+            ]);
+
             $link = $payment['processor']->getPaymentLink();
 
             if (!empty($link)) {
