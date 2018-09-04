@@ -46,13 +46,30 @@
         },
 
         updateCarts: function() {
-            $('[data-commerce-cart]').each(function() {
-                (function($cart) {
-                    $.post('commerce/cart/contents', {hash: $cart.attr('data-commerce-cart')}, function(response) {
-                        $cart.replaceWith(response);
-                    });
-                })($(this));
-            });
+            var $carts = $('[data-commerce-cart]');
+
+            if ($carts.length) {
+                var hashes = [];
+
+                $carts.each(function() {
+                    hashes.push($(this).attr('data-commerce-cart'));
+                });
+
+                (function($carts) {
+                    $.post('commerce/cart/contents', {hashes: hashes}, function(response) {
+                        if (response.status == 'success' && response.markup) {
+                            $carts.each(function() {
+                                var $cart = $(this),
+                                    hash  = $cart.attr('data-commerce-cart');
+
+                                if (response.markup[hash]) {
+                                    $cart.replaceWith(response.markup[hash]);
+                                }
+                            });
+                        }
+                    }, 'json');
+                })($carts);
+            }
         },
 
         updateOrderData: function($form) {

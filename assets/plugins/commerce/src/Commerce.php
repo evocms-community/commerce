@@ -153,14 +153,32 @@ class Commerce
             }
 
             case 'commerce/cart/contents': {
-                $params = [];
-                $hash = $_POST['hash'];
+                $response = [
+                    'status' => 'failed',
+                ];
 
-                if (!empty($_SESSION['commerce.cart-' . $hash])) {
-                    $params = unserialize($_SESSION['commerce.cart-' . $hash]);
+                if (isset($_POST['hashes']) && is_array($_POST['hashes'])) {
+                    foreach ($_POST['hashes'] as $hash) {
+                        if (!is_string($hash)) {
+                            continue;
+                        }
+
+                        if (empty($_SESSION['commerce.cart-' . $hash])) {
+                            continue;
+                        }
+
+                        $params = unserialize($_SESSION['commerce.cart-' . $hash]);
+
+                        if (!isset($response['markup'])) {
+                            $response['markup'] = [];
+                            $response['status'] = 'success';
+                        }
+
+                        $response['markup'][$hash] = $this->modx->runSnippet('Cart', $params);
+                    }
                 }
 
-                echo $this->modx->runSnippet('Cart', $params);
+                echo json_encode($response);
                 exit;
             }
 
