@@ -15,6 +15,8 @@ class SimpleProcessor implements \Commerce\Interfaces\Processor
     protected $tableProducts = 'commerce_order_products';
     protected $tableHistory  = 'commerce_order_history';
 
+    protected $sessionKey = 'commerce.order';
+
     public function __construct($modx)
     {
         $this->modx = $modx;
@@ -173,9 +175,13 @@ class SimpleProcessor implements \Commerce\Interfaces\Processor
         return $this->cart;
     }
 
-    public function processPayment($form)
+    public function postProcessForm($FL)
     {
         $order = $this->getOrder();
+
+        if (isset($_SESSION[$this->sessionKey])) {
+            unset($_SESSION[$this->sessionKey]);
+        }
 
         if (!empty($order['fields']['payment_method'])) {
             $payment = $this->modx->commerce->getPayment($order['fields']['payment_method']);
@@ -188,18 +194,109 @@ class SimpleProcessor implements \Commerce\Interfaces\Processor
             $link = $payment['processor']->getPaymentLink();
 
             if (!empty($link)) {
-                $form->config->setConfig(['redirectTo' => $link]);
+                $FL->config->setConfig(['redirectTo' => [
+                    'page'   => $link,
+                    'header' => 'HTTP/1.1 301 Moved Permanently',
+                ]]);
             } else {
                 $markup = $payment['processor']->getPaymentMarkup();
 
                 if (!empty($markup)) {
-                    $form->config->setConfig(['successTpl' => $markup]);
-                } else {
-                    $lang = $this->modx->commerce->getUserLanguage('payments');
-                    $form->config->setConfig(['successTpl' => $lang['payments.error_initialization']]);
+                    $FL->config->setConfig(['successTpl' => $markup]);
                 }
             }
         }
+    }
+
+    public function processPayment($order_id, $amount)
+    {
+        $order = $this->loadOrder($order_id);
+
+        if (!is_null($order)) {
+            if ($order['amount'] == $amount) {
+                $status = $this->modx->commerce->getSetting('status_id_after_payment', 3);
+
+                if ($this->modx->db->update(['status' => $status], '[+prefix+]commerce_orders', "`id` = '" . $order['id'] . "'")) {
+                    $lang = $this->modx->commerce->getUserLanguage('order');
+                    $comment = \DLTemplate::getInstance($this->modx)->parseChunk($lang['order.order_paid'], [
+                        'order_id' => $order['id']
+                    ]);
+                    $this->updateHistory($status, $comment, true);
+                    return true;
+                }
+            }
+        }
+
+        return true;
+    }
+
+    public function updateRawData($data)
+    {
+        $this->modx->invokeEvent('OnOrderRawDataChanged', ['data' => $data]);
+        $_SESSION[$this->sessionKey] = $data;
+    }
+
+    public function getRawData()
+    {
+        if (isset($_SESSION[$this->sessionKey])) {
+            return $_SESSION[$this->sessionKey];
+        }
+
+        return [];
+    }
+
+    public function getCurrentDelivery()
+    {
+        if (isset($_SESSION[$this->sessionKey]['delivery_method'])) {
+            return $_SESSION[$this->sessionKey]['delivery_method'];
+        }
+
+        $order = $this->getOrder();
+
+        if (isset($order['fields']['delivery_method'])) {
+            return $order['fields']['delivery_method'];
+        }
+
+        $code = $this->modx->commerce->getSetting('default_delivery');
+
+        if (!empty($code)) {
+            return $code;
+        }
+
+        $deliveries = $this->modx->commerce->getDeliveries();
+
+        if (count($deliveries)) {
+            return key($deliveries);
+        }
+
+        return null;
+    }
+
+    public function getCurrentPayment()
+    {
+        if (isset($_SESSION[$this->sessionKey]['payment_method'])) {
+            return $_SESSION[$this->sessionKey]['payment_method'];
+        }
+
+        $order = $this->getOrder();
+
+        if (isset($order['fields']['payment_method'])) {
+            return $order['fields']['payment_method'];
+        }
+
+        $code = $this->modx->commerce->getSetting('default_payment');
+
+        if (!empty($code)) {
+            return $code;
+        }
+
+        $payments = $this->modx->commerce->getPayments();
+
+        if (count($payments)) {
+            return key($payments);
+        }
+
+        return null;
     }
 
     private function isTableExists($table)

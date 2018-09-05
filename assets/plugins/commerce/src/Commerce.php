@@ -16,6 +16,7 @@ class Commerce
     private $processor;
 
     private $payments;
+    private $deliveries;
 
     private $lexicon;
     private $lang = [];
@@ -105,6 +106,30 @@ class Commerce
         return $payments[$code];
     }
 
+    public function getDeliveries()
+    {
+        if (is_null($this->deliveries)) {
+            $this->deliveries = [];
+
+            $this->modx->invokeEvent('OnRegisterDelivery', [
+                'rows' => &$this->deliveries,
+            ]);
+        }
+
+        return $this->deliveries;
+    }
+
+    public function getDelivery($code)
+    {
+        $deliveries = $this->getDeliveries();
+
+        if (!isset($deliveries[$code])) {
+            throw new \Exception('Delivery with code "' . $code . '" not registered!');
+        }
+
+        return $deliveries[$code];
+    }
+
     public function getUserLanguage($instance = 'common')
     {
         $this->lang = array_merge($this->lang, $this->lexicon->loadLang($instance));
@@ -184,7 +209,8 @@ class Commerce
 
             case 'commerce/data/update': {
                 if ($_SERVER['REQUEST_METHOD'] == 'POST' && !empty($_POST)) {
-                    $this->modx->invokeEvent('OnOrderRawDataChanged', ['data' => $_POST]);
+                    $this->loadProcessor()->updateRawData($_POST);
+                    echo json_encode(['status' => 'success']);
                     exit;
                 }
                 break;
@@ -208,7 +234,9 @@ class Commerce
 
                 case 'payment-success': {
                     if ($payment['processor']->handleSuccess()) {
-                        $this->modx->sendRedirect($params['success_payment_page_id']);
+                        $docid = $this->getSetting('payment_success_page_id', $this->modx->getConfig('site_start'));
+                        $url   = $this->modx->makeUrl($docid);
+                        $this->modx->sendRedirect($url);
                         exit;
                     }
                     break;
@@ -216,7 +244,9 @@ class Commerce
 
                 case 'payment-failed': {
                     if ($payment['processor']->handleError()) {
-                        $this->modx->sendRedirect($params['failed_payment_page_id']);
+                        $docid = $this->getSetting('payment_failed_page_id', $this->modx->getConfig('site_start'));
+                        $url   = $this->modx->makeUrl($docid);
+                        $this->modx->sendRedirect($url);
                         exit;
                     }
                     break;

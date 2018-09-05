@@ -77,7 +77,7 @@
                 if (response.status == 'success') {
                     Commerce.updateCarts();
                 }
-            });
+            }, 'json');
         }
     };
 
@@ -160,6 +160,12 @@
     $(document).on('action-complete.commerce', function(e, data) {
         if (data.response.status == 'success') {
             Commerce.updateCarts();
+        }
+    });
+
+    $(document).on('change', '[data-commerce-order]', function(e) {
+        if (e.target.name == 'delivery_method') {
+            Commerce.updateOrderData($(this));
         }
     });
 

@@ -8,7 +8,7 @@
  * @internal    @overwrite false
  * @internal    @installset base
  */
-<form method="post">
+<form method="post" data-commerce-order>
 	<input type="hidden" name="formid" value="order">
 	
 	<div class="form-group [+name.errorClass+][+name.requiredClass+]">

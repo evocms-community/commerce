@@ -19,6 +19,7 @@ $tableEvents     = $modx->getFullTablename('site_plugin_events');
 
 $events = [
     'OnInitializeCommerce',
+    'OnInitializeOrderProcessor',
     'OnCollectSubtotals',
     'OnRegisterDelivery',
     'OnRegisterPayments',

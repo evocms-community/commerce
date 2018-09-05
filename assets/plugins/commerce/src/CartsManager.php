@@ -24,7 +24,7 @@ class CartsManager
     public function addCart($name, Interfaces\Cart $cart)
     {
         if (isset($this->carts[$name])) {
-            throw new Exception('Cart "' . $name . '" already exists!');
+            throw new \Exception('Cart "' . $name . '" already exists!');
         }
 
         $this->carts[$name] = $cart;

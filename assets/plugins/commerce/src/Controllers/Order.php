@@ -6,10 +6,7 @@ class Order extends Form
 {
     public function render()
     {
-        $delivery = [];
-        $this->modx->invokeEvent('OnRegisterDelivery', [
-            'rows' => &$delivery,
-        ]);
+        $delivery = $this->modx->commerce->getDeliveries();
 
         $payments = [];
         foreach ($this->modx->commerce->getPayments() as $code => $payment) {
@@ -19,7 +16,7 @@ class Order extends Form
             ];
         }
 
-        foreach (['delivery' => $this->getCFGDef('default_delivery'), 'payments' => $this->getCFGDef('default_payment')] as $type => $default) {
+        foreach (['delivery' => $this->getCFGDef('default_delivery', key($delivery)), 'payments' => $this->getCFGDef('default_payment', key($payments))] as $type => $default) {
             $output = '';
             $rows   = $$type;
             $index  = 0;
@@ -31,7 +28,7 @@ class Order extends Form
                     'title'  => $row['title'],
                     'price'  => isset($row['price']) ? $row['price'] : '',
                     'markup' => isset($row['markup']) ? $row['markup'] : '',
-                    'active' => 1 * ($default == $code || empty($default) && !$index),
+                    'active' => 1 * ($default == $code),
                     'index'  => $index,
                 ]);
 
@@ -70,14 +67,22 @@ class Order extends Form
             $cart->setItems($items);
         }
 
+        $fields = $this->getFormData('fields');
+
+        if (!empty($fields['payment_method'])) {
+            $payment = $this->modx->commerce->getPayment($fields['payment_method']);
+            $this->setField('payment_method_title', $payment['title']);
+        }
+
+        if (!empty($fields['delivery_method'])) {
+            $delivery = $this->modx->commerce->getDelivery($fields['delivery_method']);
+            $this->setField('delivery_method_title', $delivery['title']);
+        }
+
         $processor = $this->modx->commerce->loadProcessor();
         $processor->createOrder($items, $this->getFormData('fields'));
         parent::process();
-        $processor->processPayment($this);
-    }
-
-    public function postProcess()
-    {
+        $processor->postProcessForm($this);
         $this->modx->invokeEvent('OnOrderProcessed');
         $this->redirect();
     }
