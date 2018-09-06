@@ -1,41 +1,41 @@
 //<?php
 /**
- * CommerceDeliveryFixed
+ * CommerceDeliveryPickup
  *
- * Simple delivery
+ * Pickup
  *
  * @category    plugin
  * @version     0.1.0
  * @author      mnoskov
  * @internal    @events OnCollectSubtotals,OnRegisterDelivery
- * @internal    @properties &title=Title;text; &price=Price;text;
+ * @internal    @properties &title=Title;text; 
  * @internal    @modx_category Commerce
  * @internal    @installset base
 */
 
-$e = $modx->Event;
+$e = &$modx->Event;
 
 if (empty($params['title'])) {
     $lang = $modx->commerce->getUserLanguage('delivery');
-    $params['title'] = $lang['delivery.fixed_title'];
+    $params['title'] = $lang['delivery.pickup_title'];
 }
 
 switch ($e->name) {
     case 'OnCollectSubtotals': {
-        if ($modx->commerce->loadProcessor()->getCurrentDelivery() == 'fixed') {
+        if ($modx->commerce->loadProcessor()->getCurrentDelivery() == 'pickup') {
             $params['total'] += $params['price'];
-            $params['rows']['fixed'] = [
+            $params['rows']['pickup'] = [
                 'title' => $params['title'],
-                'price' => $params['price'],
+                'price' => 0,
             ];
         }
         break;
     }
 
     case 'OnRegisterDelivery': {
-        $params['rows']['fixed'] = [
+        $params['rows']['pickup'] = [
             'title' => $params['title'],
-            'price' => $params['price'],
+            'price' => 0,
         ];
 
         break;

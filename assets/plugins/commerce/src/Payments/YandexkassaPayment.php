@@ -35,7 +35,7 @@ class YandexkassaPayment extends Payment implements \Commerce\Interfaces\Payment
 
     public function getPaymentLink()
     {
-        $debug = $this->getSetting('debug') == 'Да';
+        $debug = !empty($this->getSetting('debug'));
 
         $processor = $this->modx->commerce->loadProcessor();
         $order     = $processor->getOrder();
@@ -105,7 +105,7 @@ class YandexkassaPayment extends Payment implements \Commerce\Interfaces\Payment
 
     public function handleCallback()
     {
-        $debug = $this->getSetting('debug') == 'Да';
+        $debug = !empty($this->getSetting('debug'));
         $source = file_get_contents('php://input');
 
         if ($debug) {
