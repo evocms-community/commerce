@@ -26,6 +26,45 @@ class SimpleProcessor implements \Commerce\Interfaces\Processor
         $this->tableHistory  = $modx->getFullTablename($this->tableHistory);
     }
 
+    protected function prepareItem($order_id, $position, $item)
+    {
+        return [
+            'order_id'   => $order_id,
+            'product_id' => (int)$item['id'],
+            'title'      => $this->modx->db->escape($item['name']),
+            'price'      => (float)$item['price'],
+            'count'      => (float)$item['count'],
+            'options'    => !empty($item['options']) ? $this->modx->db->escape(json_encode($item['options'], JSON_UNESCAPED_UNICODE)) : null,
+            'meta'       => !empty($item['meta']) ? $this->modx->db->escape(json_encode($item['meta'], JSON_UNESCAPED_UNICODE)) : null,
+            'position'   => $position,
+        ];
+    }
+
+    protected function prepareSubtotal($order_id, $position, $item)
+    {
+        return [
+            'order_id' => $order_id,
+            'title'    => $this->modx->db->escape($item['title']),
+            'price'    => (float)$item['price'],
+            'position' => $position,
+        ];
+    }
+
+    protected function prepareValues($fields)
+    {
+        $values = [];
+
+        foreach (['name', 'email', 'phone'] as $field) {
+            if (isset($fields[$field])) {
+                $values[$field] = $fields[$field];
+                unset($fields[$field]);
+            }
+        }
+
+        $values['fields'] = $this->modx->db->escape(json_encode($fields, JSON_UNESCAPED_UNICODE));
+        return $values;
+    }
+
     public function createOrder(array $items, array $fields)
     {
         $total = 0;
@@ -40,24 +79,14 @@ class SimpleProcessor implements \Commerce\Interfaces\Processor
             'total' => &$total,
         ]);
 
-        $values = [];
-
-        foreach (['name', 'email', 'phone'] as $field) {
-            if (isset($fields[$field])) {
-                $values[$field] = $fields[$field];
-                unset($fields[$field]);
-            }
-        }
-
+        $values = $this->prepareValues($fields);
         $values['amount'] = (int)$total;
-        $values['fields'] = $this->modx->db->escape(json_encode($fields, JSON_UNESCAPED_UNICODE));
 
         $this->modx->invokeEvent('OnBeforeOrderSaving', [
             'values'    => &$values,
             'items'     => &$items,
             'fields'    => &$fields,
             'subtotals' => &$subtotals,
-            'total'     => &$total,
         ]);
 
         $this->checkTables();
@@ -68,25 +97,11 @@ class SimpleProcessor implements \Commerce\Interfaces\Processor
         $position = 1;
 
         foreach ($items as $item) {
-            $this->modx->db->insert([
-                'order_id'   => $order_id,
-                'product_id' => (int)$item['id'],
-                'title'      => $this->modx->db->escape($item['name']),
-                'price'      => (float)$item['price'],
-                'count'      => (float)$item['count'],
-                'options'    => !empty($item['options']) ? $this->modx->db->escape(json_encode($item['options'], JSON_UNESCAPED_UNICODE)) : null,
-                'meta'       => !empty($item['meta']) ? $this->modx->db->escape(json_encode($item['meta'], JSON_UNESCAPED_UNICODE)) : null,
-                'position'   => $position++,
-            ], $this->tableProducts);
+            $this->modx->db->insert($this->prepareItem($order_id, $position++, $item), $this->tableProducts);
         }
 
         foreach ($subtotals as $item) {
-            $this->modx->db->insert([
-                'order_id' => $order_id,
-                'title'    => $this->modx->db->escape($item['title']),
-                'price'    => (float)$item['price'],
-                'position' => $position++,
-            ], $this->tableProducts);
+            $this->modx->db->insert($this->prepareSubtotal($order_id, $position++, $item), $this->tableProducts);
         }
 
         $this->updateHistory($this->modx->commerce->getSetting('default_order_status', 1));
@@ -96,7 +111,6 @@ class SimpleProcessor implements \Commerce\Interfaces\Processor
             'items'     => &$items,
             'fields'    => &$fields,
             'subtotals' => &$subtotals,
-            'total'     => &$total,
         ]);
 
         $this->loadOrder($order_id);
@@ -310,7 +324,7 @@ class SimpleProcessor implements \Commerce\Interfaces\Processor
         return $this->modx->db->getRecordCount($query) > 0;
     }
 
-    protected function checkTables()
+    protected function checkTableOrders()
     {
         if (!$this->isTableExists($this->tableOrders)) {
             $this->modx->db->query("
@@ -327,7 +341,12 @@ class SimpleProcessor implements \Commerce\Interfaces\Processor
                     PRIMARY KEY (`id`)
                 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
             ");
+        }
+    }
 
+    protected function checkTableProducts()
+    {
+        if (!$this->isTableExists($this->tableProducts)) {
             $this->modx->db->query("
                 CREATE TABLE IF NOT EXISTS {$this->tableProducts} (
                     `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
@@ -343,7 +362,12 @@ class SimpleProcessor implements \Commerce\Interfaces\Processor
                     KEY `order_id` (`order_id`,`product_id`)
                 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
             ");
+        }
+    }
 
+    protected function checkTableHistory()
+    {
+        if (!$this->isTableExists($this->tableHistory)) {
             $this->modx->db->query("
                 CREATE TABLE IF NOT EXISTS {$this->tableHistory} (
                     `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
@@ -357,7 +381,10 @@ class SimpleProcessor implements \Commerce\Interfaces\Processor
                 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
             ");
         }
+    }
 
+    protected function checkTableStatuses()
+    {
         if (!$this->isTableExists($this->tableStatuses)) {
             $this->modx->db->query("
                 CREATE TABLE IF NOT EXISTS {$this->tableStatuses} (
@@ -377,5 +404,13 @@ class SimpleProcessor implements \Commerce\Interfaces\Processor
             $this->modx->db->insert(['title' => $lang['order.status.complete']], $this->tableStatuses);
             $this->modx->db->insert(['title' => $lang['order.status.pending']], $this->tableStatuses);
         }
+    }
+
+    protected function checkTables()
+    {
+        $this->checkTableOrders();
+        $this->checkTableProducts();
+        $this->checkTableHistory();
+        $this->checkTableStatuses();
     }
 }

@@ -188,18 +188,14 @@ class Commerce
                             continue;
                         }
 
-                        if (empty($_SESSION['commerce.cart-' . $hash])) {
-                            continue;
+                        if ($params = CartsManager::getManager()->restoreParams($hash)) {
+                            if (!isset($response['markup'])) {
+                                $response['markup'] = [];
+                                $response['status'] = 'success';
+                            }
+
+                            $response['markup'][$hash] = $this->modx->runSnippet('Cart', $params);
                         }
-
-                        $params = unserialize($_SESSION['commerce.cart-' . $hash]);
-
-                        if (!isset($response['markup'])) {
-                            $response['markup'] = [];
-                            $response['status'] = 'success';
-                        }
-
-                        $response['markup'][$hash] = $this->modx->runSnippet('Cart', $params);
                     }
                 }
 
@@ -261,30 +257,38 @@ class Commerce
             'status' => 'failed',
         ];
 
-        $instance = 'products';
-        if (isset($data['instance']) && is_string($data['instance'])) {
-            $instance = $data['instance'];
+        if (!empty($data['cart']['hash']) && is_string($data['cart']['hash'])) {
+            $cart = CartsManager::getManager()->getCartByHash($data['cart']['hash']);
         }
 
-        $cart = CartsManager::getManager()->getCart($instance);
+        if (empty($cart)) {
+            $instance = 'products';
+
+            if (isset($data['cart']['instance']) && is_string($data['cart']['instance'])) {
+                $instance = $data['cart']['instance'];
+            } elseif (isset($data['instance']) && is_string($data['instance'])) {
+                $instance = $data['instance'];
+            }
+
+            $cart = CartsManager::getManager()->getCart($instance);
+        }
 
         if (!is_null($cart)) {
             switch ($action) {
                 case 'cart/add': {
-// TODO: validation!
-                    $data = array_merge(['id' => 0, 'name' => 'Noname', 'count' => 1, 'price' => 0, 'options' => [], 'meta' => []], $data);
-                    $row = $cart->add($data['id'], $data['name'], $data['count'], $data['price'], $data['options'], $data['meta']);
+                    $row = $cart->add($data);
 
-                    $response = [
-                        'status' => 'success',
-                        'row'    => $row,
-                    ];
+                    if ($row !== false) {
+                        $response = [
+                            'status' => 'success',
+                            'row'    => $row,
+                        ];
+                    }
 
                     break;
                 }
 
                 case 'cart/update': {
-// TODO: validation!
                     if ($cart->update($data['row'], $data['attributes'])) {
                         $response['status'] = 'success';
                     }

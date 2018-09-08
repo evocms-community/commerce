@@ -19,13 +19,12 @@ class SessionCart extends SimpleCart implements \Commerce\Interfaces\Cart
         $this->storeItems();
     }
 
-    public function add($id, $name, $count = 1, $price = 0, $options = [], $meta = null)
+    public function add(array $item)
     {
-        $item = compact('id', 'name', 'count', 'price', 'options', 'meta');
         $this->modx->invokeEvent('OnBeforeCartItemAdding', ['item' => &$item]);
         extract($item);
 
-        $row = parent::add($id, $name, $count, $price, $options, $meta);
+        $row = parent::add($item);
         $this->storeItems();
 
         return $row;

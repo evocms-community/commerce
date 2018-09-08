@@ -43,4 +43,31 @@ class CartsManager
     {
         return isset($this->carts[$name]);
     }
+
+    public function storeParams(array $params)
+    {
+        $hash = md5(json_encode($params));
+        $_SESSION['commerce.cart-' . $hash] = serialize($params);
+
+        return $hash;
+    }
+
+    public function restoreParams($hash)
+    {
+        if (!empty($_SESSION['commerce.cart-' . $hash])) {
+            return unserialize($_SESSION['commerce.cart-' . $hash]);
+        }
+
+        return false;
+    }
+
+    public function getCartByHash($hash)
+    {
+        if ($params = $this->restoreParams($hash)) {
+            $instance = !empty($params['instance']) ? $params['instance'] : 'products';
+            return $this->getCart($instance);
+        }
+
+        return null;
+    }
 }

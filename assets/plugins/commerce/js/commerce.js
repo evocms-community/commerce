@@ -89,13 +89,19 @@
         var $self  = $(this),
             action = $self.attr('data-commerce-action'),
             row    = $self.attr('data-commerce-row') || $self.closest('[data-commerce-row]').attr('data-commerce-row'),
-            data   = $self.data();
+            data   = $self.data(),
+            cart   = {
+                instance: $self.attr('data-instance'),
+                hash:     $self.closest('[data-commerce-cart]').attr('data-commerce-cart')
+            };
 
         if (action == 'add') {
             if (e.type == 'submit') {
                 e.preventDefault();
                 data = $self.serializeObject();
             }
+
+            data.cart = cart;
 
             Commerce.action('cart/add', data, $self);
         }
@@ -121,10 +127,10 @@
                         count = Math.max(0, count);
 
                         if (!count) {
-                            Commerce.action('cart/remove', {row: row});
+                            Commerce.action('cart/remove', {row: row, cart: cart});
                         } else {
                             $count.val(count);
-                            Commerce.action('cart/update', {row: row, attributes: {count: count}});
+                            Commerce.action('cart/update', {row: row, cart: cart, attributes: {count: count}});
                         }
                     }
 
@@ -132,7 +138,7 @@
                 }
 
                 case 'remove': {
-                    Commerce.action('cart/remove', {row: row});
+                    Commerce.action('cart/remove', {row: row, cart: cart});
                     break;
                 }
             }

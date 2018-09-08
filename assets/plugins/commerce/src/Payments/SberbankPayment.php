@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * DRAFT, NOT FOR USE
+ */
+
 namespace Commerce\Payments;
 
 class SberbankPayment extends Payment implements \Commerce\Interfaces\Payment
@@ -59,7 +63,7 @@ class SberbankPayment extends Payment implements \Commerce\Interfaces\Payment
         $data = [
             'orderNumber' => $order_id . '-' . time(),
             'amount'      => $amount,
-            'returnUrl'   => $this->modx->getConfig('site_url') . 'commerce/payment/process/',
+            'returnUrl'   => $this->modx->getConfig('site_url') . 'commerce/sberbank/payment-process/',
             'description' => \DLTemplate::getInstance($this->modx)->parseChunk($this->lang['payments.payment_description'], [
                 'order_id'  => $order_id,
                 'site_name' => $this->modx->getConfig('site_name'),

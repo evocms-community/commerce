@@ -12,7 +12,7 @@ interface Cart
 
     public function setItems(array $items);
 
-    public function add($id, $name, $count = 1, $price = 0, $options = [], $meta = null);
+    public function add(array $item);
 
     public function addMultiple(array $items = []);
 

@@ -77,7 +77,7 @@ trait DocListerTrait
 
     public function render(array $params)
     {
-        $params['hash'] = $this->storeRenderingParams($params);
+        $params['hash'] = \Commerce\CartsManager::getManager()->storeParams($params);
 
         foreach (['prepare', 'prepareWrap'] as $prepare) {
             if (isset($params[$prepare])) {
@@ -107,13 +107,5 @@ trait DocListerTrait
             'items'      => $this->items,
             'tree'       => 0,
         ]));
-    }
-
-    protected function storeRenderingParams($params)
-    {
-        $hash = md5(json_encode($params));
-        $_SESSION['commerce.cart-' . $hash] = serialize($params);
-
-        return $hash;
     }
 }
