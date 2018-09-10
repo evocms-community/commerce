@@ -23,7 +23,6 @@ if (empty($params['title'])) {
 switch ($e->name) {
     case 'OnCollectSubtotals': {
         if ($modx->commerce->loadProcessor()->getCurrentDelivery() == 'pickup') {
-            $params['total'] += $params['price'];
             $params['rows']['pickup'] = [
                 'title' => $params['title'],
                 'price' => 0,

@@ -6,7 +6,7 @@ class DocListerOrderCart extends SimpleCart implements \Commerce\Interfaces\Cart
 {
     use DocListerTrait;
 
-    private $modx;
+    protected $modx;
 
     protected $subtotals = [];
 

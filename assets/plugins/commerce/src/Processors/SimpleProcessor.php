@@ -104,7 +104,7 @@ class SimpleProcessor implements \Commerce\Interfaces\Processor
             $this->modx->db->insert($this->prepareSubtotal($order_id, $position++, $item), $this->tableProducts);
         }
 
-        $this->updateHistory($this->modx->commerce->getSetting('default_order_status', 1));
+        $this->updateHistory($order_id, $this->modx->commerce->getSetting('default_order_status', 1));
 
         $this->modx->invokeEvent('OnOrderSaved', [
             'values'    => &$values,
@@ -117,20 +117,53 @@ class SimpleProcessor implements \Commerce\Interfaces\Processor
         $this->getCart();
     }
 
-    public function updateHistory($status_id, $comment = '', $notify = false)
+    public function updateHistory($order_id, $status_id, $comment = '', $notify = false, $template = 'order_notify')
     {
-        if (!empty($this->order_id)) {
-            $this->modx->db->insert([
-                'order_id'  => (int)$this->order_id,
-                'status_id' => (int)$status_id,
-                'comment'   => $this->modx->db->escape($comment),
-                'notify'    => 1 * !!$notify,
-            ], $this->tableHistory);
+        $order = $this->loadOrder($order_id);
 
-            if ($notify) {
-                // TODO: notify customer
-            }
+        if (empty($order) || empty($order['email'])) {
+            return false;
         }
+
+        $this->modx->invokeEvent('OnBeforeOrderHistoryUpdate', [
+            'order_id'  => $order_id,
+            'status_id' => &$status_id,
+            'comment'   => &$comment,
+            'notify'    => &$notify,
+            'template'  => &$template,
+        ]);
+
+        $this->modx->db->insert([
+            'order_id'  => (int)$order_id,
+            'status_id' => (int)$status_id,
+            'comment'   => $this->modx->db->escape($comment),
+            'notify'    => 1 * !!$notify,
+        ], $this->tableHistory);
+
+        if ($notify) {
+            $parser = \DLTemplate::getInstance($this->modx);
+            $lang   = $this->modx->commerce->getUserLanguage('order');
+            $status = $this->modx->db->getValue($this->modx->db->select('title', $this->modx->getFullTablename('commerce_order_statuses'), "`id` = '" . intval($status_id) . "'"));
+
+            $body = $parser->parseChunk($template, [
+                'order_id' => $order_id,
+                'status'   => $status,
+                'comment'  => $comment,
+            ], true);
+
+            $subject = $parser->parseChunk($lang['order.subject_status_changed'], [
+                'order_id' => $order_id,
+            ], true);
+
+            $mailer = new \Helpers\Mailer($this->modx, [
+                'to'      => $order['email'],
+                'subject' => $subject,
+            ]);
+
+            $mailer->send($body);
+        }
+
+        return true;
     }
 
     public function getOrder()
@@ -176,7 +209,14 @@ class SimpleProcessor implements \Commerce\Interfaces\Processor
                     $item['meta'] = !empty($item['meta']) ? json_decode($item['meta'], true) : [];
 
                     if (!is_null($item['product_id'])) {
-                        $this->cart->add($item['product_id'], $item['title'], $item['count'], $item['price'], $item['options'], $item['meta']);
+                        $this->cart->add([
+                            'id'      => $item['product_id'],
+                            'name'    => $item['title'],
+                            'count'   => $item['count'],
+                            'price'   => $item['price'],
+                            'options' => $item['options'],
+                            'meta'    => $item['meta'],
+                        ]);
                     } else {
                         $subtotals[] = $item;
                     }
@@ -235,7 +275,7 @@ class SimpleProcessor implements \Commerce\Interfaces\Processor
                     $comment = \DLTemplate::getInstance($this->modx)->parseChunk($lang['order.order_paid'], [
                         'order_id' => $order['id']
                     ]);
-                    $this->updateHistory($status, $comment, true);
+                    $this->updateHistory($order_id, $status, $comment, true);
                     return true;
                 }
             }

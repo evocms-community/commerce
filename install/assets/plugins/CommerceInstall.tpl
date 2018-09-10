@@ -30,6 +30,7 @@ $events = [
     'OnBeforeOrderSaving',
     'OnOrderSaved',
     'OnOrderProcessed',
+    'OnBeforeOrderHistoryUpdate',
 ];
 
 foreach ($events as $event) {
