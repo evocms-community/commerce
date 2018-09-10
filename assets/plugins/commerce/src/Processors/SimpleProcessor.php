@@ -104,7 +104,7 @@ class SimpleProcessor implements \Commerce\Interfaces\Processor
             $this->modx->db->insert($this->prepareSubtotal($order_id, $position++, $item), $this->tableProducts);
         }
 
-        $this->updateHistory($order_id, $this->modx->commerce->getSetting('default_order_status', 1));
+        $this->changeStatus($order_id, $this->modx->commerce->getSetting('default_order_status', 1));
 
         $this->modx->invokeEvent('OnOrderSaved', [
             'values'    => &$values,
@@ -117,7 +117,7 @@ class SimpleProcessor implements \Commerce\Interfaces\Processor
         $this->getCart();
     }
 
-    public function updateHistory($order_id, $status_id, $comment = '', $notify = false, $template = 'order_notify')
+    public function changeStatus($order_id, $status_id, $comment = '', $notify = false, $template = 'order_notify')
     {
         $order = $this->loadOrder($order_id);
 
@@ -132,6 +132,8 @@ class SimpleProcessor implements \Commerce\Interfaces\Processor
             'notify'    => &$notify,
             'template'  => &$template,
         ]);
+
+        $this->modx->db->update(['status_id' => $status_id], $this->tableOrders, "`id` = '$order_id'");
 
         $this->modx->db->insert([
             'order_id'  => (int)$order_id,
@@ -269,15 +271,12 @@ class SimpleProcessor implements \Commerce\Interfaces\Processor
         if (!is_null($order)) {
             if ($order['amount'] == $amount) {
                 $status = $this->modx->commerce->getSetting('status_id_after_payment', 3);
-
-                if ($this->modx->db->update(['status' => $status], '[+prefix+]commerce_orders', "`id` = '" . $order['id'] . "'")) {
-                    $lang = $this->modx->commerce->getUserLanguage('order');
-                    $comment = \DLTemplate::getInstance($this->modx)->parseChunk($lang['order.order_paid'], [
-                        'order_id' => $order['id']
-                    ]);
-                    $this->updateHistory($order_id, $status, $comment, true);
-                    return true;
-                }
+                $lang = $this->modx->commerce->getUserLanguage('order');
+                $comment = \DLTemplate::getInstance($this->modx)->parseChunk($lang['order.order_paid'], [
+                    'order_id' => $order_id,
+                ]);
+                $this->changeStatus($order_id, $status, $comment, true);
+                return true;
             }
         }
 
@@ -375,7 +374,7 @@ class SimpleProcessor implements \Commerce\Interfaces\Processor
                     `email` varchar(255) NULL,
                     `amount` float NOT NULL DEFAULT '0',
                     `fields` text,
-                    `status` tinyint(3) UNSIGNED NOT NULL DEFAULT '0',
+                    `status_id` tinyint(3) UNSIGNED NOT NULL DEFAULT '0',
                     `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
                     `updated_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
                     PRIMARY KEY (`id`)
