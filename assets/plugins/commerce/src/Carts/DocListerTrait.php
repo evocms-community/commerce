@@ -9,10 +9,6 @@ trait DocListerTrait
         $total = $e->getStore('total');
         $count = $e->getStore('count');
 
-        if (isset($this->items[$data['hash']])) {
-            $data = array_merge($data, $this->items[$data['hash']]);
-        }
-
         $data['total'] = $data['price'] * $data['count'];
 
         $total += $data['total'];
@@ -31,13 +27,14 @@ trait DocListerTrait
         if (isset($data['options'])) {
             foreach ($data['options'] as $key => $option) {
                 $options .= \DLTemplate::getInstance($modx)->parseChunk($DL->getCFGDef('optionsTpl'), [
-                    'key'    => $key,
-                    'option' => $option,
+                    'key'    => htmlentities($key),
+                    'option' => htmlentities($option),
                 ]);
             }
         }
 
-        $data['options'] = $options;
+        $data['_options'] = $data['options'];
+        $data['options']  = $options;
         return $data;
     }
 
@@ -90,8 +87,11 @@ trait DocListerTrait
         }
 
         $params['prepare'][]     = [$this, 'prepareCartRow'];
-        $params['prepare'][]     = [$this, 'prepareCartRowOptions'];
         $params['prepareWrap'][] = [$this, 'prepareCartOuter'];
+
+        if (empty($params['defaultOptionsRender'])) {
+            $params['prepare'][] = [$this, 'prepareCartRowOptions'];
+        }
 
         $docids = [];
         foreach ($this->items as $item) {
@@ -104,7 +104,7 @@ trait DocListerTrait
             'sortType'   => 'doclist',
             'idType'     => 'documents',
             'documents'  => $docids,
-            'items'      => $this->items,
+            'cartItems'  => $this->items,
             'tree'       => 0,
         ]));
     }

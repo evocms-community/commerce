@@ -47,7 +47,13 @@ class CartDocLister extends site_contentDocLister
             }
         }
 
+        $cartItems = $this->getCFGDef('cartItems', []);
+
         foreach ($this->_docs as $hash => $doc) {
+            if (isset($cartItems[$hash])) {
+                $this->_docs[$hash] = array_merge($doc, $cartItems[$hash]);
+            }
+
             $this->_docs[$hash]['hash'] = $doc['id'];
             $this->_docs[$hash]['id'] = $doc['docid'];
         }
@@ -57,10 +63,10 @@ class CartDocLister extends site_contentDocLister
 
     protected function getDocList()
     {
-        $items = $this->getCFGDef('items');
+        $cartItems = $this->getCFGDef('cartItems');
         $join = [];
 
-        foreach ($items as $row => $item) {
+        foreach ($cartItems as $row => $item) {
             $join[] = "SELECT " . $item['id'] . " AS id, '$row' AS `hash`";
         }
 
