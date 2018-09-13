@@ -11,24 +11,24 @@
 [[if? &is=`[+count+]:>:0` &then=`
 	<div class="commerce-cart minicart dropdown" data-commerce-cart="[+hash+]">
 		<div class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-			Корзина<br>
-			[+count+] товар(ов) на [[PriceFormat? &price=`[+total+]`]]
+			[%cart.%]<br>
+			[+count+] [%cart.items_count%] [[PriceFormat? &price=`[+total+]`]]
 		</div>
 	
 		<div class="dropdown-menu">
 			<table class="table">
 				<thead>
 					<tr>
-						<td>Название</td>
-						<td>Кол-во</td>
-						<td class="text-xs-right">Стоимость</td>
-						<td class="text-xs-right">Цена</td>
+						<td>[%cart.item_title%]</td>
+						<td>[%cart.count%]</td>
+						<td class="text-xs-right">[%cart.item_price%]</td>
+						<td class="text-xs-right">[%cart.item_summary%]</td>
 					</tr>
 				</thead>
 
 				<tfoot>
 					<tr>
-						<td colspan="3">ИТОГО:</td>
+						<td colspan="3">[%cart.total%]:</td>
 						<td class="text-xs-right">[[PriceFormat? &price=`[+total+]`]]</td>
 					</tr>
 				</tfoot>
@@ -40,14 +40,13 @@
 
 			<div class="dropdown-divider"></div>
 
-			<a class="dropdown-item" href="[~1~]">Перейти в корзину</a>
-			<a class="dropdown-item" href="[~1~]">Оформить заказ</a>
+			<a class="dropdown-item" href="[~4~]">[%cart.to_cart%]</a>
+			<a class="dropdown-item" href="[~3~]">[%cart.to_checkout%]</a>
 		</div>
 	</div>
 ` &else=`
 	<div class="commerce-cart minicart" data-commerce-cart="[+hash+]">
-		Корзина<br>
-		Товаров нет
+		[%cart.caption%]<br>
+		[%cart.no_items%]
 	</div>
 `]]
-

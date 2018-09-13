@@ -9,6 +9,7 @@
  * @internal    @installset base
  */
 <div class="panel">
-	<p>Delivery:</p>
-	[+wrap+]
+    <p>[%delivery.caption%]:</p>
+    [+wrap+]
 </div>
+

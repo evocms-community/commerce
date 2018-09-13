@@ -3,6 +3,7 @@
 setlocale(LC_ALL, 'ru_RU.UTF-8');
 
 return [
+    'payments.caption' => 'Способ оплаты',
     'payments.sberbank_title' => 'Оплата картой Visa, MasterCard (Sberbank)',
     'payments.yandexkassa_title' => 'Оплата через Яндекс.Кассу',
     'payments.on_delivery_title' => 'Оплата при вручении',

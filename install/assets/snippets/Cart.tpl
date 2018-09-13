@@ -1,4 +1,4 @@
-//<?php
+<?php
 /**
  * Cart
  * 
@@ -17,6 +17,8 @@ $cart = Commerce\CartsManager::getManager()->getCart($instance);
 if (!is_null($cart) && method_exists($cart, 'render')) {
     $params['theme'] = isset($params['theme']) ? $params['theme'] : '';
     $params['instance'] = $instance;
+
+    $lang = $modx->getConfig('manager_language');
     
     return $cart->render(array_merge([
         'tpl'             => $params['theme'] . 'cart_row',
@@ -25,5 +27,6 @@ if (!is_null($cart) && method_exists($cart, 'render')) {
         'noneTPL'         => $params['theme'] . 'cart_wrap_empty',
         'subtotalsRowTpl' => $params['theme'] . 'cart_subtotals_row',
         'subtotalsTpl'    => $params['theme'] . 'cart_subtotals',
+        'customLang'      => 'assets/plugins/commerce/lang/' . $lang . '/cart.inc.php',
     ], $params));
 }

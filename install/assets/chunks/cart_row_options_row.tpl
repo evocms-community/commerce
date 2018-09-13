@@ -8,4 +8,4 @@
  * @internal    @overwrite false
  * @internal    @installset base
  */
-<span data-key="[+e.key+]">[+option+]</span><br>
+<span data-key="[+key+]">[+option+]</span><br>

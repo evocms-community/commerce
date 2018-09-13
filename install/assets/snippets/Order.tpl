@@ -1,4 +1,4 @@
-//<?php
+<?php
 /**
  * Order
  * 
@@ -17,6 +17,8 @@ $lang = $modx->commerce->getUserLanguage('order');
 $params = array_merge([
     'formid'                => 'order',
     'parseDocumentSource'   => 1,
+    'langDir'               => 'assets/plugins/commerce/lang/',
+    'lexicon'               => 'common,delivery,payments,order',
     'formTpl'               => 'order_form',
     'deliveryTpl'           => 'order_form_delivery',
     'deliveryRowTpl'        => 'order_form_delivery_row',
@@ -31,18 +33,14 @@ $params = array_merge([
     'successTpl'            => $lang['order.success'],
     'rules'                 => [
         'name' => [
-            'required' => 'Введите имя',
+            'required' => $lang['order.error.name_required'],
         ],
         'email' => [
-            'required' => 'Введите email',
-            'email' => 'Введите email правильно',
+            'required' => $lang['order.error.email_required'],
+            'email'    => $lang['order.error.email_incorrect'],
         ],
         'phone' => [
-            'required' => 'Введите телефон',
-            'matches' => [
-                'params'  => '/^\+?[78]\s?\(\d{3}\)\s?\d{3}-\d\d-\d\d$/',
-                'message' => 'Формат телефона неверный',
-            ],
+            'required' => $lang['order.error.phone_required'],
         ],
     ],
 ], $params, [

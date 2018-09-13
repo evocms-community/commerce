@@ -9,6 +9,6 @@
  * @internal    @installset base
  */
 <div class="panel">
-	<p>Payments:</p>
-	[+wrap+]
+    <p>[%payments.caption%]:</p>
+    [+wrap+]
 </div>

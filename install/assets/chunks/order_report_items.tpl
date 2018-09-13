@@ -9,10 +9,10 @@
  * @internal    @installset base
  */
 <tr>
-	<td colspan="2">Название</td>
-	<td>Кол-во</td>
-	<td class="text-xs-right">Стоимость</td>
-	<td class="text-xs-right">Цена</td>
+    <td>[%cart.item_title%]</td>
+    <td>[%cart.count%]</td>
+    <td class="text-xs-right">[%cart.item_price%]</td>
+    <td class="text-xs-right">[%cart.item_summary%]</td>
 </tr>
 
 [+dl.wrap+]
@@ -20,6 +20,7 @@
 [+subtotals+]
 
 <tr>
-	<td class="text-xs-right" colspan="4">ИТОГО:</td>
-	<td class="text-xs-right">[[PriceFormat? &price=`[+total+]`]]</td>
+    <td class="text-xs-right" colspan="3">[%cart.total%]:</td>
+    <td class="text-xs-right">[[PriceFormat? &price=`[+total+]`]]</td>
 </tr>
+

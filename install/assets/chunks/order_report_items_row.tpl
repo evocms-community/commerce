@@ -10,9 +10,6 @@
  */
 <tr>
 	<td>
-		<img src="[[phpthumb? &input=`[+tv.image+]` &options=`w=80,h=80,zc=1,f=jpg`]]" class="img-fluid" alt="[+e.title+]">
-		
-	<td>
 		<a href="[+url+]">[+name+]</a>
 		
 		<div class="small text-muted">
