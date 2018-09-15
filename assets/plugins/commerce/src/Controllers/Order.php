@@ -6,6 +6,7 @@ class Order extends Form
 {
     public function render()
     {
+        $processor = $this->modx->commerce->loadProcessor();
         $delivery = $this->modx->commerce->getDeliveries();
 
         $payments = [];
@@ -16,7 +17,7 @@ class Order extends Form
             ];
         }
 
-        foreach (['delivery' => $this->getCFGDef('default_delivery', key($delivery)), 'payments' => $this->getCFGDef('default_payment', key($payments))] as $type => $default) {
+        foreach (['delivery' => $processor->getCurrentDelivery(), 'payments' => $processor->getCurrentPayment()] as $type => $default) {
             $output = '';
             $rows   = $$type;
             $index  = 0;
