@@ -11,22 +11,32 @@
  * @internal    @installset base
 */
 
+$manager  = Commerce\CartsManager::getManager();
 $instance = isset($instance) ? $instance : 'products';
-$cart = Commerce\CartsManager::getManager()->getCart($instance);
+$theme    = !empty($theme) ? $theme : '';
+$cart     = $manager->getCart($instance);
+$lang     = $modx->getConfig('manager_language');
 
-if (!is_null($cart) && method_exists($cart, 'render')) {
-    $params['theme'] = isset($params['theme']) ? $params['theme'] : '';
-    $params['instance'] = $instance;
-
-    $lang = $modx->getConfig('manager_language');
-    
-    return $cart->render(array_merge([
-        'tpl'             => $params['theme'] . 'cart_row',
-        'optionsTpl'      => $params['theme'] . 'cart_row_options_row',
-        'ownerTPL'        => $params['theme'] . 'cart_wrap',
-        'noneTPL'         => $params['theme'] . 'cart_wrap_empty',
-        'subtotalsRowTpl' => $params['theme'] . 'cart_subtotals_row',
-        'subtotalsTpl'    => $params['theme'] . 'cart_subtotals',
-        'customLang'      => 'assets/plugins/commerce/lang/' . $lang . '/cart.inc.php',
-    ], $params));
+if (!is_null($cart)) {
+    return $modx->runSnippet('DocLister', array_merge([
+        'templatePath'      => 'assets/plugins/commerce/templates/cart/',
+        'templateExtension' => 'tpl',
+        'tpl'               => '@FILE:' . $theme . 'cart_row',
+        'optionsTpl'        => '@FILE:' . $theme . 'cart_row_options_row',
+        'ownerTPL'          => '@FILE:' . $theme . 'cart_wrap',
+        'noneTPL'           => '@FILE:' . $theme . 'cart_wrap_empty',
+        'subtotalsRowTpl'   => '@FILE:' . $theme . 'cart_subtotals_row',
+        'subtotalsTpl'      => '@FILE:' . $theme . 'cart_subtotals',
+        'customLang'        => 'assets/plugins/commerce/lang/' . $lang . '/cart.inc.php',
+    ], $params, [
+        'controller' => 'Cart',
+        'dir'        => 'assets/plugins/commerce/src/Controllers/',
+        'sortType'   => 'doclist',
+        'idType'     => 'documents',
+        'documents'  => array_column($cart->getItems(), 'id'),
+        'instance'   => $instance,
+        'hash'       => $manager->storeParams($params),
+        'cart'       => $cart,
+        'tree'       => 0,
+    ]));
 }

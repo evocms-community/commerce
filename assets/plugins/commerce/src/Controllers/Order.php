@@ -24,7 +24,7 @@ class Order extends Form
             $markup = '';
 
             foreach ($rows as $code => $row) {
-                $output .= $this->DLTemplate->parseChunk('order_form_' . $type . '_row', [
+                $output .= $this->DLTemplate->parseChunk($this->getCFGDef($type . 'RowTpl'), [
                     'code'   => $code,
                     'title'  => $row['title'],
                     'price'  => isset($row['price']) ? $row['price'] : '',
@@ -37,7 +37,7 @@ class Order extends Form
             }
 
             if (!empty($output)) {
-                $output = $this->DLTemplate->parseChunk('order_form_' . $type, [
+                $output = $this->DLTemplate->parseChunk($this->getCFGDef($type . 'Tpl'), [
                     'wrap'   => $output,
                     'markup' => $markup,
                 ]);
