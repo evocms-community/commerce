@@ -2,6 +2,55 @@
 
 class CartDocLister extends site_contentDocLister
 {
+    public function __construct($modx, $cfg = [], $startTime = null)
+    {
+        if (isset($cfg['prepareWrap'])) {
+            if (!is_array($cfg['prepareWrap'])) {
+                $cfg['prepareWrap'] = explode(',', $cfg['prepareWrap']);
+            }
+        } else {
+            $cfg['prepareWrap'] = [];
+        }
+
+        $cfg['prepareWrap'][] = [$this, 'prepareCartOuter'];
+
+        parent::__construct($modx, $cfg, $startTime);
+    }
+
+    public function prepareCartOuter($data, $modx, $DL, $e)
+    {
+        $placeholders = $data['placeholders'];
+
+        $placeholders['hash']      = $this->getCFGDef('hash');
+        $placeholders['subtotals'] = $this->renderSubtotals();
+        $placeholders['total']     = $this->totalPrice;
+        $placeholders['count']     = $this->itemsCount;
+
+        return $placeholders;
+    }
+
+    protected function renderSubtotals()
+    {
+        $DLTemplate = \DLTemplate::getInstance($this->modx);
+        $tpl = $this->getCFGDef('subtotalsRowTpl');
+        $result = '';
+        $rows = [];
+
+        $this->getCFGDef('cart')->getSubtotals($rows, $this->totalPrice);
+
+        foreach ($rows as $row) {
+            $result .= $DLTemplate->parseChunk($tpl, $row);
+        }
+
+        if (!empty($result)) {
+            $result = $DLTemplate->parseChunk($this->getCFGDef('subtotalsTpl'), [
+                'wrap' => $result,
+            ]);
+        }
+
+        return $result;
+    }
+
     public function getDocs($tvlist = '')
     {
         if ($tvlist == '') {
@@ -16,15 +65,6 @@ class CartDocLister extends site_contentDocLister
         $multiCategories = $this->getCFGDef('multiCategories', 0) ? $this->getExtender('multicategories', true) : null;
         if ($multiCategories) {
             $multiCategories->init($this);
-        }
-
-        /**
-         * @var $extJotCount jotcount_DL_Extender
-         */
-        $extJotCount = $this->getCFGdef('jotcount', 0) ? $this->getExtender('jotcount', true) : null;
-
-        if ($extJotCount) {
-            $extJotCount->init($this);
         }
 
         if ($this->extPaginate = $this->getExtender('paginate')) {
@@ -47,23 +87,39 @@ class CartDocLister extends site_contentDocLister
             }
         }
 
-        $cartItems = $this->getCFGDef('cartItems', []);
+        $cartItems = $this->getCFGDef('cart')->getItems();
+        $total = 0;
+        $count = 0;
 
         foreach ($this->_docs as $hash => $doc) {
             if (isset($cartItems[$hash])) {
-                $this->_docs[$hash] = array_merge($doc, $cartItems[$hash]);
+                $doc = array_merge($doc, $cartItems[$hash]);
             }
 
-            $this->_docs[$hash]['hash'] = $doc['id'];
-            $this->_docs[$hash]['id'] = $doc['docid'];
+            $doc['hash'] = $doc['id'];
+            $doc['id']   = $doc['docid'];
+
+            if (!empty($doc['count'])) {
+                $count += $doc['count'];
+
+                if (!empty($doc['price'])) {
+                    $doc['total'] = $doc['price'] * $doc['count'];
+                    $total += $doc['total'];
+                }
+            }
+
+            $this->_docs[$hash] = $doc;
         }
+
+        $this->totalPrice = $total;
+        $this->itemsCount = $count;
 
         return $this->_docs;
     }
 
     protected function getDocList()
     {
-        $cartItems = $this->getCFGDef('cartItems');
+        $cartItems = $this->getCFGDef('cart')->getItems();
         $join = [];
 
         foreach ($cartItems as $row => $item) {
@@ -79,5 +135,32 @@ class CartDocLister extends site_contentDocLister
         }
 
         return parent::getDocList();
+    }
+
+    public function _render($tpl = '')
+    {
+        if (!empty($this->getCFGDef('defaultOptionsRender', 1))) {
+            $DLTemplate = \DLTemplate::getInstance($this->modx);
+            $optionsTpl = $this->getCFGDef('optionsTpl');
+
+            foreach ($this->_docs as $id => $item) {
+                $options = '';
+
+                if (isset($item['options']) && is_array($item['options'])) {
+                    foreach ($item['options'] as $key => $option) {
+                        $options .= $DLTemplate->parseChunk($optionsTpl, [
+                            'key'    => htmlentities($key),
+                            'option' => htmlentities(is_scalar($option) ? $option : json_encode($option)),
+                        ]);
+                    }
+                }
+
+                $item['_options'] = $item['options'];
+                $item['options']  = $options;
+                $this->_docs[$id] = $item;
+            }
+        }
+
+        return parent::_render($tpl);
     }
 }

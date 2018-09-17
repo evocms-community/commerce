@@ -2,9 +2,13 @@
 
 namespace Commerce;
 
+use Commerce\Interfaces\Cart;
+use Commerce\Interfaces\CartStore;
+
 class CartsManager
 {
     protected $carts = [];
+    protected $stores = [];
 
     static protected $self;
 
@@ -21,7 +25,7 @@ class CartsManager
     private function __clone() {}
     private function __wakeup() {}
 
-    public function addCart($name, Interfaces\Cart $cart)
+    public function addCart($name, Cart $cart)
     {
         if (isset($this->carts[$name])) {
             throw new \Exception('Cart "' . $name . '" already exists!');
@@ -69,5 +73,23 @@ class CartsManager
         }
 
         return null;
+    }
+
+    public function registerStore($name, CartStore $store)
+    {
+        if (isset($this->stores[$name])) {
+            throw new \Exception('Store "' . print_r($name, true) . '" already registered!');
+        }
+
+        $this->stores[$name] = $store;
+    }
+
+    public function getStore($name)
+    {
+        if (!isset($this->stores[$name])) {
+            throw new \Exception('Store "' . print_r($name, true) . '" not registered!');
+        }
+
+        return clone $this->stores[$name];
     }
 }

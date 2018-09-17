@@ -2,8 +2,12 @@
 
 namespace Commerce;
 
-use Interfaces\Cart;
-use Interfaces\Processor;
+use Commerce\Interfaces\Cart;
+use Commerce\Interfaces\Processor;
+use Commerce\Carts\SessionCartStore;
+use Commerce\Carts\ProductsCart;
+use Commerce\Carts\ProductsList;
+use Helpers\Lexicon;
 
 class Commerce
 {
@@ -26,23 +30,27 @@ class Commerce
         $this->modx = $modx;
         $this->setSettings($params);
 
-        $this->lexicon = new \Helpers\Lexicon($modx, [
+        $this->lexicon = new Lexicon($modx, [
             'langDir' => 'assets/plugins/commerce/lang/',
             'lang'    => $modx->getConfig('manager_language'),
         ]);
 
         $modx->invokeEvent('OnInitializeCommerce');
 
-        if (!($this->cart instanceof Cart)) {
-            $this->cart = new Carts\DocListerCart($modx);
+        $cartsManager = CartsManager::getManager();
+        $cartsManager->registerStore('session', new SessionCartStore());
+
+        if (!$cartsManager->has('products')) {
+            $this->cart = new ProductsCart($modx);
+            $cartsManager->addCart('products', $this->cart);
         }
 
-        $cartsManager = CartsManager::getManager();
-        $cartsManager->addCart('products', $this->cart);
+        $this->cart->setTitleField($this->getSetting('title_field', 'pagetitle'));
+        $this->cart->setPriceField($this->getSetting('price_field', 'price'));
 
         foreach (['wishlist', 'comparison'] as $cart) {
             if (!$cartsManager->has($cart)) {
-                $cartsManager->addCart($cart, new Carts\DocListerItemsList($modx, $cart));
+                $cartsManager->addCart($cart, new ProductsList($modx, $cart));
             }
         }
     }
@@ -50,15 +58,6 @@ class Commerce
     public function getCart()
     {
         return $this->cart;
-    }
-
-    public function setCart(Cart $cart)
-    {
-        if ($this->cart instanceof Cart) {
-            throw new \Exception('Cart already set!');
-        }
-
-        $this->cart = $cart;
     }
 
     public function getVersion()
@@ -183,12 +182,14 @@ class Commerce
                 ];
 
                 if (isset($_POST['hashes']) && is_array($_POST['hashes'])) {
+                    $manager = CartsManager::getManager();
+
                     foreach ($_POST['hashes'] as $hash) {
                         if (!is_string($hash)) {
                             continue;
                         }
 
-                        if ($params = CartsManager::getManager()->restoreParams($hash)) {
+                        if (($params = $manager->restoreParams($hash)) !== false) {
                             if (!isset($response['markup'])) {
                                 $response['markup'] = [];
                                 $response['status'] = 'success';

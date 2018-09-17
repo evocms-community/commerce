@@ -198,7 +198,7 @@ class SimpleProcessor implements \Commerce\Interfaces\Processor
     public function getCart()
     {
         if (is_null($this->cart)) {
-            $this->cart = new \Commerce\Carts\DocListerOrderCart($this->modx);
+            $this->cart = new \Commerce\Carts\OrderCart($this->modx);
             \Commerce\CartsManager::getManager()->addCart('order', $this->cart);
 
             if (!empty($this->order_id)) {

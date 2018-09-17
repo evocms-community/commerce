@@ -2,18 +2,9 @@
 
 namespace Commerce\Carts;
 
-class DocListerOrderCart extends SimpleCart implements \Commerce\Interfaces\Cart
+class OrderCart extends SimpleCart implements \Commerce\Interfaces\Cart
 {
-    use DocListerTrait;
-
-    protected $modx;
-
     protected $subtotals = [];
-
-    public function __construct($modx)
-    {
-        $this->modx = $modx;
-    }
 
     public function setSubtotals($subtotals)
     {
