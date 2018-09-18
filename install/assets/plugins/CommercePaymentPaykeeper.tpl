@@ -8,7 +8,7 @@
  * @version     0.1.0
  * @author      mnoskov
  * @internal    @events OnRegisterPayments
- * @internal    @properties &title=Title;text; &pay_url=Payment url;text; &secret=Token;text;
+ * @internal    @properties &title=Title;text; &pay_url=Payment url;text; &secret=Token;text; &template=Chunk name or code;text;
  * @internal    @modx_category Commerce
  * @internal    @installset base
 */
