@@ -55,6 +55,9 @@ class Order extends Form
             return;
         }
 
+        $processor = $this->modx->commerce->loadProcessor();
+        $processor->startOrder();
+
         $cart = $this->modx->commerce->getCart();
         $items = $cart->getItems();
         $params = [
@@ -80,7 +83,6 @@ class Order extends Form
             $this->setField('delivery_method_title', $delivery['title']);
         }
 
-        $processor = $this->modx->commerce->loadProcessor();
         $processor->createOrder($items, $this->getFormData('fields'));
         parent::process();
         $processor->postProcessForm($this);

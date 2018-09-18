@@ -283,6 +283,18 @@ class SimpleProcessor implements \Commerce\Interfaces\Processor
         return true;
     }
 
+    public function startOrder()
+    {
+        if (!$this->isOrderStarted()) {
+            $_SESSION[$this->sessionKey] = [];
+        }
+    }
+
+    public function isOrderStarted()
+    {
+        return isset($_SESSION[$this->sessionKey]);
+    }
+
     public function updateRawData($data)
     {
         $this->modx->invokeEvent('OnOrderRawDataChanged', ['data' => $data]);

@@ -22,7 +22,9 @@ if (empty($params['title'])) {
 
 switch ($e->name) {
     case 'OnCollectSubtotals': {
-        if ($modx->commerce->loadProcessor()->getCurrentDelivery() == 'fixed') {
+        $processor = $modx->commerce->loadProcessor();
+
+        if ($processor->isOrderStarted() && $processor->getCurrentDelivery() == 'fixed') {
             $params['total'] += $params['price'];
             $params['rows']['fixed'] = [
                 'title' => $params['title'],
