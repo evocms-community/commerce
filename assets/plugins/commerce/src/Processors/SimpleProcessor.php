@@ -268,19 +268,17 @@ class SimpleProcessor implements \Commerce\Interfaces\Processor
     {
         $order = $this->loadOrder($order_id);
 
-        if (!is_null($order)) {
-            if ($order['amount'] == $amount) {
-                $status = $this->modx->commerce->getSetting('status_id_after_payment', 3);
-                $lang = $this->modx->commerce->getUserLanguage('order');
-                $comment = \DLTemplate::getInstance($this->modx)->parseChunk($lang['order.order_paid'], [
-                    'order_id' => $order_id,
-                ]);
-                $this->changeStatus($order_id, $status, $comment, true);
-                return true;
-            }
+        if (!is_null($order) && $order['amount'] == $amount) {
+            $status = $this->modx->commerce->getSetting('status_id_after_payment', 3);
+            $lang = $this->modx->commerce->getUserLanguage('order');
+            $comment = \DLTemplate::getInstance($this->modx)->parseChunk($lang['order.order_paid'], [
+                'order_id' => $order_id,
+            ]);
+            $this->changeStatus($order_id, $status, $comment, true);
+            return true;
         }
 
-        return true;
+        return false;
     }
 
     public function startOrder()
