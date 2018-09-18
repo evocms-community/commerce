@@ -22,4 +22,8 @@ return [
     'order.status.canceled' => 'Отменен',
     'order.status.complete' => 'Завершен',
     'order.status.pending' => 'Ожидание',
+    'order.status_title' => 'Статус',
+    'order.amount_title' => 'Сумма',
+    'order.delivery_title' => 'Способ доставки',
+    'order.payment_title' => 'Способ оплаты',
 ];
