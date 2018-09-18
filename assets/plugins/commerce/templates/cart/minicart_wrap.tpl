@@ -1,7 +1,7 @@
 [[if? &is=`[+count+]:>:0` &then=`
     <div class="commerce-cart minicart dropdown" data-commerce-cart="[+hash+]">
         <div class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            [%cart.%]<br>
+            [%cart.caption%]<br>
             [+count+] [%cart.items_count%] [[PriceFormat? &price=`[+total+]`]]
         </div>
 
