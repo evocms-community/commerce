@@ -170,7 +170,7 @@
     });
 
     $(document).on('change', '[data-commerce-order]', function(e) {
-        if (e.target.name == 'delivery_method') {
+        if (['delivery_method', 'payment_method'].indexOf(e.target.name) !== -1) {
             Commerce.updateOrderData($(this));
         }
     });
