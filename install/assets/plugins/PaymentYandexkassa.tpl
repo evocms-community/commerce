@@ -1,6 +1,6 @@
 //<?php
 /**
- * CommercePaymentYandexkassa
+ * Payment Yandexkassa
  *
  * Yandex Kassa payments processing
  *

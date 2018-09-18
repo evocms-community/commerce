@@ -1,6 +1,6 @@
 //<?php
 /**
- * CommerceDeliveryFixed
+ * Delivery Fixed
  *
  * Simple delivery
  *

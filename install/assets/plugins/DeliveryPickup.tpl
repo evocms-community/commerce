@@ -1,6 +1,6 @@
 //<?php
 /**
- * CommerceDeliveryPickup
+ * Delivery Pickup
  *
  * Pickup
  *

@@ -1,6 +1,6 @@
 //<?php
 /**
- * CommerceDiscountExample
+ * Discount example
  *
  * Discount example
  *
