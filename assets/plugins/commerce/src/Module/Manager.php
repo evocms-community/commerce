@@ -7,15 +7,15 @@ class Manager
     use \Commerce\SettingsTrait;
 
     private $modx;
-    protected $flashKey = 'commerce.module.messages';
+
+    public $flash;
 
     public function __construct($modx, array $params = [])
     {
         $this->modx = $modx;
         $this->setSettings($params);
-        
 ini_set('display_errors', 1);
-        $_SESSION[$this->flashKey] = [];
+        $this->flash = new FlashMessages;
     }
 
     public function processRoute($route)
@@ -52,13 +52,13 @@ ini_set('display_errors', 1);
             case 'orders/edit': {
                 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     if ($result = $controller->save()) {
-                        $message = ['success' => $this->lang['module.order_updated']];
+                        $this->flash->set('success', $this->lang['module.order_updated']);
                     } else {
-                        $message = ['error' => $this->lang['module.error.order_not_updated']];
+                        $this->flash->set('error', $this->lang['module.error.order_not_updated']);
                     }
 
                     $target = isset($stay) || $result === false ? 'orders/edit&order_id = ' . $id : 'orders';
-                    $this->sendRedirect($target, $message);
+                    $this->sendRedirect($target);
                 } else {
                     echo $controller->show();
                 }
@@ -74,12 +74,8 @@ ini_set('display_errors', 1);
         }
     }
 
-    public function sendRedirect($route = '', array $messages = [])
+    public function sendRedirect($route = '')
     {
-        if (!empty($messages)) {
-            $_SESSION[$this->flashKey] = array_merge($_SESSION[$this->flashKey], $messages);
-        }
-
         $this->modx->sendRedirect($this->makeUrl($route));
         exit;
     }

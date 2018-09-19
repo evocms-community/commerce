@@ -34,6 +34,7 @@ class Renderer
         $modx  = $this->modx;
         $lang  = $this->lang;
         $flash = $this->getSetting('flash', []);
+        $module = $this->module;
         extract($data);
 
         ob_start();

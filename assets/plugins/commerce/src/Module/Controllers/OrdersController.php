@@ -84,14 +84,14 @@ class OrdersController extends Controller
         ];
 
         $config = [
-            'orderBy' => 'created_at DESC',
-            'display' => 10,
-            'paginate' => 'pages',
+            'orderBy'         => 'created_at DESC',
+            'display'         => 10,
+            'paginate'        => 'pages',
             'TplWrapPaginate' => '@CODE:<ul class="[+class+]">[+wrap+]</ul>',
-            'TplPage' => '@CODE:<li class="page-item"><a href="[+link+]" class="page-link page" data-page="[+num+]">[+num+]</a></li>',
-            'TplCurrentPage' => '@CODE:<li class="page-item active"><span class="page-link">[+num+]</span></li>',
-            'TplNextP' => '@CODE:',
-            'TplPrevP' => '@CODE:',
+            'TplCurrentPage'  => '@CODE:<li class="page-item active"><span class="page-link">[+num+]</span></li>',
+            'TplPage'         => '@CODE:<li class="page-item"><a href="[+link+]" class="page-link page" data-page="[+num+]">[+num+]</a></li>',
+            'TplNextP'        => '@CODE:',
+            'TplPrevP'        => '@CODE:',
         ];
 
         $this->modx->invokeEvent('OnManagerBeforeOrdersListRender', [
@@ -167,14 +167,18 @@ class OrdersController extends Controller
     {
         $order_id = filter_input(INPUT_GET, 'order_id', FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
 
-        if (empty($order_id)) {
-            $this->sendRedirect('', ['error' => $this->lang['module.error.order_not_found']]);
+        if (!empty($order_id)) {
+            $query = $this->modx->db->select('*', $this->modx->getFullTablename('commerce_orders'), "`id` = '$order_id'");
+            $order = $this->modx->db->getRow($query);
         }
 
-        $query = $this->modx->db->select('*', $this->modx->getFullTablename('commerce_orders'), "`id` = '$order_id'");
+        if (empty($order)) {
+            $this->module->flash->set('error', $this->lang['module.error.order_not_found']);
+            $this->module->sendRedirect('orders');
+        }
 
         return $this->view->render('order.tpl', [
-            'order' => $this->modx->db->getRow($query),
+            'order' => $order,
         ]);
     }
 

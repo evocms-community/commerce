@@ -4,15 +4,19 @@
     <i class="fa fa-cog"></i><?= $this->block('title', $lang['module.orders_caption']) ?> 
 </h1>
 
-<?php if (!empty($flash['error'])): ?>
-    <div class="alert alert-danger">
-        <?= $flash['error'] ?>
+<?php if ($module->flash->has('error')): ?>
+    <div class="container">
+        <div class="alert alert-danger">
+            <?= $module->flash->get('error') ?>
+        </div>
     </div>
 <?php endif; ?>
 
-<?php if (!empty($flash['success'])): ?>
-    <div class="alert alert-success">
-        <?= $flash['success'] ?>
+<?php if ($module->flash->has('success')): ?>
+    <div class="container">
+        <div class="alert alert-success">
+            <?= $module->flash->get('success') ?>
+        </div>
     </div>
 <?php endif; ?>
 
