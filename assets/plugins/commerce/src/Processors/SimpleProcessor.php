@@ -2,6 +2,9 @@
 
 namespace Commerce\Processors;
 
+use Commerce\Carts\OrderCart;
+use Commerce\CartsManager;
+
 class SimpleProcessor implements \Commerce\Interfaces\Processor
 {
     private $modx;
@@ -198,11 +201,11 @@ class SimpleProcessor implements \Commerce\Interfaces\Processor
     public function getCart()
     {
         if (is_null($this->cart)) {
-            $this->cart = new \Commerce\Carts\OrderCart($this->modx);
-            \Commerce\CartsManager::getManager()->addCart('order', $this->cart);
+            $this->cart = new OrderCart($this->modx);
+            CartsManager::getManager()->addCart('order', $this->cart);
 
             if (!empty($this->order_id)) {
-                $query = $this->modx->db->select('*', $this->tableProducts, "`order_id` = '{$this->order_id}'");
+                $query = $this->modx->db->select('*', $this->tableProducts, "`order_id` = '{$this->order_id}'", "`position`");
                 $items = [];
                 $subtotals = [];
 

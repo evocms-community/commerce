@@ -11,7 +11,7 @@ class OrderCart extends SimpleCart implements \Commerce\Interfaces\Cart
         $this->subtotals = $subtotals;
     }
 
-    protected function getSubtotals(array &$rows, &$total)
+    public function getSubtotals(array &$rows, &$total)
     {
         $rows = $this->subtotals;
 
