@@ -19,7 +19,7 @@ $lang     = $modx->getConfig('manager_language');
 
 if (!is_null($cart)) {
     return $modx->runSnippet('DocLister', array_merge([
-        'templatePath'      => 'assets/plugins/commerce/templates/cart/',
+        'templatePath'      => 'assets/plugins/commerce/templates/front/',
         'templateExtension' => 'tpl',
         'tpl'               => '@FILE:' . $theme . 'cart_row',
         'optionsTpl'        => '@FILE:' . $theme . 'cart_row_options_row',
