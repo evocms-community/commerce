@@ -94,4 +94,15 @@ ini_set('display_errors', 1);
 
         return $url;
     }
+
+    public function invokeTemplateEvent($evemt, array $params = [])
+    {
+        $result = $this->modx->invokeEvent($event, $params);
+
+        if (is_array($result)) {
+            $result = implode($result);
+        }
+
+        return $result;
+    }
 }

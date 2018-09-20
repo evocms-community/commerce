@@ -54,6 +54,7 @@ class OrdersController extends Controller
         return $this->view->render('orders_list.tpl', [
             'columns' => $columns,
             'orders'  => $list,
+            'custom'  => $this->module->invokeTemplateEvent('OnManagerOrdersListRender'),
         ]);
     }
 
@@ -121,6 +122,7 @@ class OrdersController extends Controller
             'columns'  => $columns,
             'statuses' => $this->getStatuses(),
             'history'  => $history,
+            'custom'   => $this->module->invokeTemplateEvent('OnManagerOrderRender'),
         ]);
     }
 

@@ -33,6 +33,8 @@ $events = [
     'OnBeforeOrderHistoryUpdate',
     'OnManagerBeforeOrdersListRender',
     'OnManagerBeforeOrderRender',
+    'OnManagerOrdersListRender',
+    'OnManagerOrderRender',
 ];
 
 foreach ($events as $event) {

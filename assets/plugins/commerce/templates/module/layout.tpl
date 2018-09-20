@@ -41,4 +41,8 @@
     </div>
 </form>
 
+<?php if (!empty($custom)): ?>
+    <?= $custom ?>
+<?php endif; ?>
+
 <?php include MODX_MANAGER_PATH . 'includes/footer.inc.php'; ?>
