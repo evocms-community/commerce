@@ -242,15 +242,22 @@ class OrdersController extends Controller
                 'sort'    => 0,
                 'style'   => 'width: 1%; text-align: center;',
             ],
+            'date' => [
+                'title'   => $this->lang['order.created_at'],
+                'content' => function($data, $DL, $eDL) {
+                    return (new \DateTime($data['created_at']))->format('d.m.Y H:i:s');
+                },
+                'sort' => 10,
+            ],
             'name' => [
                 'title'   => $this->lang['order.name_field'],
                 'content' => 'name',
-                'sort'    => 10,
+                'sort'    => 20,
             ],
             'phone' => [
                 'title'   => $this->lang['order.phone_field'],
                 'content' => 'phone',
-                'sort'    => 20,
+                'sort'    => 30,
                 'style'   => 'white-space: nowrap;',
             ],
             'email' => [
@@ -262,7 +269,7 @@ class OrdersController extends Controller
 
                     return '';
                 },
-                'sort'    => 30,
+                'sort'    => 40,
                 'style'   => 'white-space: nowrap;',
             ],
             'amount' => [
@@ -271,7 +278,7 @@ class OrdersController extends Controller
                     return $this->modx->commerce->formatPrice($data['amount']);
                 },
                 'style'   => 'text-align: right;',
-                'sort'    => 40,
+                'sort'    => 50,
                 'style'   => 'white-space: nowrap; text-align: right;',
             ],
             'delivery' => [
@@ -279,14 +286,14 @@ class OrdersController extends Controller
                 'content' => function($data, $DL, $eDL) {
                     return !empty($data['fields']['delivery_method_title']) ? $data['fields']['delivery_method_title'] : '';
                 },
-                'sort' => 50,
+                'sort' => 60,
             ],
             'payment' => [
                 'title' => $this->lang['order.payment_title'],
                 'content' => function($data, $DL, $eDL) {
                     return !empty($data['fields']['payment_method_title']) ? $data['fields']['payment_method_title'] : '';
                 },
-                'sort' => 60,
+                'sort' => 70,
             ],
             'status' => [
                 'title' => $this->lang['order.status_title'],
@@ -299,7 +306,7 @@ class OrdersController extends Controller
 
                     return '<select name="status_id" onchange="location = \'' . $this->module->makeUrl('orders/change-status', 'order_id=' . $data['id'] . '&status_id=') . '\' + jQuery(this).val();">' . $out . '</select>';
                 },
-                'sort' => 70,
+                'sort' => 80,
             ],
         ];
     }
