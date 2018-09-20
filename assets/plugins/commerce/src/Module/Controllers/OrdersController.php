@@ -126,9 +126,39 @@ class OrdersController extends Controller
         ]);
     }
 
-    public function save()
+    public function changeStatus()
     {
-        return true;
+        $data = array_merge($_POST, $_GET);
+
+        $result = $this->modx->commerce->validate($data, [
+            'order_id' => [
+                'numeric' => 'status_id should be numeric',
+            ],
+            'status_id' => [
+                'numeric' => 'status_id should be numeric',
+            ],
+            '!description' => [
+                'string' => 'description should be string',
+            ],
+        ]);
+
+        if (is_array($result)) {
+            $this->module->flash->set('validation_errors', $result);
+            $this->module->sendRedirectBack();
+        }
+
+        $processor = $this->modx->commerce->loadProcessor();
+        $order = $processor->loadOrder($data['order_id']);
+
+        if (empty($order)) {
+            $this->module->flash->set('error', $this->lang['module.error.order_not_found']);
+            $this->module->sendRedirectBack();
+        }
+
+        $processor->changeStatus($order['id'], $data['status_id'], !empty($data['description']) ? $data['description'] : '', !empty($data['notify']));
+
+        $this->module->flash->set('success', $this->lang['module.status_changed']);
+        $this->module->sendRedirectBack();
     }
 
     private function getStatuses()
@@ -261,7 +291,13 @@ class OrdersController extends Controller
             'status' => [
                 'title' => $this->lang['order.status_title'],
                 'content' => function($data, $DL, $eDL) use ($statuses) {
-                    return isset($statuses[$data['status_id']]) ? $statuses[$data['status_id']] : '';
+                    $out = '';
+
+                    foreach ($statuses as $id => $title) {
+                        $out .= '<option value="' . $id . '"' . ($id == $data['status_id'] ? ' selected' : '') . '>' . $title . '</option>';
+                    }
+
+                    return '<select name="status_id" onchange="location = \'' . $this->module->makeUrl('orders/change-status', 'order_id=' . $data['id'] . '&status_id=') . '\' + jQuery(this).val();">' . $out . '</select>';
                 },
                 'sort' => 70,
             ],

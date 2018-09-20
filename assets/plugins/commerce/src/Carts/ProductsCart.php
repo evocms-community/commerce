@@ -45,10 +45,7 @@ class ProductsCart extends StoreCart implements \Commerce\Interfaces\Cart
 
     protected function validateItem(array $item)
     {
-        $formlister = new \FormLister\Form($this->modx);
-        $validator  = new \FormLister\Validator;
-
-        $result = $formlister->validate($validator, $this->rules, $item);
+        $result = $this->commerce->validate($item, $this->rules);
 
         if ($result !== true && !empty($result)) {
             $this->modx->logEvent(0, 3, 'Item not added, validation fails.<br><pre>' . htmlentities(print_r($item, true)) . '<br>' . htmlentities(print_r($result, true)) . '</pre>', 'Commerce Cart');

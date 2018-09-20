@@ -44,8 +44,8 @@ $manager = new Commerce\Module\Manager($modx, array_merge($modx->event->params, 
 ]));
 
 $route = filter_input(INPUT_GET, 'route', FILTER_VALIDATE_REGEXP, ['options' => [
-    'regexp'  => '/^[a-z]+(:?\/[a-z]+)*$/',
+    'regexp'  => '/^[a-z]+(:?\/[a-z-]+)*$/',
     'default' => '',
 ]]);
 
-$manager->processRoute($route);
+return $manager->processRoute($route);

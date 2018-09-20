@@ -32,51 +32,54 @@ ini_set('display_errors', 1);
 
         switch ($route) {
             case 'statuses/edit': {
-                break;
+                return;
             }
 
             case 'statuses': {
-                $controller->showList();
-                break;
+                return $controller->showList();
             }
 
             case 'currency/edit': {
-                break;
+                return;
             }
 
             case 'currency': {
-                $controller->showList();
-                break;
+                return $controller->showList();
             }
 
             case 'orders/edit': {
-                if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-                    if ($result = $controller->save()) {
-                        $this->flash->set('success', $this->lang['module.order_updated']);
-                    } else {
-                        $this->flash->set('error', $this->lang['module.error.order_not_updated']);
-                    }
+                return $controller->show();
+            }
 
-                    $target = isset($stay) || $result === false ? 'orders/edit&order_id = ' . $id : 'orders';
-                    $this->sendRedirect($target);
-                } else {
-                    echo $controller->show();
-                }
-
-                break;
+            case 'orders/change-status': {
+                return $controller->changeStatus();
             }
 
             case 'orders':
-            default: {
-                echo $controller->showList();
-                break;
+            case '': {
+                return $controller->showList();
             }
         }
+
+        $this->flash->set('error', $this->lang['module.unknown_route']);
+        $this->sendRedirect('orders');
     }
 
     public function sendRedirect($route = '')
     {
         $this->modx->sendRedirect($this->makeUrl($route));
+        exit;
+    }
+
+    public function sendRedirectBack($fallback = '')
+    {
+        $url = $fallback;
+
+        if (!empty($_SERVER['HTTP_REFERER'])) {
+            $url = htmlspecialchars_decode($_SERVER['HTTP_REFERER']);
+        }
+
+        $this->modx->sendRedirect($url);
         exit;
     }
 
@@ -95,7 +98,7 @@ ini_set('display_errors', 1);
         return $url;
     }
 
-    public function invokeTemplateEvent($evemt, array $params = [])
+    public function invokeTemplateEvent($event, array $params = [])
     {
         $result = $this->modx->invokeEvent($event, $params);
 

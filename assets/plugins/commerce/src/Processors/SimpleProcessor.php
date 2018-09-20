@@ -442,6 +442,7 @@ class SimpleProcessor implements \Commerce\Interfaces\Processor
                 CREATE TABLE IF NOT EXISTS {$this->tableStatuses} (
                     `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
                     `title` varchar(255) NOT NULL,
+                    `notify` tinyint(1) unsigned NOT NULL DEFAULT '0',
                     PRIMARY KEY (`id`)
                 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
             ");
@@ -450,9 +451,9 @@ class SimpleProcessor implements \Commerce\Interfaces\Processor
 
             $this->modx->db->insert(['title' => $lang['order.status.new']], $this->tableStatuses);
             $this->modx->db->insert(['title' => $lang['order.status.processing']], $this->tableStatuses);
-            $this->modx->db->insert(['title' => $lang['order.status.paid']], $this->tableStatuses);
+            $this->modx->db->insert(['title' => $lang['order.status.paid'], 'notify' => 1], $this->tableStatuses);
             $this->modx->db->insert(['title' => $lang['order.status.shipped']], $this->tableStatuses);
-            $this->modx->db->insert(['title' => $lang['order.status.canceled']], $this->tableStatuses);
+            $this->modx->db->insert(['title' => $lang['order.status.canceled'], 'notify' => 1], $this->tableStatuses);
             $this->modx->db->insert(['title' => $lang['order.status.complete']], $this->tableStatuses);
             $this->modx->db->insert(['title' => $lang['order.status.pending']], $this->tableStatuses);
         }

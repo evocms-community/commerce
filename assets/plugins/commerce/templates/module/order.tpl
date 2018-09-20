@@ -92,10 +92,10 @@
                 <tbody>
                     <?php foreach ($history as $row): ?>
                         <tr>
-                            <td><?= (new \DateTime($row['created_at']))->format('d.m.Y H:i:s') ?></td>
-                            <td><?= !empty($statuses[$row['status_id']]) ? $statuses[$row['status_id']] : '' ?></td>
+                            <td style="white-space: nowrap;"><?= (new \DateTime($row['created_at']))->format('d.m.Y H:i:s') ?></td>
+                            <td style="white-space: nowrap;"><?= !empty($statuses[$row['status_id']]) ? $statuses[$row['status_id']] : '' ?></td>
                             <td><?= !empty($row['notify']) ? $_lang['yes'] : $_lang['no'] ?></td>
-                            <td><?= $row['description'] ?></td>
+                            <td><?= htmlentities($row['comment']) ?></td>
                         </tr>
                     <?php endforeach; ?>
                 </tbody>
@@ -107,7 +107,7 @@
         </div>
 
         <div class="sectionBody">
-            <form action="#" method="post">
+            <form action="<?= $module->makeUrl('orders/change-status') ?>" method="post">
                 <table class="table">
                     <tr>
                         <td><?= $lang['module.status_title'] ?></td>
@@ -127,12 +127,14 @@
                         <td></td>
                         <td>
                             <label>
+                                <input type="hidden" name="notify" value="0">
                                 <input type="checkbox" name="notify" value="1">
                                 <?= $lang['module.status_change_notify'] ?>
                             </label>
                         </td>
                 </table>
 
+                <input type="hidden" name="order_id" value="<?= $order['id'] ?>">
                 <button type="submit" class="btn btn-secondary"><?= $_lang['submit'] ?></button>
             </form>
         </div>

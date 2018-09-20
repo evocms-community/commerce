@@ -313,4 +313,18 @@ class Commerce
     {
         return number_format(floatval($price), 2, ',', ' ') . ' руб.';
     }
+
+    public function validate($data, array $rules)
+    {
+        $formlister = new \FormLister\Form($this->modx);
+        $validator  = new \FormLister\Validator;
+
+        $result = $formlister->validate($validator, $rules, $data);
+
+        if ($result !== true && !empty($result)) {
+            return $result;
+        }
+
+        return true;
+    }
 }

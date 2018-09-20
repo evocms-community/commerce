@@ -13,6 +13,16 @@
     </div>
 <?php endif; ?>
 
+<?php if ($module->flash->has('validation_errors')): ?>
+    <div class="container">
+        <div class="alert alert-danger">
+            <?php foreach ($module->flash->get('validation_errors') as $error): ?>
+                <?= $error[2] ?><br>
+            <?php endforeach; ?>
+        </div>
+    </div>
+<?php endif; ?>
+
 <?php if ($module->flash->has('success')): ?>
     <div class="container">
         <div class="alert alert-success">
@@ -21,25 +31,23 @@
     </div>
 <?php endif; ?>
 
-<form name="module" method="post" id="mutate">
-    <?php if (!empty($this->block('buttons'))): ?>
-        <div id="actions">
-            <div class="btn-group">
-                <?= $this->block('buttons') ?>
-            </div>
-        </div>
-    <?php endif; ?>
-
-    <div class="sectionBody">
-        <div class="tab-pane" id="commercePane">
-            <script type="text/javascript">
-                var tpCommerce = new WebFXTabPane(document.getElementById('commercePane'), <?= ($modx->getConfig('remember_last_tab') == 1 ? 'true' : 'false') ?> );
-            </script> 
-
-            <?= $this->block('content') ?>
+<?php if (!empty($this->block('buttons'))): ?>
+    <div id="actions">
+        <div class="btn-group">
+            <?= $this->block('buttons') ?>
         </div>
     </div>
-</form>
+<?php endif; ?>
+
+<div class="sectionBody">
+    <div class="tab-pane" id="commercePane">
+        <script type="text/javascript">
+            var tpCommerce = new WebFXTabPane(document.getElementById('commercePane'), <?= ($modx->getConfig('remember_last_tab') == 1 ? 'true' : 'false') ?> );
+        </script> 
+
+        <?= $this->block('content') ?>
+    </div>
+</div>
 
 <?php if (!empty($custom)): ?>
     <?= $custom ?>
