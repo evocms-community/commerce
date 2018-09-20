@@ -31,7 +31,7 @@
                 
                                 <td>
                                     <a href="<?= $this->module->makeUrl('orders/edit', 'order_id=' . $order['id']) ?>" class="btn btn-primary">
-                                        <?= $lang['module.edit_order_btn'] ?>
+                                        <?= $lang['module.show_order_btn'] ?>
                                     </a>
                                 </td>
                             </tr>
