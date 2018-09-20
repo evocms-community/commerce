@@ -1,4 +1,5 @@
 <?php include MODX_MANAGER_PATH . 'includes/header.inc.php'; ?>
+<link rel="stylesheet" href="../assets/plugins/commerce/css/module.css">
 
 <h1>
     <i class="fa fa-cog"></i><?= $this->block('title', $lang['module.orders_caption']) ?> 
@@ -21,11 +22,13 @@
 <?php endif; ?>
 
 <form name="module" method="post" id="mutate">
-    <div id="actions">
-        <div class="btn-group">
-            <?= $this->block('buttons') ?>
+    <?php if (!empty($this->block('buttons'))): ?>
+        <div id="actions">
+            <div class="btn-group">
+                <?= $this->block('buttons') ?>
+            </div>
         </div>
-    </div>
+    <?php endif; ?>
 
     <div class="sectionBody">
         <div class="tab-pane" id="commercePane">

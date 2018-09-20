@@ -1,0 +1,7 @@
+ul.order-groups { margin: 0 -0.25rem; padding: 0; list-style: none; }
+ul.order-groups > li { margin: 0 0 1rem; padding: 0 0.5rem; vertical-align: top; display: inline-block; }
+ul.order-groups > li > .sectionHeader { margin: 0; }
+ul.order-groups > li > .sectionBody { margin: 0; }
+.cart-contents .sectionHeader { margin: 0 0.25rem; }
+.cart-contents .table.data td { vertical-align: middle; }
+.cart-contents .table.data td pre { margin: 0; }

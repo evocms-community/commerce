@@ -16,8 +16,125 @@
             tpCommerce.addTabPage(document.getElementById('tab_main'));
         </script>
 
-        <table border="0" cellspacing="0" cellpadding="3" style="font-size: inherit; line-height: inherit;">
-            <?php print_r($order); ?>
-        </table>
+        <ul class="order-groups">
+            <?php foreach ($groups as $group_id => $group): ?>
+                <li id="group-<?= $group_id ?>" style="width: <?= $group['width'] ?>;">
+                    <div class="sectionHeader">
+                        <?= $group['title'] ?>
+                    </div>
+                    
+                    <div class="sectionBody">
+                        <table class="table data group-fields">
+                            <?php foreach ($group['fields'] as $field): ?>
+                                <tr>
+                                    <td><?= $field['title'] ?>:</td>
+                                    <td><?= $field['value'] ?></td>
+                                </tr>
+                            <?php endforeach; ?>
+                        </table>
+                    </div>
+            <?php endforeach; ?>
+        </ul>
+
+        <div class="cart-contents">
+            <div class="sectionHeader">
+                <?= $lang['module.cart_contents_title'] ?>
+            </div>
+
+            <div class="sectionBody">
+                <div class="table-responsive">
+                    <table class="table data">
+                        <thead>
+                            <tr>
+                                <?php foreach ($columns as $column): ?>
+                                    <td<?= !empty($column['style']) ? ' style="' . $column['style'] . '"' : '' ?>><?= $column['title'] ?></td>
+                                <?php endforeach; ?>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            <?php foreach ($cartData as $row): ?>
+                                <tr>
+                                    <?php foreach ($row['cells'] as $name => $cell): ?>
+                                        <td<?= !empty($columns[$name]['style']) ? ' style="' . $columns[$name]['style'] . '"' : '' ?>><?= $cell ?></td>
+                                    <?php endforeach; ?>
+                                </tr>
+                            <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="tab-page" id="tab_history">
+        <h2 class="tab"><?= $lang['module.order_history_title'] ?></h2>
+
+        <script type="text/javascript">
+            tpCommerce.addTabPage(document.getElementById('tab_main'));
+        </script>
+
+        <div class="sectionHeader">
+            <?= $lang['module.order_history_title'] ?>
+        </div>
+
+        <div class="sectionBody">
+            <table class="table data">
+                <thead>
+                    <tr>
+                        <td><?= $lang['module.status_change_date'] ?></td>
+                        <td><?= $lang['module.status_title'] ?></td>
+                        <td><?= $lang['module.is_customer_notified'] ?></td>
+                        <td><?= $lang['module.status_change_description'] ?></td>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <?php foreach ($history as $row): ?>
+                        <tr>
+                            <td><?= (new \DateTime($row['created_at']))->format('d.m.Y H:i:s') ?></td>
+                            <td><?= !empty($statuses[$row['status_id']]) ? $statuses[$row['status_id']] : '' ?></td>
+                            <td><?= !empty($row['notify']) ? $_lang['yes'] : $_lang['no'] ?></td>
+                            <td><?= $row['description'] ?></td>
+                        </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="sectionHeader">
+            <?= $lang['module.add_history'] ?>
+        </div>
+
+        <div class="sectionBody">
+            <form action="#" method="post">
+                <table class="table">
+                    <tr>
+                        <td><?= $lang['module.status_title'] ?></td>
+                        <td>
+                            <select name="status_id">
+                                <?php foreach ($statuses as $id => $title): ?>
+                                    <option value="<?= $id ?>"><?= $title ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </td>
+
+                    <tr>
+                        <td><?= $lang['module.status_change_description'] ?></td>
+                        <td><textarea name="description"></textarea></td>
+
+                    <tr>
+                        <td></td>
+                        <td>
+                            <label>
+                                <input type="checkbox" name="notify" value="1">
+                                <?= $lang['module.status_change_notify'] ?>
+                            </label>
+                        </td>
+                </table>
+
+                <button type="submit" class="btn btn-secondary"><?= $_lang['submit'] ?></button>
+            </form>
+        </div>
     </div>
 <?php $this->endBlock(); ?>

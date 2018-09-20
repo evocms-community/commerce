@@ -6,6 +6,8 @@ return [
     'cart.caption' => 'Корзина',
     'cart.items_count' => 'товар(ов) на',
     'cart.item_title' => 'Название',
+    'cart.image' => 'Изображение',
+    'cart.item_options' => 'Опции товара',
     'cart.count' => 'Кол-во',
     'cart.item_price' => 'Цена',
     'cart.item_summary' => 'Всего',
