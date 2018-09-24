@@ -1,181 +1,186 @@
 ;
 
-(function() {
+var Commerce = {
+    action: function(action, data, initiator) {
+        if (typeof initiator == 'undefined') {
+            initiator = $(document);
+        }
+        
+        initiator.trigger('action-start.commerce', {
+            action: action,
+            data: data
+        });
 
-    var Commerce = {
-        action: function(action, data, initiator) {
-            if (typeof initiator == 'undefined') {
+        if (matches = action.match(/^([a-z]+)\/([a-z]+)$/)) {
+            var event = matches[1].charAt(0).toUpperCase() + matches[1].slice(1) + '-' + matches[2].charAt(0).toUpperCase() + matches[2].slice(1);
+            event = event.toLowerCase();
+
+            if (!initiator) {
                 initiator = $(document);
             }
-            
-            initiator.trigger('action-start.commerce', {
-                action: action,
-                data: data
+
+            initiator.trigger(event + '.commerce', data);
+
+            (function(event, data, initiator) {
+                $.post('commerce/action', {
+                    action: action,
+                    data: data
+                }, function(response) {
+                    initiator.trigger(event + '-complete.commerce', {
+                        response: response,
+                        data: data,
+                        initiator: initiator
+                    });
+
+                    initiator.trigger('action-complete.commerce', {
+                        response: response,
+                        action: action,
+                        data: data,
+                        initiator: initiator
+                    });
+                }, 'json');
+            })(event, data, initiator);
+        }
+    },
+
+    updateCarts: function() {
+        var $carts = $('[data-commerce-cart]');
+
+        if ($carts.length) {
+            var hashes = [];
+
+            $carts.each(function() {
+                hashes.push($(this).attr('data-commerce-cart'));
             });
 
-            if (matches = action.match(/^([a-z]+)\/([a-z]+)$/)) {
-                var event = matches[1].charAt(0).toUpperCase() + matches[1].slice(1) + '-' + matches[2].charAt(0).toUpperCase() + matches[2].slice(1);
-                event = event.toLowerCase();
+            (function($carts) {
+                $.post('commerce/cart/contents', {hashes: hashes}, function(response) {
+                    if (response.status == 'success' && response.markup) {
+                        $carts.each(function() {
+                            var $cart = $(this),
+                                hash  = $cart.attr('data-commerce-cart');
 
-                if (!initiator) {
-                    initiator = $(document);
-                }
-
-                initiator.trigger(event + '.commerce', data);
-
-                (function(event, data, initiator) {
-                    $.post('commerce/action', {
-                        action: action,
-                        data: data
-                    }, function(response) {
-                        initiator.trigger(event + '-complete.commerce', {
-                            response: response,
-                            data: data,
-                            initiator: initiator
+                            if (response.markup[hash]) {
+                                $cart.replaceWith(response.markup[hash]);
+                            }
                         });
-
-                        initiator.trigger('action-complete.commerce', {
-                            response: response,
-                            action: action,
-                            data: data,
-                            initiator: initiator
-                        });
-                    }, 'json');
-                })(event, data, initiator);
-            }
-        },
-
-        updateCarts: function() {
-            var $carts = $('[data-commerce-cart]');
-
-            if ($carts.length) {
-                var hashes = [];
-
-                $carts.each(function() {
-                    hashes.push($(this).attr('data-commerce-cart'));
-                });
-
-                (function($carts) {
-                    $.post('commerce/cart/contents', {hashes: hashes}, function(response) {
-                        if (response.status == 'success' && response.markup) {
-                            $carts.each(function() {
-                                var $cart = $(this),
-                                    hash  = $cart.attr('data-commerce-cart');
-
-                                if (response.markup[hash]) {
-                                    $cart.replaceWith(response.markup[hash]);
-                                }
-                            });
-                        }
-                    }, 'json');
-                })($carts);
-            }
-        },
-
-        updateOrderData: function($form) {
-            $.post('commerce/data/update', $form.serializeObject(), function(response) {
-                if (response.status == 'success') {
-                    Commerce.updateCarts();
-                }
-            }, 'json');
-        }
-    };
-
-    $(document).on('submit click change', '[data-commerce-action]', function(e) {
-        if (e.currentTarget != e.target) {
-            return;
-        }
-
-        var $self  = $(this),
-            action = $self.attr('data-commerce-action'),
-            row    = $self.attr('data-commerce-row') || $self.closest('[data-commerce-row]').attr('data-commerce-row'),
-            data   = $self.data(),
-            cart   = {
-                instance: $self.attr('data-instance'),
-                hash:     $self.closest('[data-commerce-cart]').attr('data-commerce-cart')
-            };
-
-        if (action == 'add') {
-            if (e.type == 'submit') {
-                e.preventDefault();
-                data = $self.serializeObject();
-            }
-
-            data.cart = cart;
-
-            Commerce.action('cart/add', data, $self);
-        }
-
-        if (e.type == 'click') {
-            if (e.target.tagName == 'A') {
-                e.preventDefault();
-            }
-            
-            switch (action) {
-                case 'increase':
-                case 'decrease': {
-                    var $row = $self.closest('[data-commerce-cart]').find('[data-commerce-row="' + row + '"]'),
-                        $count = $row.filter('input[name="count"]');
-
-                    if (!$count.length) {
-                        $count = $row.find('input[name="count"]');
                     }
+                }, 'json');
+            })($carts);
+        }
+    },
 
-                    if ($count.length == 1) {
-                        var count = parseInt($count.val()) || 0;
-                        count += action == 'increase' ? 1 : -1;
-                        count = Math.max(0, count);
+    updateOrderData: function($form) {
+        $.post('commerce/data/update', $form.serializeObject(), function(response) {
+            if (response.status == 'success') {
+                Commerce.updateCarts();
+            }
+        }, 'json');
+    },
 
-                        if (!count) {
-                            Commerce.action('cart/remove', {row: row, cart: cart});
-                        } else {
-                            $count.val(count);
-                            Commerce.action('cart/update', {row: row, cart: cart, attributes: {count: count}});
-                        }
+    setCurrency: function(code) {
+        $.post('commerce/currency/set', {code: code}, function(response) {
+            if (response.status == 'success') {
+                location.reload();
+            }
+        }, 'json');
+    }
+};
+
+$(document).on('submit click change', '[data-commerce-action]', function(e) {
+    if (e.currentTarget != e.target) {
+        return;
+    }
+
+    var $self  = $(this),
+        action = $self.attr('data-commerce-action'),
+        row    = $self.attr('data-commerce-row') || $self.closest('[data-commerce-row]').attr('data-commerce-row'),
+        data   = $self.data(),
+        cart   = {
+            instance: $self.attr('data-instance'),
+            hash:     $self.closest('[data-commerce-cart]').attr('data-commerce-cart')
+        };
+
+    if (action == 'add') {
+        if (e.type == 'submit') {
+            e.preventDefault();
+            data = $self.serializeObject();
+        }
+
+        data.cart = cart;
+
+        Commerce.action('cart/add', data, $self);
+    }
+
+    if (e.type == 'click') {
+        if (e.target.tagName == 'A') {
+            e.preventDefault();
+        }
+        
+        switch (action) {
+            case 'increase':
+            case 'decrease': {
+                var $row = $self.closest('[data-commerce-cart]').find('[data-commerce-row="' + row + '"]'),
+                    $count = $row.filter('input[name="count"]');
+
+                if (!$count.length) {
+                    $count = $row.find('input[name="count"]');
+                }
+
+                if ($count.length == 1) {
+                    var count = parseInt($count.val()) || 0;
+                    count += action == 'increase' ? 1 : -1;
+                    count = Math.max(0, count);
+
+                    if (!count) {
+                        Commerce.action('cart/remove', {row: row, cart: cart});
+                    } else {
+                        $count.val(count);
+                        Commerce.action('cart/update', {row: row, cart: cart, attributes: {count: count}});
                     }
-
-                    break;
                 }
 
-                case 'remove': {
-                    Commerce.action('cart/remove', {row: row, cart: cart});
-                    break;
-                }
+                break;
+            }
+
+            case 'remove': {
+                Commerce.action('cart/remove', {row: row, cart: cart});
+                break;
             }
         }
+    }
 
-        if (e.type == 'change') {
-            switch (action) {
-                case 'recount': {
-                    var count = parseInt($self.val());
+    if (e.type == 'change') {
+        switch (action) {
+            case 'recount': {
+                var count = parseInt($self.val());
 
-                    if (typeof count != 'NaN' && count >= 0) {
-                        if (!count) {
-                            Commerce.action('cart/remove', {row: row});
-                        } else {
-                            Commerce.action('cart/update', {row: row, attributes: {count: count}});
-                        }
+                if (typeof count != 'NaN' && count >= 0) {
+                    if (!count) {
+                        Commerce.action('cart/remove', {row: row});
+                    } else {
+                        Commerce.action('cart/update', {row: row, attributes: {count: count}});
                     }
-
-                    break;
                 }
+
+                break;
             }
         }
-    });
+    }
+});
 
-    $(document).on('action-complete.commerce', function(e, data) {
-        if (data.response.status == 'success') {
-            Commerce.updateCarts();
-        }
-    });
+$(document).on('action-complete.commerce', function(e, data) {
+    if (data.response.status == 'success') {
+        Commerce.updateCarts();
+    }
+});
 
-    $(document).on('change', '[data-commerce-order]', function(e) {
-        if (['delivery_method', 'payment_method'].indexOf(e.target.name) !== -1) {
-            Commerce.updateOrderData($(this));
-        }
-    });
+$(document).on('change', '[data-commerce-order]', function(e) {
+    if (['delivery_method', 'payment_method'].indexOf(e.target.name) !== -1) {
+        Commerce.updateOrderData($(this));
+    }
+});
 
-})();
 
 /**
  * jQuery serializeObject

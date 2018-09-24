@@ -86,7 +86,12 @@ class Order extends Form
         $processor->createOrder($items, $this->getFormData('fields'));
         parent::process();
         $processor->postProcessForm($this);
-        $this->modx->invokeEvent('OnOrderProcessed');
+
+        $this->modx->invokeEvent('OnOrderProcessed', [
+            'order' => $processor->getOrder(),
+            'cart'  => $processor->getCart(),
+        ]);
+
         $this->redirect();
     }
 }

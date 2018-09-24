@@ -11,10 +11,10 @@
  * @internal    @installset base
 */
 
-$manager  = Commerce\CartsManager::getManager();
+$carts    = ci()->carts;
 $instance = isset($instance) ? $instance : 'products';
 $theme    = !empty($theme) ? $theme : '';
-$cart     = $manager->getCart($instance);
+$cart     = $carts->getCart($instance);
 $lang     = $modx->getConfig('manager_language');
 
 if (!is_null($cart)) {
@@ -35,7 +35,7 @@ if (!is_null($cart)) {
         'idType'     => 'documents',
         'documents'  => array_column($cart->getItems(), 'id'),
         'instance'   => $instance,
-        'hash'       => $manager->storeParams($params),
+        'hash'       => $carts->storeParams($params),
         'cart'       => $cart,
         'tree'       => 0,
     ]));

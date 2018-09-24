@@ -15,12 +15,38 @@
 
 if (!class_exists('Commerce\\Commerce')) {
     require_once MODX_BASE_PATH . 'assets/plugins/commerce/autoload.php';
+
+    $ci = ci();
+
+    $ci->set('modx', function($ci) use ($modx) {
+        return $modx;
+    });
+
+    $ci->set('commerce', function($ci) use ($modx, $params) {
+        return new Commerce\Commerce($modx, $params);
+    });
+
+    $ci->set('currency', function($ci) {
+        return $ci->commerce->currency;
+    });
+
+    $ci->set('cache', function($ci) use ($modx) {
+        return Commerce\Cache::getInstance();
+    });
+
+    $ci->set('carts', function($ci) use ($modx) {
+        return Commerce\CartsManager::getManager($modx);
+    });
+
+    $ci->set('db', function($ci) {
+        return $ci->modx->db;
+    });
 }
 
 $e = &$modx->Event;
 
 if (empty($modx->commerce) || isset($modx->commerce) && !($modx->commerce instanceof Commerce\Commerce)) {
-    $modx->commerce = new Commerce\Commerce($modx, $params);
+    $modx->commerce = $ci->commerce;
 }
 
 switch ($e->name) {
@@ -53,6 +79,11 @@ switch ($e->name) {
         if (strpos($url, 'commerce') === 0) {
             $modx->commerce->processRoute($url);
         }
+        break;
+    }
+
+    case 'OnCacheUpdate': {
+        ci()->cache->clean();
         break;
     }
 }

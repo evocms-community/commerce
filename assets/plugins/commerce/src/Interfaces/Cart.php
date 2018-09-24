@@ -21,4 +21,6 @@ interface Cart
     public function remove($row);
 
     public function clean();
+
+    public function setCurrency($code);
 }

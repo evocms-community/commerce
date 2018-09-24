@@ -45,7 +45,7 @@ class ProductsCart extends StoreCart implements \Commerce\Interfaces\Cart
 
     protected function validateItem(array $item)
     {
-        $result = $this->commerce->validate($item, $this->rules);
+        $result = $this->modx->commerce->validate($item, $this->rules);
 
         if ($result !== true && !empty($result)) {
             $this->modx->logEvent(0, 3, 'Item not added, validation fails.<br><pre>' . htmlentities(print_r($item, true)) . '<br>' . htmlentities(print_r($result, true)) . '</pre>', 'Commerce Cart');
@@ -92,7 +92,7 @@ class ProductsCart extends StoreCart implements \Commerce\Interfaces\Cart
             $tv = $this->modx->getTemplateVar($this->priceField, '*', $id);
 
             if (!empty($tv)) {
-                return $tv['value'];
+                return ci()->currency->convertFromDefault($tv['value']);
             }
         }
 

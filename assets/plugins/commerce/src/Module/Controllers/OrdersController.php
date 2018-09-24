@@ -234,6 +234,7 @@ class OrdersController extends Controller
     private function getOrdersListColumns()
     {
         $statuses = $this->getStatuses();
+        $defaultCurrency = ci()->currency->getDefaultCurrencyCode();
 
         return [
             'id' => [
@@ -274,8 +275,15 @@ class OrdersController extends Controller
             ],
             'amount' => [
                 'title'   => $this->lang['order.amount_title'],
-                'content' => function($data, $DL, $eDL) {
-                    return $this->modx->commerce->formatPrice($data['amount']);
+                'content' => function($data, $DL, $eDL) use ($defaultCurrency) {
+                    $currency = ci()->currency;
+                    $out = $currency->format($data['amount'], $data['currency']);
+
+                    if ($data['currency'] != $defaultCurrency) {
+                        $out .= '<br>(' . $currency->formatWithDefault($data['amount'], $data['currency']) . ')';
+                    }
+
+                    return $out;
                 },
                 'style'   => 'text-align: right;',
                 'sort'    => 50,
@@ -314,6 +322,7 @@ class OrdersController extends Controller
     private function getOrderGroups()
     {
         $statuses = $this->getStatuses();
+        $defaultCurrency = ci()->currency->getDefaultCurrencyCode();
 
         return [
             'order_info' => [
@@ -376,8 +385,15 @@ class OrdersController extends Controller
                 'fields' => [
                     'amount' => [
                         'title'   => $this->lang['order.to_pay_title'],
-                        'content' => function($data) {
-                            return '<strong>' . $this->modx->commerce->formatPrice($data['amount']) . '</strong>';
+                        'content' => function($data) use ($defaultCurrency) {
+                            $currency = ci()->currency;
+                            $out = $currency->format($data['amount'], $data['currency']);
+
+                            if ($data['currency'] != $defaultCurrency) {
+                                $out .= '<br>(' . $currency->formatWithDefault($data['amount'], $data['currency']) . ')';
+                            }
+
+                            return '<strong>' . $out . '</strong>';
                         },
                         'sort' => 10,
                     ],
@@ -402,7 +418,9 @@ class OrdersController extends Controller
 
     private function getOrderCartColumns()
     {
-        $lang = $this->modx->commerce->getUserLanguage('cart');
+        $lang = ci()->commerce->getUserLanguage('cart');
+        $order = ci()->commerce->loadProcessor()->getOrder();
+        $defaultCurrency = ci()->currency->getDefaultCurrencyCode();
 
         return [
             'position' => [
@@ -452,16 +470,30 @@ class OrdersController extends Controller
             ],
             'price' => [
                 'title'   => $lang['cart.item_price'],
-                'content' => function($data, $DL, $eDL) {
-                    return $this->modx->commerce->formatPrice($data['price']);
+                'content' => function($data, $DL, $eDL) use ($order, $defaultCurrency) {
+                    $currency = ci()->currency;
+                    $out = $currency->format($data['price'], $order['currency']);
+
+                    if ($order['currency'] != $defaultCurrency) {
+                        $out .= '<br>(' . $currency->formatWithDefault($data['price'], $order['currency']) . ')';
+                    }
+
+                    return $out;
                 },
                 'style' => 'text-align: right; white-space: nowrap;',
                 'sort' => 60,
             ],
             'summary' => [
                 'title'   => $lang['cart.item_summary'],
-                'content' => function($data, $DL, $eDL) {
-                    return $this->modx->commerce->formatPrice($data['total']);
+                'content' => function($data, $DL, $eDL) use ($order, $defaultCurrency) {
+                    $currency = ci()->currency;
+                    $out = $currency->format($data['total'], $order['currency']);
+
+                    if ($order['currency'] != $defaultCurrency) {
+                        $out .= '<br>(' . $currency->formatWithDefault($data['total'], $order['currency']) . ')';
+                    }
+
+                    return $out;
                 },
                 'style' => 'text-align: right; white-space: nowrap;',
                 'sort' => 70,

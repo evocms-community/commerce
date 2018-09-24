@@ -6,6 +6,8 @@ class SimpleCart implements \Commerce\Interfaces\Cart
 {
     protected $items = [];
 
+    protected $currency;
+
     protected $defaults = [
         'id'      => 0,
         'name'    => 'Item',
@@ -70,7 +72,8 @@ class SimpleCart implements \Commerce\Interfaces\Cart
 
     protected function makeHash(array $item)
     {
-        return md5(serialize([$item['id'], $item['name'], $item['price'], $item['options'], $item['meta']]));
+        $price = (float) ci()->currency->convertToDefault($item['price']);
+        return md5(serialize([$item['id'], $item['name'], $price, $item['options'], $item['meta']]));
     }
 
     public function add(array $item)
@@ -137,5 +140,20 @@ class SimpleCart implements \Commerce\Interfaces\Cart
     public function clean()
     {
         $this->items = [];
+    }
+
+    public function setCurrency($code)
+    {
+        if (!is_null($this->currency) && !empty($this->items)) {
+            $currency = ci()->currency;
+
+            foreach ($this->items as &$item) {
+                $item['price'] = $currency->convert($item['price'], $this->currency, $code);
+            }
+
+            unset($item);
+        }
+
+        $this->currency = $code;
     }
 }

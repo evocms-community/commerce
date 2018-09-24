@@ -48,6 +48,13 @@ class CartsManager
         return isset($this->carts[$name]);
     }
 
+    public function changeCurrency($code)
+    {
+        foreach ($this->carts as $cart) {
+            $cart->setCurrency($code);
+        }
+    }
+
     public function storeParams(array $params)
     {
         $hash = md5(json_encode($params));

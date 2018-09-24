@@ -15,6 +15,8 @@ class Commerce
 
     const VERSION = 'v0.1.0';
 
+    public $currency;
+
     private $modx;
     private $cart;
     private $processor;
@@ -29,6 +31,7 @@ class Commerce
     {
         $this->modx = $modx;
         $this->setSettings($params);
+        $this->currency = new Currency($modx);
 
         $this->lexicon = new Lexicon($modx, [
             'langDir' => 'assets/plugins/commerce/lang/',
@@ -42,6 +45,7 @@ class Commerce
 
         if (!$cartsManager->has('products')) {
             $this->cart = new ProductsCart($modx);
+            $this->cart->setCurrency($this->currency->getCurrencyCode());
             $cartsManager->addCart('products', $this->cart);
         }
 
@@ -212,6 +216,30 @@ class Commerce
                 }
                 break;
             }
+
+            case 'commerce/currency/set': {
+                $response = [
+                    'status' => 'failed',
+                ];
+
+                if (isset($_POST['code'])) {
+                    try {
+                        $this->currency->setCurrency($_POST['code']);
+                    } catch (\Exception $e) {
+                        $response['error'] = $e->getMessage();
+                        echo json_encode($response);
+                        exit;
+                    }
+
+                    ci()->carts->changeCurrency($this->currency->getCurrencyCode());
+
+                    $response['status'] = 'success';
+                    echo json_encode($response);
+                    exit;
+                }
+
+                exit;
+            }
         }
 
         if (preg_match('/^commerce\/([a-z-_]+?)\/([a-z-]+?)$/', $route, $parts)) {
@@ -309,9 +337,9 @@ class Commerce
         return json_encode($response);
     }
 
-    public function formatPrice($price)
+    public function formatPrice($price, $currency = null)
     {
-        return number_format(floatval($price), 2, ',', ' ') . ' руб.';
+        return call_user_func_array([$this->currency, 'format'], func_get_args());
     }
 
     public function validate($data, array $rules)
@@ -326,5 +354,16 @@ class Commerce
         }
 
         return true;
+    }
+
+    public function isTableExists($table)
+    {
+        try {
+            $query = $this->modx->db->query("SHOW FIELDS FROM " . $table, false);
+        } catch (\Exception $e) {
+            return false;
+        }
+
+        return $this->modx->db->getRecordCount($query) > 0;
     }
 }

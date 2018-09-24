@@ -16,13 +16,16 @@ $e = &$modx->Event;
 
 switch ($e->name) {
     case 'OnCollectSubtotals': {
-        if ($modx->commerce->getCart()->getTotal() >= 2000) {
-            $discount = $params['total'] * 0.2;
+        $currency = ci()->currency;
+        $price = $currency->convertToActive(200);
+
+        if ($modx->commerce->getCart()->getTotal() >= $price) {
+            $discount = $params['total'] * 0.2; // 20% discount
 
             $params['total'] -= $discount;
 
             $params['rows']['discount'] = [
-                'title' => 'Discount example',
+                'title' => 'Discount for ' . $currency->format($price),
                 'price' => -$discount,
             ];
         }

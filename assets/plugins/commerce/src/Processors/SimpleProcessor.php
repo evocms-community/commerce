@@ -35,8 +35,8 @@ class SimpleProcessor implements \Commerce\Interfaces\Processor
             'order_id'   => $order_id,
             'product_id' => (int)$item['id'],
             'title'      => $this->modx->db->escape($item['name']),
-            'price'      => (float)$item['price'],
-            'count'      => (float)$item['count'],
+            'price'      => number_format((float)$item['price'], 6),
+            'count'      => number_format((float)$item['count'], 6),
             'options'    => !empty($item['options']) ? $this->modx->db->escape(json_encode($item['options'], JSON_UNESCAPED_UNICODE)) : null,
             'meta'       => !empty($item['meta']) ? $this->modx->db->escape(json_encode($item['meta'], JSON_UNESCAPED_UNICODE)) : null,
             'position'   => $position,
@@ -48,7 +48,7 @@ class SimpleProcessor implements \Commerce\Interfaces\Processor
         return [
             'order_id' => $order_id,
             'title'    => $this->modx->db->escape($item['title']),
-            'price'    => (float)$item['price'],
+            'price'    => number_format((float)$item['price'], 6),
             'position' => $position,
         ];
     }
@@ -83,7 +83,8 @@ class SimpleProcessor implements \Commerce\Interfaces\Processor
         ]);
 
         $values = $this->prepareValues($fields);
-        $values['amount'] = (int)$total;
+        $values['amount']   = number_format((float)$total, 6);
+        $values['currency'] = ci()->currency->getCurrencyCode();
 
         $this->modx->invokeEvent('OnBeforeOrderSaving', [
             'values'    => &$values,
@@ -200,35 +201,37 @@ class SimpleProcessor implements \Commerce\Interfaces\Processor
 
     public function getCart()
     {
-        if (is_null($this->cart)) {
+        $order = $this->getOrder();
+
+        if (is_null($this->cart) && !is_null($order)) {
             $this->cart = new OrderCart($this->modx);
+            $this->cart->setCurrency($order['currency']);
+
             CartsManager::getManager()->addCart('order', $this->cart);
 
-            if (!empty($this->order_id)) {
-                $query = $this->modx->db->select('*', $this->tableProducts, "`order_id` = '{$this->order_id}'", "`position`");
-                $items = [];
-                $subtotals = [];
+            $query = $this->modx->db->select('*', $this->tableProducts, "`order_id` = '{$this->order_id}'", "`position`");
+            $items = [];
+            $subtotals = [];
 
-                while ($item = $this->modx->db->getRow($query)) {
-                    $item['options'] = !empty($item['options']) ? json_decode($item['options'], true) : [];
-                    $item['meta'] = !empty($item['meta']) ? json_decode($item['meta'], true) : [];
+            while ($item = $this->modx->db->getRow($query)) {
+                $item['options'] = !empty($item['options']) ? json_decode($item['options'], true) : [];
+                $item['meta'] = !empty($item['meta']) ? json_decode($item['meta'], true) : [];
 
-                    if (!is_null($item['product_id'])) {
-                        $this->cart->add([
-                            'id'      => $item['product_id'],
-                            'name'    => $item['title'],
-                            'count'   => $item['count'],
-                            'price'   => $item['price'],
-                            'options' => $item['options'],
-                            'meta'    => $item['meta'],
-                        ]);
-                    } else {
-                        $subtotals[] = $item;
-                    }
+                if (!is_null($item['product_id'])) {
+                    $this->cart->add([
+                        'id'      => $item['product_id'],
+                        'name'    => $item['title'],
+                        'count'   => $item['count'],
+                        'price'   => $item['price'],
+                        'options' => $item['options'],
+                        'meta'    => $item['meta'],
+                    ]);
+                } else {
+                    $subtotals[] = $item;
                 }
-
-                $this->cart->setSubtotals($subtotals);
             }
+
+            $this->cart->setSubtotals($subtotals);
         }
 
         return $this->cart;
@@ -365,20 +368,9 @@ class SimpleProcessor implements \Commerce\Interfaces\Processor
         return null;
     }
 
-    private function isTableExists($table)
-    {
-        try {
-            $query = $this->modx->db->query("SHOW FIELDS FROM " . $table, false);
-        } catch (\Exception $e) {
-            return false;
-        }
-
-        return $this->modx->db->getRecordCount($query) > 0;
-    }
-
     protected function checkTableOrders()
     {
-        if (!$this->isTableExists($this->tableOrders)) {
+        if (!$this->modx->commerce->isTableExists($this->tableOrders)) {
             $this->modx->db->query("
                 CREATE TABLE IF NOT EXISTS {$this->tableOrders} (
                     `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -386,6 +378,7 @@ class SimpleProcessor implements \Commerce\Interfaces\Processor
                     `phone` varchar(255) NULL,
                     `email` varchar(255) NULL,
                     `amount` float NOT NULL DEFAULT '0',
+                    'currency' varchar(8) NOT NULL,
                     `fields` text,
                     `status_id` tinyint(3) UNSIGNED NOT NULL DEFAULT '0',
                     `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -398,7 +391,7 @@ class SimpleProcessor implements \Commerce\Interfaces\Processor
 
     protected function checkTableProducts()
     {
-        if (!$this->isTableExists($this->tableProducts)) {
+        if (!$this->modx->commerce->isTableExists($this->tableProducts)) {
             $this->modx->db->query("
                 CREATE TABLE IF NOT EXISTS {$this->tableProducts} (
                     `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
@@ -419,7 +412,7 @@ class SimpleProcessor implements \Commerce\Interfaces\Processor
 
     protected function checkTableHistory()
     {
-        if (!$this->isTableExists($this->tableHistory)) {
+        if (!$this->modx->commerce->isTableExists($this->tableHistory)) {
             $this->modx->db->query("
                 CREATE TABLE IF NOT EXISTS {$this->tableHistory} (
                     `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
@@ -437,7 +430,7 @@ class SimpleProcessor implements \Commerce\Interfaces\Processor
 
     protected function checkTableStatuses()
     {
-        if (!$this->isTableExists($this->tableStatuses)) {
+        if (!$this->modx->commerce->isTableExists($this->tableStatuses)) {
             $this->modx->db->query("
                 CREATE TABLE IF NOT EXISTS {$this->tableStatuses} (
                     `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
@@ -459,7 +452,7 @@ class SimpleProcessor implements \Commerce\Interfaces\Processor
         }
     }
 
-    protected function checkTables()
+    public function checkTables()
     {
         $this->checkTableOrders();
         $this->checkTableProducts();

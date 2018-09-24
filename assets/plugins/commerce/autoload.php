@@ -35,3 +35,7 @@ spl_autoload_register(function ($class) {
         }
     }
 }, true);
+
+function ci() {
+    return Commerce\Container::getInstance();
+}

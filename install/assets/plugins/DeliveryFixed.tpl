@@ -13,22 +13,24 @@
  * @internal    @installset base
 */
 
-$e = $modx->Event;
+$e = &$modx->Event;
 
 if (empty($params['title'])) {
     $lang = $modx->commerce->getUserLanguage('delivery');
     $params['title'] = $lang['delivery.fixed_title'];
 }
 
+$price = ci()->currency->convertToActive($params['price']);
+
 switch ($e->name) {
     case 'OnCollectSubtotals': {
         $processor = $modx->commerce->loadProcessor();
 
         if ($processor->isOrderStarted() && $processor->getCurrentDelivery() == 'fixed') {
-            $params['total'] += $params['price'];
+            $params['total'] += $price;
             $params['rows']['fixed'] = [
                 'title' => $params['title'],
-                'price' => $params['price'],
+                'price' => $price,
             ];
         }
         break;
@@ -37,7 +39,7 @@ switch ($e->name) {
     case 'OnRegisterDelivery': {
         $params['rows']['fixed'] = [
             'title' => $params['title'],
-            'price' => $params['price'],
+            'price' => $price,
         ];
 
         break;

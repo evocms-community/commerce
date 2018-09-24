@@ -52,4 +52,10 @@ class StoreCart extends SimpleCart implements Cart
         parent::clean();
         $this->store->save($this->items);
     }
+
+    public function setCurrency($code)
+    {
+        parent::setCurrency($code);
+        $this->store->save($this->items);
+    }
 }

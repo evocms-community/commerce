@@ -49,5 +49,5 @@ $params = array_merge([
     'controller' => 'Order',
     'dir'        => 'assets/plugins/commerce/src/Controllers/',
 ]);
-    
+
 return $modx->runSnippet('FormLister', $params);
