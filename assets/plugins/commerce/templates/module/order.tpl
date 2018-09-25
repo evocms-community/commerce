@@ -62,6 +62,28 @@
                             <?php endforeach; ?>
                         </tbody>
                     </table>
+
+                    <?php if (!empty($subtotals)): ?>
+                        <table class="table data">
+                            <thead>
+                                <tr>
+                                    <?php foreach ($subcolumns as $column): ?>
+                                        <td<?= !empty($column['style']) ? ' style="' . $column['style'] . '"' : '' ?>><?= $column['title'] ?></td>
+                                    <?php endforeach; ?>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                <?php foreach ($subtotals as $row): ?>
+                                    <tr>
+                                        <?php foreach ($row['cells'] as $name => $cell): ?>
+                                            <td<?= !empty($columns[$name]['style']) ? ' style="' . $columns[$name]['style'] . '"' : '' ?>><?= $cell ?></td>
+                                        <?php endforeach; ?>
+                                    </tr>
+                                <?php endforeach; ?>
+                            </tbody>
+                        </table>
+                    <?php endif; ?>
                 </div>
             </div>
         </div>

@@ -75,13 +75,15 @@ class OrdersController extends Controller
             'tvList'     => 'image',
         ];
 
-        $groups  = $this->getOrderGroups();
-        $columns = $this->getOrderCartColumns();
+        $groups     = $this->getOrderGroups();
+        $columns    = $this->getOrderCartColumns();
+        $subcolumns = $this->getOrderSubtotalsColumns();
 
         $this->modx->invokeEvent('OnManagerBeforeOrderRender', [
-            'groups'  => &$groups,
-            'config'  => &$config,
-            'columns' => &$columns,
+            'groups'     => &$groups,
+            'config'     => &$config,
+            'columns'    => &$columns,
+            'subcolumns' => &$subcolumns,
         ]);
 
         foreach ($groups as $group_id => &$group) {
@@ -112,17 +114,27 @@ class OrdersController extends Controller
             'api'        => 1,
         ]));
 
+        $subcolumns = $this->sortFields($subcolumns);
+        $subtotals  = [];
+        $cart->getSubtotals($subtotals, $total);
+
+        foreach ($subtotals as $i => $row) {
+            $subtotals[$i]['cells'] = $this->processFields($subcolumns, ['data' => $row]);
+        }
+
         $query   = $this->modx->db->select('*', $this->modx->getFullTablename('commerce_order_history'), "`order_id` = '" . $order['id'] . "'", 'created_at DESC');
         $history = $this->modx->db->makeArray($query);
 
         return $this->view->render('order.tpl', [
-            'order'    => $order,
-            'groups'   => $groups,
-            'cartData' => json_decode($cartData, true),
-            'columns'  => $columns,
-            'statuses' => $this->getStatuses(),
-            'history'  => $history,
-            'custom'   => $this->module->invokeTemplateEvent('OnManagerOrderRender'),
+            'order'      => $order,
+            'groups'     => $groups,
+            'cartData'   => json_decode($cartData, true),
+            'columns'    => $columns,
+            'statuses'   => $this->getStatuses(),
+            'subcolumns' => $subcolumns,
+            'subtotals'  => $subtotals,
+            'history'    => $history,
+            'custom'     => $this->module->invokeTemplateEvent('OnManagerOrderRender'),
         ]);
     }
 
@@ -497,6 +509,38 @@ class OrdersController extends Controller
                 },
                 'style' => 'text-align: right; white-space: nowrap;',
                 'sort' => 70,
+            ],
+        ];
+    }
+
+    private function getOrderSubtotalsColumns()
+    {
+        $commerce = ci()->commerce;
+        $currency = ci()->currency;
+        $lang  = $commerce->getUserLanguage('cart');
+        $order = $commerce->loadProcessor()->getOrder();
+        $defaultCurrency = $currency->getDefaultCurrencyCode();
+
+        return [
+            'title' => [
+                'title'   => $lang['cart.item_title'],
+                'content' => 'title',
+                'sort'    => 10,
+            ],
+            'price' => [
+                'title'   => $lang['cart.item_price'],
+                'content' => function($data) use ($order, $currency, $defaultCurrency) {
+                    $currency = ci()->currency;
+                    $out = $currency->format($data['price'], $order['currency']);
+
+                    if ($order['currency'] != $defaultCurrency) {
+                        $out .= '<br>(' . $currency->formatWithDefault($data['price'], $order['currency']) . ')';
+                    }
+
+                    return $out;
+                },
+                'style' => 'text-align: right; white-space: nowrap;',
+                'sort' => 20,
             ],
         ];
     }
