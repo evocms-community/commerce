@@ -125,8 +125,8 @@ class Currency
 
     public function convert($amount, $from, $to)
     {
-        if (!is_numeric($amount)) {
-            throw new \Exception('Not numeric amount');
+        if (!is_scalar($amount)) {
+            return $amount;
         }
 
         $currencies = $this->getCurrencies();
