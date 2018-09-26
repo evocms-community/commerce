@@ -66,8 +66,7 @@ class OrdersController extends Controller
         $order = $processor->loadOrder($order_id);
 
         if (empty($order)) {
-            $this->module->flash->set('error', $this->lang['module.error.order_not_found']);
-            $this->module->sendRedirect('orders');
+            $this->module->sendRedirect('orders', ['error' => $this->lang['module.error.order_not_found']]);
         }
 
         $config  = [
@@ -155,22 +154,19 @@ class OrdersController extends Controller
         ]);
 
         if (is_array($result)) {
-            $this->module->flash->set('validation_errors', $result);
-            $this->module->sendRedirectBack();
+            $this->module->sendRedirectBack(['validation_errors' => $result]);
         }
 
         $processor = $this->modx->commerce->loadProcessor();
         $order = $processor->loadOrder($data['order_id']);
 
         if (empty($order)) {
-            $this->module->flash->set('error', $this->lang['module.error.order_not_found']);
-            $this->module->sendRedirectBack();
+            $this->module->sendRedirectBack(['error' => $this->lang['module.error.order_not_found']]);
         }
 
         $processor->changeStatus($order['id'], $data['status_id'], !empty($data['description']) ? $data['description'] : '', !empty($data['notify']));
 
-        $this->module->flash->set('success', $this->lang['module.status_changed']);
-        $this->module->sendRedirectBack();
+        $this->module->sendRedirectBack(['success' => $this->lang['module.status_changed']]);
     }
 
     private function getStatuses()

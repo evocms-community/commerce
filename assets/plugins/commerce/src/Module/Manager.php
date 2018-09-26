@@ -69,17 +69,20 @@ ini_set('display_errors', 1);
             }
         }
 
-        $this->flash->set('error', $this->lang['module.unknown_route']);
-        $this->sendRedirect('orders');
+        $this->sendRedirect('orders', ['error' => $this->lang['module.unknown_route']]);
     }
 
-    public function sendRedirect($route = '')
+    public function sendRedirect($route = '', $messages = [])
     {
+        if (!empty($messages)) {
+            $this->flash->setMultiple($messages);
+        }
+
         $this->modx->sendRedirect($this->makeUrl($route));
         exit;
     }
 
-    public function sendRedirectBack($fallback = '')
+    public function sendRedirectBack($messages = [], $fallback = '')
     {
         $url = $fallback;
 
@@ -87,7 +90,11 @@ ini_set('display_errors', 1);
             $url = htmlspecialchars_decode($_SERVER['HTTP_REFERER']);
         }
 
-        $this->modx->sendRedirect($url);
+        if (!empty($messages)) {
+            $this->flash->setMultiple($messages);
+        }
+
+        $this->modx->sendRedirect($url, $messages);
         exit;
     }
 

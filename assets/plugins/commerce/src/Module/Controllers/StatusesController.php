@@ -32,8 +32,7 @@ class StatusesController extends Controller
         $status = $this->modx->db->getRow($query);
 
         if (empty($status)) {
-            $this->module->flash->set('error', $this->lang['module.error.status_not_found']);
-            $this->module->sendRedirect('statuses');
+            $this->module->sendRedirect('statuses', ['error' => $this->lang['module.error.status_not_found']]);
         }
 
         return $this->view->render('status.tpl', [
@@ -52,8 +51,7 @@ class StatusesController extends Controller
             $status = $db->getRow($query);
 
             if (empty($status)) {
-                $this->module->flash->set('error', $this->lang['module.error.status_not_found']);
-                $this->module->sendRedirect('statuses');
+                $this->module->sendRedirect('statuses', ['error' => $this->lang['module.error.status_not_found']]);
             }
         } else {
             $status = [];
@@ -71,8 +69,7 @@ class StatusesController extends Controller
         ]);
 
         if (is_array($result)) {
-            $this->module->flash->set('validation_errors', $result);
-            $this->module->sendRedirectBack();
+            $this->module->sendRedirectBack(['validation_errors' => $result]);
         }
 
         $fields = [
@@ -85,8 +82,7 @@ class StatusesController extends Controller
             $query = $db->select('*', $this->table, "`default` = 1" . (!empty($status['id']) ? " AND `id` != '" . $status['id'] . "'" : ''));
 
             if (!$db->getRecordCount($query)) {
-                $this->module->flash->set('error', 'default status should be defined');
-                $this->module->sendRedirectBack();
+                $this->module->sendRedirectBack(['error' => 'default status should be defined']);
             }
         }
 
@@ -102,12 +98,10 @@ class StatusesController extends Controller
                 $this->modx->clearCache('full');
             }
         } catch (\Exception $e) {
-            $this->module->flash->set('error', $e->getMessage());
-            $this->module->sendRedirectBack();
+            $this->module->sendRedirectBack(['error' => $e->getMessage()]);
         }
 
-        $this->module->flash->set('success', $this->lang['module.status_saved']);
-        $this->module->sendRedirect('statuses');
+        $this->module->sendRedirect('statuses', ['success' => $this->lang['module.status_saved']]);
     }
 
     public function delete()
@@ -121,22 +115,18 @@ class StatusesController extends Controller
 
                 if (!empty($row)) {
                     if ($row['default'] == 1) {
-                        $this->module->flash->set('error', $this->lang['module.error.default_status_cannot_delete']);
-                        $this->module->sendRedirect('statuses');
+                        $this->module->sendRedirect('statuses', ['error' => $this->lang['module.error.default_status_cannot_delete']]);
                     }
 
                     if ($db->delete($this->table, "`id` = '$status_id'")) {
-                        $this->module->flash->set('success', $this->lang['module.status_deleted']);
-                        $this->module->sendRedirect('statuses');
+                        $this->module->sendRedirect('statuses', ['success' => $this->lang['module.status_deleted']]);
                     }
                 }
             } catch (\Exception $e) {
-                $this->module->flash->set('error', $e->getMessage());
-                $this->module->sendRedirect('statuses');
+                $this->module->sendRedirect('statuses', ['error' => $e->getMessage()]);
             }
         }
 
-        $this->module->flash->set('error', $this->lang['module.error.status_not_found']);
-        $this->module->sendRedirect('statuses');
+        $this->module->sendRedirect('statuses', ['error' => $this->lang['module.error.status_not_found']]);
     }
 }

@@ -44,6 +44,12 @@ class FlashMessages
         $_SESSION[$this->key][$name] = $value;
     }
 
+    public function setMultiple(array $rows) {
+        foreach ($rows as $name => $value) {
+            $_SESSION[$this->key][$name] = $value;
+        }
+    }
+
     public function clean()
     {
         if (isset($_SESSION[$this->key])) {
