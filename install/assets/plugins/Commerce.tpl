@@ -8,7 +8,7 @@
  * @version     0.1.0
  * @author      mnoskov
  * @internal    @events OnWebPageInit,OnManagerPageInit,OnPageNotFound,OnManagerMenuPrerender
- * @internal    @properties &payment_success_page_id=Page ID for redirect after successfull payment;text; &payment_failed_page_id=Page ID for redirect after payment error;text; &default_order_status=Default status ID;text; &status_id_after_payment=Status ID after payment;text;
+ * @internal    @properties &payment_success_page_id=Page ID for redirect after successfull payment;text; &payment_failed_page_id=Page ID for redirect after payment error;text; &status_id_after_payment=Status ID after payment;text;
  * @internal    @modx_category Commerce
  * @internal    @installset base
 */

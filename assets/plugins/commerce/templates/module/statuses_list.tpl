@@ -31,9 +31,13 @@
                                 <td style="white-space: nowrap;"><strong><?= !empty($row['default']) ? $lang['module.default_field'] : '' ?></strong></td>
                                 <td style="white-space: nowrap;"><?= !empty($row['notify']) ? $lang['module.notify'] : '' ?></td>
                 
-                                <td>
+                                <td style="white-space: nowrap;">
                                     <a href="<?= $this->module->makeUrl('statuses/edit', 'status_id=' . $row['id']) ?>" class="btn btn-primary">
                                         <?= $lang['module.edit_status_btn'] ?>
+                                    </a>
+
+                                    <a href="<?= $this->module->makeUrl('statuses/delete', 'status_id=' . $row['id']) ?>" class="btn btn-danger">
+                                        <?= $lang['module.delete_status_btn'] ?>
                                     </a>
                                 </td>
                             </tr>

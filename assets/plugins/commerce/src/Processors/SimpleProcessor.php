@@ -108,7 +108,18 @@ class SimpleProcessor implements \Commerce\Interfaces\Processor
             $this->modx->db->insert($this->prepareSubtotal($order_id, $position++, $item), $this->tableProducts);
         }
 
-        $this->changeStatus($order_id, $this->modx->commerce->getSetting('default_order_status', 1));
+        $defaultStatus = ci()->cache->getOrCreate('default_status', function() {
+            $db = ci()->db;
+            $query = $db->select('id', $this->modx->getFullTablename('commerce_order_statuses'), "`default` = 1");
+
+            if (!$db->getRecordCount($query)) {
+                throw new \Exception('Default status not found');
+            }
+
+            return $db->getValue($query);
+        });
+
+        $this->changeStatus($order_id, $defaultStatus);
 
         $this->modx->invokeEvent('OnOrderSaved', [
             'values'    => &$values,

@@ -15,6 +15,12 @@ class FlashMessages
                 $this->clean();
             });
         }
+
+        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+            foreach ($_POST as $key => $value) {
+                $this->set('form_' . $key, $value);
+            }
+        }
     }
 
     public function has($name)

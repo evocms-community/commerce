@@ -32,7 +32,15 @@ ini_set('display_errors', 1);
 
         switch ($route) {
             case 'statuses/edit': {
-                return;
+                return $controller->show();
+            }
+
+            case 'statuses/save': {
+                return $controller->save();
+            }
+
+            case 'statuses/delete': {
+                return $controller->delete();
             }
 
             case 'statuses': {
@@ -107,5 +115,18 @@ ini_set('display_errors', 1);
         }
 
         return $result;
+    }
+
+    public function getFormAttr($data, $attr)
+    {
+        if ($this->flash->has('form_' . $attr)) {
+            return $this->flash->get('form_' . $attr);
+        }
+
+        if (is_array($data) && isset($data[$attr])) {
+            return $data[$attr];
+        }
+
+        return null;
     }
 }
