@@ -23,50 +23,21 @@ ini_set('display_errors', 1);
         $parts = explode('/', $route);
         $controller = !empty($parts[0]) ? array_shift($parts) : 'orders';
 
+        $route = implode('/', $parts);
+        if (empty($route)) {
+            $route = 'index';
+        }
+
         if (!in_array($controller, ['orders', 'statuses', 'currency'])) {
             $this->modx->sendRedirect('index.php?a=106');
         }
 
         $classname = '\\Commerce\\Module\\Controllers\\' . ucfirst($controller) . 'Controller';
         $controller = new $classname($this->modx, $this);
+        $routes = $controller->registerRoutes();
 
-        switch ($route) {
-            case 'statuses/edit': {
-                return $controller->show();
-            }
-
-            case 'statuses/save': {
-                return $controller->save();
-            }
-
-            case 'statuses/delete': {
-                return $controller->delete();
-            }
-
-            case 'statuses': {
-                return $controller->showList();
-            }
-
-            case 'currency/edit': {
-                return;
-            }
-
-            case 'currency': {
-                return $controller->showList();
-            }
-
-            case 'orders/edit': {
-                return $controller->show();
-            }
-
-            case 'orders/change-status': {
-                return $controller->changeStatus();
-            }
-
-            case 'orders':
-            case '': {
-                return $controller->showList();
-            }
+        if (isset($routes[$route])) {
+            return call_user_func([$controller, $routes[$route]]);
         }
 
         $this->sendRedirect('orders', ['error' => $this->lang['module.unknown_route']]);

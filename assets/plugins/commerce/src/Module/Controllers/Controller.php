@@ -17,6 +17,11 @@ class Controller
         $this->view = new Renderer($modx, $module);
     }
 
+    public function registerRoutes()
+    {
+        return [];
+    }
+
     protected function sortFields($fields)
     {
         uasort($fields, function($a, $b) {

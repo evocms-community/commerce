@@ -12,7 +12,16 @@ class OrdersController extends Controller
         $this->lang = $this->modx->commerce->getUserLanguage('order');
     }
 
-    public function showList()
+    public function registerRoutes()
+    {
+        return [
+            'index'         => 'index',
+            'edit'          => 'show',
+            'change-status' => 'changeStatus',
+        ];
+    }
+
+    public function index()
     {
         $columns = $this->getOrdersListColumns();
 

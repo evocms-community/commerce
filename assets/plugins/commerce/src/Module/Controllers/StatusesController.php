@@ -14,7 +14,17 @@ class StatusesController extends Controller
         $this->table = $this->modx->getFullTablename($this->table);
     }
 
-    public function showList()
+    public function registerRoutes()
+    {
+        return [
+            'index'  => 'index',
+            'edit'   => 'show',
+            'save'   => 'save',
+            'delete' => 'delete',
+        ];
+    }
+
+    public function index()
     {
         $query = $this->modx->db->select('*', $this->modx->getFullTablename('commerce_order_statuses'), '', 'id ASC');
 
