@@ -19,4 +19,10 @@ return [
     'module.status_change_date' => 'Дата смены статуса',
     'module.status_changed' => 'Статус заказа изменен!',
     'module.unknown_route' => 'Неизвестный запрос',
+    'module.statuses_caption' => 'Статусы заказов',
+    'module.edit_status_btn' => 'Редактировать статус',
+    'module.name_field' => 'Название',
+    'module.default_field' => 'Начальный статус',
+    'module.notify_field' => 'Уведомлять покупателя о смене',
+    'module.notify' => 'Уведомлять',
 ];

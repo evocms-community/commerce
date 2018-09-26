@@ -436,6 +436,7 @@ class SimpleProcessor implements \Commerce\Interfaces\Processor
                     `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
                     `title` varchar(255) NOT NULL,
                     `notify` tinyint(1) unsigned NOT NULL DEFAULT '0',
+                    `default` tinyint(1) unsigned NOT NULL DEFAULT '0',
                     PRIMARY KEY (`id`)
                 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
             ");

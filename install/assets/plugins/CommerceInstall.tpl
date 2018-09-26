@@ -35,6 +35,7 @@ $events = [
     'OnManagerBeforeOrderRender',
     'OnManagerOrdersListRender',
     'OnManagerOrderRender',
+    'OnManagerStatusesListRender',
     'OnBeforeCurrencyChange',
 ];
 
