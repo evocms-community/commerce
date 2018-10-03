@@ -10,6 +10,7 @@
  * @internal    @events OnRegisterPayments
  * @internal    @properties &title=Payment title;text; 
  * @internal    @modx_category Commerce
+ * @internal    @disabled 1
  * @internal    @installset base
 */
 

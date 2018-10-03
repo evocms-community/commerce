@@ -65,6 +65,14 @@ foreach ($events as $event) {
     }
 }
 
+require_once MODX_BASE_PATH . 'assets/lib/APIHelpers.class.php';
+require_once MODX_BASE_PATH . 'assets/snippets/FormLister/lib/Lexicon.php';
+
+$lexicon = new \Helpers\Lexicon($modx, [
+    'langDir' => 'assets/plugins/commerce/lang/',
+    'lang'    => $modx->getConfig('manager_language'),
+]);
+
 $modx->db->query("
     CREATE TABLE IF NOT EXISTS " . $modx->getFullTablename('commerce_orders') . " (
         `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
@@ -125,7 +133,7 @@ if (!tableExists($modx, $table)) {
         ) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
     ");
 
-    $lang = $modx->commerce->getUserLanguage('order');
+    $lang = $lexicon->loadLang('order');
 
     $modx->db->insert(['title' => $lang['order.status.new']], $table);
     $modx->db->insert(['title' => $lang['order.status.processing']], $table);
@@ -159,7 +167,7 @@ if (!tableExists($modx, $table)) {
         ) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
     ");
 
-    $lang = $modx->commerce->getUserLanguage('common');
+    $lang = $lexicon->loadLang('common');
 
     $modx->db->insert([
         'title'    => $lang['currency.title'],
@@ -171,6 +179,9 @@ if (!tableExists($modx, $table)) {
         'value'    => 1,
     ], $table);
 }
+
+$ids = $modx->db->getColumn('id', $modx->db->query("SELECT MAX(p.id) AS id FROM `kfy9_site_plugins` p JOIN `kfy9_categories` c ON p.category = c.id AND c.category = 'Commerce' GROUP BY name"));
+$modx->db->update(['disabled' => 0], $modx->getFullTablename('site_plugins'), "`id` IN (" . implode(',', $ids) . ")");
 
 // TODO store all parameters in main plugin, link plugins and snippets
 

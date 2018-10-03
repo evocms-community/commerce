@@ -10,6 +10,7 @@
  * @internal    @events OnCollectSubtotals,OnRegisterDelivery
  * @internal    @properties &title=Title;text; 
  * @internal    @modx_category Commerce
+ * @internal    @disabled 1
  * @internal    @installset base
 */
 

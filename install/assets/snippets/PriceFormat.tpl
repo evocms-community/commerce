@@ -11,4 +11,6 @@
  * @internal    @installset base
 */
 
-return $modx->commerce->formatPrice(array_shift($params));
+if (!empty($modx->commerce)) {
+    return $modx->commerce->formatPrice(array_shift($params));
+}

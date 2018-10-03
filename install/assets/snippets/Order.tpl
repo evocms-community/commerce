@@ -12,42 +12,44 @@
  * @internal    @installset base
 */
 
-$lang = $modx->commerce->getUserLanguage('order');
+if (!empty($modx->commerce)) {
+    $lang = $modx->commerce->getUserLanguage('order');
 
-$params = array_merge([
-    'formid'                => 'order',
-    'parseDocumentSource'   => 1,
-    'langDir'               => 'assets/plugins/commerce/lang/',
-    'lexicon'               => 'common,delivery,payments,order',
-    'templatePath'          => 'assets/plugins/commerce/templates/front/',
-    'templateExtension'     => 'tpl',
-    'formTpl'               => '@FILE:order_form',
-    'deliveryTpl'           => '@FILE:order_form_delivery',
-    'deliveryRowTpl'        => '@FILE:order_form_delivery_row',
-    'paymentsTpl'           => '@FILE:order_form_payments',
-    'paymentsRowTpl'        => '@FILE:order_form_payments_row',
-    'reportTpl'             => '@FILE:order_report',
-    'to'                    => $modx->getConfig('emailsender'),
-    'ccSender'              => '1',
-    'ccSenderField'         => 'email',
-    'ccSenderTpl'           => '@FILE:order_reportback',
-    'subjectTpl'            => $lang['order.subject'],
-    'successTpl'            => $lang['order.success'],
-    'rules'                 => [
-        'name' => [
-            'required' => $lang['order.error.name_required'],
+    $params = array_merge([
+        'formid'                => 'order',
+        'parseDocumentSource'   => 1,
+        'langDir'               => 'assets/plugins/commerce/lang/',
+        'lexicon'               => 'common,delivery,payments,order',
+        'templatePath'          => 'assets/plugins/commerce/templates/front/',
+        'templateExtension'     => 'tpl',
+        'formTpl'               => '@FILE:order_form',
+        'deliveryTpl'           => '@FILE:order_form_delivery',
+        'deliveryRowTpl'        => '@FILE:order_form_delivery_row',
+        'paymentsTpl'           => '@FILE:order_form_payments',
+        'paymentsRowTpl'        => '@FILE:order_form_payments_row',
+        'reportTpl'             => '@FILE:order_report',
+        'to'                    => $modx->getConfig('emailsender'),
+        'ccSender'              => '1',
+        'ccSenderField'         => 'email',
+        'ccSenderTpl'           => '@FILE:order_reportback',
+        'subjectTpl'            => $lang['order.subject'],
+        'successTpl'            => $lang['order.success'],
+        'rules'                 => [
+            'name' => [
+                'required' => $lang['order.error.name_required'],
+            ],
+            'email' => [
+                'required' => $lang['order.error.email_required'],
+                'email'    => $lang['order.error.email_incorrect'],
+            ],
+            'phone' => [
+                'required' => $lang['order.error.phone_required'],
+            ],
         ],
-        'email' => [
-            'required' => $lang['order.error.email_required'],
-            'email'    => $lang['order.error.email_incorrect'],
-        ],
-        'phone' => [
-            'required' => $lang['order.error.phone_required'],
-        ],
-    ],
-], $params, [
-    'controller' => 'Order',
-    'dir'        => 'assets/plugins/commerce/src/Controllers/',
-]);
+    ], $params, [
+        'controller' => 'Order',
+        'dir'        => 'assets/plugins/commerce/src/Controllers/',
+    ]);
 
-return $modx->runSnippet('FormLister', $params);
+    return $modx->runSnippet('FormLister', $params);
+}

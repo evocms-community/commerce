@@ -11,32 +11,34 @@
  * @internal    @installset base
 */
 
-$carts    = ci()->carts;
-$instance = isset($instance) ? $instance : 'products';
-$theme    = !empty($theme) ? $theme : '';
-$cart     = $carts->getCart($instance);
-$lang     = $modx->getConfig('manager_language');
+if (!empty($modx->commerce)) {
+    $carts    = ci()->carts;
+    $instance = isset($instance) ? $instance : 'products';
+    $theme    = !empty($theme) ? $theme : '';
+    $cart     = $carts->getCart($instance);
+    $lang     = $modx->getConfig('manager_language');
 
-if (!is_null($cart)) {
-    return $modx->runSnippet('DocLister', array_merge([
-        'templatePath'      => 'assets/plugins/commerce/templates/front/',
-        'templateExtension' => 'tpl',
-        'tpl'               => '@FILE:' . $theme . 'cart_row',
-        'optionsTpl'        => '@FILE:' . $theme . 'cart_row_options_row',
-        'ownerTPL'          => '@FILE:' . $theme . 'cart_wrap',
-        'noneTPL'           => '@FILE:' . $theme . 'cart_wrap_empty',
-        'subtotalsRowTpl'   => '@FILE:' . $theme . 'cart_subtotals_row',
-        'subtotalsTpl'      => '@FILE:' . $theme . 'cart_subtotals',
-        'customLang'        => 'assets/plugins/commerce/lang/' . $lang . '/cart.inc.php',
-    ], $params, [
-        'controller' => 'Cart',
-        'dir'        => 'assets/plugins/commerce/src/Controllers/',
-        'sortType'   => 'doclist',
-        'idType'     => 'documents',
-        'documents'  => array_column($cart->getItems(), 'id'),
-        'instance'   => $instance,
-        'hash'       => $carts->storeParams($params),
-        'cart'       => $cart,
-        'tree'       => 0,
-    ]));
+    if (!is_null($cart)) {
+        return $modx->runSnippet('DocLister', array_merge([
+            'templatePath'      => 'assets/plugins/commerce/templates/front/',
+            'templateExtension' => 'tpl',
+            'tpl'               => '@FILE:' . $theme . 'cart_row',
+            'optionsTpl'        => '@FILE:' . $theme . 'cart_row_options_row',
+            'ownerTPL'          => '@FILE:' . $theme . 'cart_wrap',
+            'noneTPL'           => '@FILE:' . $theme . 'cart_wrap_empty',
+            'subtotalsRowTpl'   => '@FILE:' . $theme . 'cart_subtotals_row',
+            'subtotalsTpl'      => '@FILE:' . $theme . 'cart_subtotals',
+            'customLang'        => 'assets/plugins/commerce/lang/' . $lang . '/cart.inc.php',
+        ], $params, [
+            'controller' => 'Cart',
+            'dir'        => 'assets/plugins/commerce/src/Controllers/',
+            'sortType'   => 'doclist',
+            'idType'     => 'documents',
+            'documents'  => array_column($cart->getItems(), 'id'),
+            'instance'   => $instance,
+            'hash'       => $carts->storeParams($params),
+            'cart'       => $cart,
+            'tree'       => 0,
+        ]));
+    }
 }

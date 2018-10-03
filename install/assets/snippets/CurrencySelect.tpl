@@ -11,28 +11,30 @@
  * @internal    @installset base
 */
 
-$DLTemplate = DLTemplate::getInstance($modx);
+if (!empty($modx->commerce)) {
+    $DLTemplate = DLTemplate::getInstance($modx);
 
-$params = array_merge([
-    'templatePath'      => 'assets/plugins/commerce/templates/front/',
-    'templateExtension' => 'tpl',
-    'tpl'               => '@FILE:currency_select_row',
-    'activeTpl'         => '@FILE:currency_select_active_row',
-    'outerTpl'          => '@FILE:currency_select_wrap',
-], $params);
+    $params = array_merge([
+        'templatePath'      => 'assets/plugins/commerce/templates/front/',
+        'templateExtension' => 'tpl',
+        'tpl'               => '@FILE:currency_select_row',
+        'activeTpl'         => '@FILE:currency_select_active_row',
+        'outerTpl'          => '@FILE:currency_select_wrap',
+    ], $params);
 
-$currency = ci()->currency;
-$rows     = $currency->getCurrencies();
-$active   = $currency->getCurrencyCode();
+    $currency = ci()->currency;
+    $rows     = $currency->getCurrencies();
+    $active   = $currency->getCurrencyCode();
 
-$out = '';
+    $out = '';
 
-$DLTemplate->setTemplatePath($params['templatePath']);
-$DLTemplate->setTemplateExtension($params['templateExtension']);
+    $DLTemplate->setTemplatePath($params['templatePath']);
+    $DLTemplate->setTemplateExtension($params['templateExtension']);
 
-foreach ($rows as $row) {
-    $tpl = $row['code'] == $active ? $params['activeTpl'] : $params['tpl'];
-    $out .= $DLTemplate->parseChunk($tpl, $row);
+    foreach ($rows as $row) {
+        $tpl = $row['code'] == $active ? $params['activeTpl'] : $params['tpl'];
+        $out .= $DLTemplate->parseChunk($tpl, $row);
+    }
+
+    return $DLTemplate->parseChunk($params['outerTpl'], ['wrap' => $out]);
 }
-
-return $DLTemplate->parseChunk($params['outerTpl'], ['wrap' => $out]);

@@ -9,6 +9,7 @@
  * @author      mnoskov
  * @internal    @events OnCollectSubtotals,OnRegisterDelivery
  * @internal    @modx_category Commerce
+ * @internal    @disabled 1
  * @internal    @installset base
 */
 

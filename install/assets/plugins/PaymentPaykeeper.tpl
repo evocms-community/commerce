@@ -10,6 +10,7 @@
  * @internal    @events OnRegisterPayments
  * @internal    @properties &title=Title;text; &pay_url=Payment url;text; &secret=Token;text; &template=Chunk name or code;text; &debug=Отладка;list;No==0||Yes==1;0
  * @internal    @modx_category Commerce
+ * @internal    @disabled 1
  * @internal    @installset base
 */
 
