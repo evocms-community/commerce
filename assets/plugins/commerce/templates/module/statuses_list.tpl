@@ -1,5 +1,13 @@
 <?php $this->extend('layout.tpl'); ?>
 
+<?php $this->block('title'); ?>
+    <?= $lang['module.statuses_caption'] ?>
+<?php $this->endBlock(); ?>
+
+<?php $this->block('buttons'); ?>
+    <a href="<?= $module->makeUrl('statuses/edit') ?>" class="btn btn-success"><?= $lang['module.add_status'] ?></a>
+<?php $this->endBlock(); ?>
+
 <?php $this->block('content'); ?>
     <div class="tab-page" id="tab_main">
         <h2 class="tab">

@@ -38,11 +38,15 @@ class StatusesController extends Controller
     {
         $status_id = filter_input(INPUT_GET, 'status_id', FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
 
-        $query  = $this->modx->db->select('*', $this->table, "`id` = '$status_id'");
-        $status = $this->modx->db->getRow($query);
+        if (!empty($status_id)) {
+            $query  = $this->modx->db->select('*', $this->table, "`id` = '$status_id'");
+            $status = $this->modx->db->getRow($query);
 
-        if (empty($status)) {
-            $this->module->sendRedirect('statuses', ['error' => $this->lang['module.error.status_not_found']]);
+            if (empty($status)) {
+                $this->module->sendRedirect('statuses', ['error' => $this->lang['module.error.status_not_found']]);
+            }
+        } else {
+            $status = [];
         }
 
         return $this->view->render('status.tpl', [
@@ -96,6 +100,8 @@ class StatusesController extends Controller
             }
         }
 
+        $db->query('START TRANSACTION;');
+
         try {
             if (!empty($status['id'])) {
                 $db->update($fields, $this->table, "`id` = '" . $status['id'] . "'");
@@ -108,9 +114,11 @@ class StatusesController extends Controller
                 $this->modx->clearCache('full');
             }
         } catch (\Exception $e) {
+            $db->query('ROLLBACK;');
             $this->module->sendRedirectBack(['error' => $e->getMessage()]);
         }
 
+        $db->query('COMMIT;');
         $this->module->sendRedirect('statuses', ['success' => $this->lang['module.status_saved']]);
     }
 

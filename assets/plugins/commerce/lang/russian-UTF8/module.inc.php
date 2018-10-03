@@ -54,4 +54,5 @@ return [
     'module.decimals_separator' => 'Разделитель целой и дробной части',
     'module.thousands_separator' => 'Разделитель разрядов',
     'module.add_currency' => 'Добавить валюту',
+    'module.add_status' => 'Добавить статус',
 ];
