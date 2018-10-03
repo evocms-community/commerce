@@ -32,11 +32,11 @@
                                 <td style="white-space: nowrap;"><?= !empty($row['notify']) ? $lang['module.notify'] : '' ?></td>
                 
                                 <td style="white-space: nowrap;">
-                                    <a href="<?= $this->module->makeUrl('statuses/edit', 'status_id=' . $row['id']) ?>" class="btn btn-primary">
+                                    <a href="<?= $this->module->makeUrl('statuses/edit', 'status_id=' . $row['id']) ?>" class="btn btn-primary btn-sm">
                                         <?= $lang['module.edit_status_btn'] ?>
                                     </a>
 
-                                    <a href="<?= $this->module->makeUrl('statuses/delete', 'status_id=' . $row['id']) ?>" class="btn btn-danger">
+                                    <a href="<?= $this->module->makeUrl('statuses/delete', 'status_id=' . $row['id']) ?>" class="btn btn-danger btn-sm">
                                         <?= $lang['module.delete_status_btn'] ?>
                                     </a>
                                 </td>
