@@ -133,6 +133,13 @@ class OrdersController extends Controller
         $query   = $this->modx->db->select('*', $this->modx->getFullTablename('commerce_order_history'), "`order_id` = '" . $order['id'] . "'", 'created_at DESC');
         $history = $this->modx->db->makeArray($query);
 
+        $query = $this->modx->db->select('*', $this->modx->getFullTablename('user_attributes'), "`internalKey` IN (" . implode(',', array_column($history, 'user_id')) . ")");
+        $users = [];
+
+        while ($row = $this->modx->db->getRow($query)) {
+            $users[$row['internalKey']] = $row['fullname'];
+        }
+
         return $this->view->render('order.tpl', [
             'order'      => $order,
             'groups'     => $groups,
@@ -142,6 +149,7 @@ class OrdersController extends Controller
             'subcolumns' => $subcolumns,
             'subtotals'  => $subtotals,
             'history'    => $history,
+            'users'      => $users,
             'custom'     => $this->module->invokeTemplateEvent('OnManagerOrderRender'),
         ]);
     }

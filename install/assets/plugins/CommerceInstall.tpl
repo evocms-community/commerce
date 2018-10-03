@@ -104,6 +104,7 @@ $modx->db->query("
         `status_id` int(10) unsigned NOT NULL,
         `comment` text NOT NULL,
         `notify` tinyint(1) unsigned NOT NULL DEFAULT '1',
+        `user_id` int(11) DEFAULT NULL,
         `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
         PRIMARY KEY (`id`),
         KEY `order_id` (`order_id`,`status_id`),

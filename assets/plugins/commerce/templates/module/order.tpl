@@ -108,6 +108,7 @@
                         <td><?= $lang['module.status_title'] ?></td>
                         <td><?= $lang['module.is_customer_notified'] ?></td>
                         <td><?= $lang['module.status_change_description'] ?></td>
+                        <td><?= $lang['module.user'] ?></td>
                     </tr>
                 </thead>
 
@@ -118,6 +119,7 @@
                             <td style="white-space: nowrap;"><?= !empty($statuses[$row['status_id']]) ? $statuses[$row['status_id']] : '' ?></td>
                             <td><?= !empty($row['notify']) ? $_lang['yes'] : $_lang['no'] ?></td>
                             <td><?= htmlentities($row['comment']) ?></td>
+                            <td><?= $row['user_id'] > 0 ? htmlentities($users[$row['user_id']]) : '' ?></td>
                         </tr>
                     <?php endforeach; ?>
                 </tbody>

@@ -55,4 +55,5 @@ return [
     'module.thousands_separator' => 'Разделитель разрядов',
     'module.add_currency' => 'Добавить валюту',
     'module.add_status' => 'Добавить статус',
+    'module.user' => 'Пользователь',
 ];

@@ -153,6 +153,7 @@ class SimpleProcessor implements \Commerce\Interfaces\Processor
             'status_id' => (int)$status_id,
             'comment'   => $this->modx->db->escape($comment),
             'notify'    => 1 * !!$notify,
+            'user_id'   => $this->modx->getLoginUserID('mgr'),
         ], $this->tableHistory);
 
         if ($notify) {
