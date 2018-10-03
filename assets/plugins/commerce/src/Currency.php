@@ -177,40 +177,4 @@ class Currency
     {
         return $this->format($this->convertToDefault($amount, $from), $this->defaultCurrency);
     }
-
-    public function checkTable()
-    {
-        if (!ci()->commerce->isTableExists($this->table)) {
-            $db = ci()->db;
-            
-            $db->query("
-                CREATE TABLE IF NOT EXISTS {$this->table} (
-                    `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
-                    `title` varchar(255) NOT NULL,
-                    `code` varchar(8) NOT NULL,
-                    `value` float NOT NULL DEFAULT '1',
-                    `left` varchar(8) NOT NULL,
-                    `right` varchar(8) NOT NULL,
-                    `decimals` tinyint(3) UNSIGNED NOT NULL DEFAULT '2',
-                    `decsep` varchar(8) NOT NULL,
-                    `thsep` varchar(8) NOT NULL,
-                    `active` tinyint(1) UNSIGNED NOT NULL DEFAULT '1',
-                    `default` tinyint(1) UNSIGNED NOT NULL DEFAULT '0',
-                    `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-                    `updated_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
-                    PRIMARY KEY (`id`)
-                ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
-            ");
-
-            $db->insert([
-                'title'    => 'Рубль',
-                'code'     => 'RUB',
-                'value'    => 1,
-                'right'    => ' руб.',
-                'decimals' => 2,
-                'decsep'   => ',',
-                'thsep'    => ' ',
-            ], $this->table);
-        }
-    }
 }

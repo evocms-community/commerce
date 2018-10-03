@@ -355,15 +355,4 @@ class Commerce
 
         return true;
     }
-
-    public function isTableExists($table)
-    {
-        try {
-            $query = $this->modx->db->query("SHOW FIELDS FROM " . $table, false);
-        } catch (\Exception $e) {
-            return false;
-        }
-
-        return $this->modx->db->getRecordCount($query) > 0;
-    }
 }

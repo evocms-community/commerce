@@ -93,8 +93,6 @@ class SimpleProcessor implements \Commerce\Interfaces\Processor
             'subtotals' => &$subtotals,
         ]);
 
-        $this->checkTables();
-
         $order_id = $this->modx->db->insert($values, $this->tableOrders);
         $this->order_id = $order_id;
 
@@ -377,98 +375,5 @@ class SimpleProcessor implements \Commerce\Interfaces\Processor
         }
 
         return null;
-    }
-
-    protected function checkTableOrders()
-    {
-        if (!$this->modx->commerce->isTableExists($this->tableOrders)) {
-            $this->modx->db->query("
-                CREATE TABLE IF NOT EXISTS {$this->tableOrders} (
-                    `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
-                    `name` varchar(255) NULL,
-                    `phone` varchar(255) NULL,
-                    `email` varchar(255) NULL,
-                    `amount` float NOT NULL DEFAULT '0',
-                    'currency' varchar(8) NOT NULL,
-                    `fields` text,
-                    `status_id` tinyint(3) UNSIGNED NOT NULL DEFAULT '0',
-                    `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-                    `updated_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
-                    PRIMARY KEY (`id`)
-                ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
-            ");
-        }
-    }
-
-    protected function checkTableProducts()
-    {
-        if (!$this->modx->commerce->isTableExists($this->tableProducts)) {
-            $this->modx->db->query("
-                CREATE TABLE IF NOT EXISTS {$this->tableProducts} (
-                    `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-                    `order_id` int(10) unsigned NOT NULL,
-                    `product_id` int(10) unsigned NULL,
-                    `title` varchar(255) NOT NULL,
-                    `price` float NOT NULL,
-                    `count` float unsigned NOT NULL DEFAULT '1',
-                    `options` text NULL,
-                    `meta` text NULL,
-                    `position` tinyint(3) unsigned NOT NULL,
-                    PRIMARY KEY (`id`),
-                    KEY `order_id` (`order_id`,`product_id`)
-                ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
-            ");
-        }
-    }
-
-    protected function checkTableHistory()
-    {
-        if (!$this->modx->commerce->isTableExists($this->tableHistory)) {
-            $this->modx->db->query("
-                CREATE TABLE IF NOT EXISTS {$this->tableHistory} (
-                    `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-                    `order_id` int(10) unsigned NOT NULL,
-                    `status_id` int(10) unsigned NOT NULL,
-                    `comment` text NOT NULL,
-                    `notify` tinyint(1) unsigned NOT NULL DEFAULT '1',
-                    `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-                    PRIMARY KEY (`id`),
-                    KEY `order_id` (`order_id`,`status_id`)
-                ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
-            ");
-        }
-    }
-
-    protected function checkTableStatuses()
-    {
-        if (!$this->modx->commerce->isTableExists($this->tableStatuses)) {
-            $this->modx->db->query("
-                CREATE TABLE IF NOT EXISTS {$this->tableStatuses} (
-                    `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-                    `title` varchar(255) NOT NULL,
-                    `notify` tinyint(1) unsigned NOT NULL DEFAULT '0',
-                    `default` tinyint(1) unsigned NOT NULL DEFAULT '0',
-                    PRIMARY KEY (`id`)
-                ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
-            ");
-
-            $lang = $this->modx->commerce->getUserLanguage('order');
-
-            $this->modx->db->insert(['title' => $lang['order.status.new']], $this->tableStatuses);
-            $this->modx->db->insert(['title' => $lang['order.status.processing']], $this->tableStatuses);
-            $this->modx->db->insert(['title' => $lang['order.status.paid'], 'notify' => 1], $this->tableStatuses);
-            $this->modx->db->insert(['title' => $lang['order.status.shipped']], $this->tableStatuses);
-            $this->modx->db->insert(['title' => $lang['order.status.canceled'], 'notify' => 1], $this->tableStatuses);
-            $this->modx->db->insert(['title' => $lang['order.status.complete']], $this->tableStatuses);
-            $this->modx->db->insert(['title' => $lang['order.status.pending']], $this->tableStatuses);
-        }
-    }
-
-    public function checkTables()
-    {
-        $this->checkTableOrders();
-        $this->checkTableProducts();
-        $this->checkTableHistory();
-        $this->checkTableStatuses();
     }
 }
