@@ -26,7 +26,7 @@ class StatusesController extends Controller
 
     public function index()
     {
-        $query = $this->modx->db->select('*', $this->modx->getFullTablename('commerce_order_statuses'), '', 'id ASC');
+        $query = $this->modx->db->select('*', $this->table, '', 'id ASC');
 
         return $this->view->render('statuses_list.tpl', [
             'list'   => $this->modx->db->makeArray($query),
@@ -38,7 +38,7 @@ class StatusesController extends Controller
     {
         $status_id = filter_input(INPUT_GET, 'status_id', FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
 
-        $query  = $this->modx->db->select('*', $this->modx->getFullTablename('commerce_order_statuses'), "`id` = '$status_id'");
+        $query  = $this->modx->db->select('*', $this->table, "`id` = '$status_id'");
         $status = $this->modx->db->getRow($query);
 
         if (empty($status)) {
@@ -47,7 +47,7 @@ class StatusesController extends Controller
 
         return $this->view->render('status.tpl', [
             'status' => $status,
-            'custom' => $this->module->invokeTemplateEvent('OnManagerOrderRender'),
+            'custom' => $this->module->invokeTemplateEvent('OnManagerStatusRender'),
         ]);
     }
 
@@ -57,7 +57,7 @@ class StatusesController extends Controller
         $status_id = filter_input(INPUT_POST, 'status_id', FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
 
         if (!empty($status_id)) {
-            $query  = $db->select('*', $this->modx->getFullTablename('commerce_order_statuses'), "`id` = '$status_id'");
+            $query  = $db->select('*', $this->table, "`id` = '$status_id'");
             $status = $db->getRow($query);
 
             if (empty($status)) {
