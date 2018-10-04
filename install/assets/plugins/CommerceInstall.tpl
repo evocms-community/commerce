@@ -53,10 +53,15 @@ $events = [
     'OnBeforeCurrencyChange',
 ];
 
-foreach ($events as $event) {
-    $query = $modx->db->select('*', $tableEventnames, "`name` = '$event'");
+$query  = $modx->db->select('*', $tableEventnames, "`groupname` = 'Commerce'");
+$exists = [];
 
-    if (!$modx->db->getRecordCount($query)) {
+while ($row = $modx->db->getRow($query)) {
+    $exists[$row['name']] = $row['id'];
+}
+
+foreach ($events as $event) {
+    if (!isset($exists[$event])) {
         $modx->db->insert([
             'name'      => $event,
             'service'   => 6,
