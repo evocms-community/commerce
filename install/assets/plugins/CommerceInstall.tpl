@@ -135,7 +135,7 @@ if (!tableExists($modx, $table)) {
 
     $lang = $lexicon->loadLang('order');
 
-    $modx->db->insert(['title' => $lang['order.status.new']], $table);
+    $modx->db->insert(['title' => $lang['order.status.new'], 'default' => 1], $table);
     $modx->db->insert(['title' => $lang['order.status.processing']], $table);
     $modx->db->insert(['title' => $lang['order.status.paid'], 'notify' => 1], $table);
     $modx->db->insert(['title' => $lang['order.status.shipped']], $table);
