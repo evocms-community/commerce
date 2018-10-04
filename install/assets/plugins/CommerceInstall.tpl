@@ -177,6 +177,7 @@ if (!tableExists($modx, $table)) {
         'decsep'   => $lang['currency.decimals_separator'],
         'thsep'    => $lang['currency.thousands_separator'],
         'value'    => 1,
+        'default'  => 1,
     ], $table);
 }
 

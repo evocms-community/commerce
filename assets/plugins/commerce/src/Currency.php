@@ -47,7 +47,7 @@ class Currency
             }
 
             if (empty($this->defaultCurrency)) {
-                $row = reset($result);
+                $row = reset($this->currencies);
                 $this->defaultCurrency = $row['code'];
             }
         }
