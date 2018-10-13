@@ -4,7 +4,7 @@ namespace Commerce\Module\Controllers;
 
 use Commerce\Module\Renderer;
 
-class Controller
+class Controller implements \Commerce\Module\Interfaces\Controller
 {
     protected $modx;
     protected $module;
@@ -20,6 +20,11 @@ class Controller
     public function registerRoutes()
     {
         return [];
+    }
+
+    public function index()
+    {
+        return '';
     }
 
     protected function sortFields($fields)

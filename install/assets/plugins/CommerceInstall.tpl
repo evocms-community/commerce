@@ -50,6 +50,7 @@ $events = [
     'OnManagerStatusRender',
     'OnManagerCurrencyListRender',
     'OnManagerCurrencyRender',
+    'OnManagerRegisterCommerceController',
     'OnBeforeCurrencyChange',
 ];
 

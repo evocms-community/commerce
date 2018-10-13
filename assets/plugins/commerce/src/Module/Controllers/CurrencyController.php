@@ -2,7 +2,7 @@
 
 namespace Commerce\Module\Controllers;
 
-class CurrencyController extends Controller
+class CurrencyController extends Controller implements \Commerce\Module\Interfaces\Controller
 {
     private $lang;
     private $table = 'commerce_currency';

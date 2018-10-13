@@ -2,7 +2,7 @@
 
 namespace Commerce\Module\Controllers;
 
-class StatusesController extends Controller
+class StatusesController extends Controller implements \Commerce\Module\Interfaces\Controller
 {
     private $lang;
     private $table = 'commerce_order_statuses';

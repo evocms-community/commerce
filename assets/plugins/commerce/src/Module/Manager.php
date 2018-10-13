@@ -7,6 +7,7 @@ class Manager
     use \Commerce\SettingsTrait;
 
     private $modx;
+    private $controllers = [];
 
     public $flash;
 
@@ -16,6 +17,15 @@ class Manager
         $this->setSettings($params);
 ini_set('display_errors', 1);
         $this->flash = new FlashMessages;
+    }
+
+    public function registerController($name, $controller)
+    {
+        if (!($controller instanceof Interfaces\Controller)) {
+            throw new \Exception('Controller "' . print_r($name, true) . '" should implement Controller interface');
+        }
+
+        $this->controllers[$name] = $controller;
     }
 
     public function processRoute($route)
@@ -28,12 +38,19 @@ ini_set('display_errors', 1);
             $route = 'index';
         }
 
-        if (!in_array($controller, ['orders', 'statuses', 'currency'])) {
+        $this->modx->invokeEvent('OnManagerRegisterCommerceController', [
+            'module' => $this,
+        ]);
+
+        $this->registerController('orders', new Controllers\OrdersController($this->modx, $this));
+        $this->registerController('statuses', new Controllers\StatusesController($this->modx, $this));
+        $this->registerController('currency', new Controllers\CurrencyController($this->modx, $this));
+
+        if (!isset($this->controllers[$controller])) {
             $this->modx->sendRedirect('index.php?a=106');
         }
 
-        $classname = '\\Commerce\\Module\\Controllers\\' . ucfirst($controller) . 'Controller';
-        $controller = new $classname($this->modx, $this);
+        $controller = $this->controllers[$controller];
         $routes = $controller->registerRoutes();
 
         if (isset($routes[$route])) {

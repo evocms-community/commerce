@@ -2,7 +2,7 @@
 
 namespace Commerce\Module\Controllers;
 
-class OrdersController extends Controller
+class OrdersController extends Controller implements \Commerce\Module\Interfaces\Controller
 {
     private $lang;
 
