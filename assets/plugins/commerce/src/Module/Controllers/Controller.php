@@ -19,7 +19,9 @@ class Controller implements \Commerce\Module\Interfaces\Controller
 
     public function registerRoutes()
     {
-        return [];
+        return [
+            'index' => 'index',
+        ];
     }
 
     public function index()

@@ -21,9 +21,18 @@ class Renderer
         $this->lang = $this->modx->commerce->getUserLanguage('module');
     }
 
+    public function setPath($path)
+    {
+        $path = realpath(MODX_BASE_PATH . $path);
+
+        if ($path) {
+            $this->setSettings(['path' => $path]);
+        }
+    }
+
     public function render($template, array $data = [])
     {
-        $template = $this->getSetting('path', MODX_BASE_PATH . 'assets/plugins/commerce/templates/module/') . $template;
+        $template = rtrim($this->getSetting('path', MODX_BASE_PATH . 'assets/plugins/commerce/templates/module'), '/') . '/' . $template;
 
         if (!is_readable($template)) {
             throw new \Exception('Template "' . $template . '" is not readable!');
