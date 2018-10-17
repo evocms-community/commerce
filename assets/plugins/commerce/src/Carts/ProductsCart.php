@@ -38,6 +38,11 @@ class ProductsCart extends StoreCart implements \Commerce\Interfaces\Cart
 
     public function add(array $item)
     {
+        if (!empty($item['id'])) {
+            $item['name']  = $this->getItemName($item['id']);
+            $item['price'] = $this->getItemPrice($item['id']);
+        }
+
         $this->modx->invokeEvent('OnBeforeCartItemAdding', [
             'instance' => $this->instance,
             'item'     => &$item,
@@ -100,16 +105,6 @@ class ProductsCart extends StoreCart implements \Commerce\Interfaces\Cart
         }
 
         return $this->defaults['price'];
-    }
-
-    protected function prepareItem(array $item)
-    {
-        if (!empty($item['id'])) {
-            $item['name']  = $this->getItemName($item['id']);
-            $item['price'] = $this->getItemPrice($item['id']);
-        }
-
-        return parent::prepareItem($item);
     }
 
     public function getSubtotals(array &$rows, &$total)
