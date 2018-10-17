@@ -9,6 +9,8 @@ class ProductsCart extends StoreCart implements \Commerce\Interfaces\Cart
     protected $modx;
     protected $titleField = 'pagetitle';
     protected $priceField = 'price';
+
+    protected $instance;
     
     protected $rules = [
         'id' => [
@@ -30,6 +32,7 @@ class ProductsCart extends StoreCart implements \Commerce\Interfaces\Cart
     public function __construct($modx, $instance = 'cart')
     {
         $this->modx = $modx;
+        $this->instance = $instance;
         parent::__construct(new SessionCartStore(), $instance);
     }
 
