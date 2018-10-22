@@ -44,11 +44,11 @@ if (!class_exists('Commerce\\Commerce')) {
     });
 }
 
-$e = &$modx->Event;
-
 if (empty($modx->commerce) || isset($modx->commerce) && !($modx->commerce instanceof Commerce\Commerce)) {
     $modx->commerce = $ci->commerce;
 }
+
+$e = &$modx->Event;
 
 switch ($e->name) {
     case 'OnWebPageInit': {
