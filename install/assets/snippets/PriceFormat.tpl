@@ -1,7 +1,7 @@
 //<?php
 /**
  * PriceFormat
- * 
+ *
  * Format price using predefined settings
  *
  * @category    snippet
@@ -12,5 +12,18 @@
 */
 
 if (!empty($modx->commerce)) {
-    return $modx->commerce->formatPrice(array_shift($params));
+    $currency = ci()->currency;
+
+    $params = array_merge([
+        'price'   => 0,
+        'convert' => 1,
+    ], $params);
+
+    if ($params['convert']) {
+        $params['price'] = $currency->convertToActive($params['price']);
+    }
+
+    return $currency->format($params['price']);
 }
+
+return array_shift($params);

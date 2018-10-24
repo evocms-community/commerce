@@ -15,7 +15,7 @@
 
                 <tr>
                     <td class="text-xs-right" colspan="4">[%cart.total%]:</td>
-                    <td class="text-xs-right">[[PriceFormat? &price=`[+total+]`]]</td>
+                    <td class="text-xs-right">[[PriceFormat? &price=`[+total+]` &convert=`0`]]</td>
                 </tr>
             </tfoot>
 

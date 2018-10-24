@@ -16,8 +16,8 @@
         <button type="button" data-commerce-action="remove">[%cart.remove%]</button>
 
     <td class="text-xs-right">
-        [[PriceFormat? &price=`[+price+]`]]
+        [!PriceFormat? &price=`[+price+]` &convert=`0`!]
 
     <td class="text-xs-right">
-        [[PriceFormat? &price=`[+total+]`]]
+        [!PriceFormat? &price=`[+total+]` &convert=`0`!]
 </tr>

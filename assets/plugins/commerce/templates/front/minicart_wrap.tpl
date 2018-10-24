@@ -2,7 +2,7 @@
     <div class="commerce-cart minicart dropdown" data-commerce-cart="[+hash+]">
         <div class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             [%cart.caption%]<br>
-            [+count+] [%cart.items_count%] [[PriceFormat? &price=`[+total+]`]]
+            [+count+] [%cart.items_count%] [[PriceFormat? &price=`[+total+]` &convert=`0`]]
         </div>
 
         <div class="dropdown-menu">
@@ -19,7 +19,7 @@
                 <tfoot>
                     <tr>
                         <td colspan="3">[%cart.total%]:</td>
-                        <td class="text-xs-right">[[PriceFormat? &price=`[+total+]`]]</td>
+                        <td class="text-xs-right">[[PriceFormat? &price=`[+total+]` &convert=`0`]]</td>
                     </tr>
                 </tfoot>
 

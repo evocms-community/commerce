@@ -177,4 +177,9 @@ class Currency
     {
         return $this->format($this->convertToDefault($amount, $from), $this->defaultCurrency);
     }
+
+    public function formatWithActive($amount, $from = null)
+    {
+        return $this->format($this->convertToActive($amount, $from), $this->activeCurrency);
+    }
 }
