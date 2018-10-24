@@ -13,6 +13,7 @@ return [
     'cart.item_summary' => 'Всего',
     'cart.total' => 'ИТОГО',
     'cart.no_items' => 'Нет товаров',
+    'cart.to_cart' => 'Перейти в корзину',
     'cart.to_checkout' => 'Оформить заказ',
     'cart.decrease' => 'Уменьшить',
     'cart.increase' => 'Увеличить',
