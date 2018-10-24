@@ -50,6 +50,7 @@ $events = [
     'OnManagerStatusRender',
     'OnManagerCurrencyListRender',
     'OnManagerCurrencyRender',
+    'OnManagerBeforeDefaultCurrencyChange',
     'OnManagerRegisterCommerceController',
     'OnBeforeCurrencyChange',
 ];
@@ -187,8 +188,7 @@ if (!tableExists($modx, $table)) {
     ], $table);
 }
 
-$ids = $modx->db->getColumn('id', $modx->db->query("SELECT MAX(p.id) AS id FROM `kfy9_site_plugins` p JOIN `kfy9_categories` c ON p.category = c.id AND c.category = 'Commerce' GROUP BY name"));
-$modx->db->update(['disabled' => 0], $modx->getFullTablename('site_plugins'), "`id` IN (" . implode(',', $ids) . ")");
+$modx->db->update(['disabled' => 0], $modx->getFullTablename('site_plugins'), "`name` = 'Commerce'");
 
 // TODO store all parameters in main plugin, link plugins and snippets
 

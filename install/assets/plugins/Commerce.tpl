@@ -7,7 +7,7 @@
  * @category    plugin
  * @version     0.1.0
  * @author      mnoskov
- * @internal    @events OnWebPageInit,OnManagerPageInit,OnPageNotFound,OnManagerMenuPrerender
+ * @internal    @events OnWebPageInit,OnManagerPageInit,OnPageNotFound,OnManagerMenuPrerender,OnCacheUpdate
  * @internal    @properties &payment_success_page_id=Page ID for redirect after successfull payment;text; &payment_failed_page_id=Page ID for redirect after payment error;text; &status_id_after_payment=Status ID after payment;text;
  * @internal    @modx_category Commerce
  * @internal    @disabled 1

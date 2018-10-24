@@ -144,16 +144,29 @@ class CurrencyController extends Controller implements \Commerce\Module\Interfac
             'default'  => !empty($data['default']) ? 1 : 0,
         ];
 
-        if (!$fields['default']) {
-            $query = $db->select('*', $this->table, "`default` = 1" . (!empty($currency['id']) ? " AND `id` != '" . $currency['id'] . "'" : ''));
+        if (!$fields['active'] && $fields['default']) {
+            $this->module->sendRedirectBack(['error' => 'default currency cannot be deactivated']);
+        }
 
+        $query = $db->select('*', $this->table, "`default` = 1" . (!empty($currency['id']) ? " AND `id` != '" . $currency['id'] . "'" : ''));
+
+        if ($fields['default']) {
+            if ($db->getRecordCount($query)) {
+                $old = $db->getRow($query);
+
+                $result = $this->modx->invokeEvent('OnManagerBeforeDefaultCurrencyChange', [
+                    'old' => $old,
+                    'new' => &$fields,
+                ]);
+
+                if ($result === false) {
+                    $this->module->sendRedirectBack(['error' => 'canceled by third party plugin']);
+                }
+            }
+        } else {
             if (!$db->getRecordCount($query)) {
                 $this->module->sendRedirectBack(['error' => 'default currency should be defined']);
             }
-        }
-
-        if (!$fields['active'] && $fields['default']) {
-            $this->module->sendRedirectBack(['error' => 'default currency cannot be deactivated']);
         }
 
         $db->query('START TRANSACTION;');
@@ -167,7 +180,6 @@ class CurrencyController extends Controller implements \Commerce\Module\Interfac
 
             if ($fields['default'] == 1) {
                 $db->update(['default' => 0], $this->table, "`id` != '" . $currency['id'] . "'");
-                $this->modx->clearCache('full');
             }
         } catch (\Exception $e) {
             $db->query('ROLLBACK;');
@@ -175,6 +187,7 @@ class CurrencyController extends Controller implements \Commerce\Module\Interfac
         }
 
         $db->query('COMMIT;');
+        $this->modx->clearCache('full');
         $this->module->sendRedirect('currency', ['success' => $this->lang['module.currency_saved']]);
     }
 
