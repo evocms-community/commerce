@@ -25,7 +25,11 @@ class Commerce
     private $deliveries;
 
     private $lexicon;
-    private $lang = [];
+    private $langDir = 'assets/plugins/commerce/lang/';
+    private $lang;
+    private $backendLang;
+    private $langKeys = [];
+    private $langData = [];
 
     public function __construct($modx, array $params)
     {
@@ -33,10 +37,7 @@ class Commerce
         $this->setSettings($params);
         $this->currency = new Currency($modx);
 
-        $this->lexicon = new Lexicon($modx, [
-            'langDir' => 'assets/plugins/commerce/lang/',
-            'lang'    => $modx->getConfig('manager_language'),
-        ]);
+        $this->backendLang = $modx->getConfig('manager_language');
 
         $modx->invokeEvent('OnInitializeCommerce');
 
@@ -133,10 +134,57 @@ class Commerce
         return $deliveries[$code];
     }
 
+    public function setLang($code)
+    {
+        if ($code != $this->lang) {
+            $this->lang = $code;
+
+            $this->lexicon = new Lexicon($modx, [
+                'langDir' => $this->langDir,
+                'lang'    => $this->lang,
+            ]);
+
+            foreach ($this->langKeys as $instance) {
+                $this->getUserLanguage($instance);
+            }
+
+            return true;
+        }
+
+        return false;
+    }
+
     public function getUserLanguage($instance = 'common')
     {
-        $this->lang = array_merge($this->lang, $this->lexicon->loadLang($instance));
-        return $this->lang;
+        if (is_null($this->lang)) {
+            $this->setLang($this->backendLang);
+        }
+
+        if (!isset($this->langKeys[$instance])) {
+            $this->langKeys[$instance] = $instance;
+            $this->langData = array_merge($this->langData, $this->lexicon->loadLang($instance));
+        }
+
+        return $this->langData;
+    }
+
+    /**
+     * Returns template from language directory
+     * 
+     * @param  string  $name Template name (without extension)
+     * @param  boolean $forceDefaultLanguage Force to use admin language
+     * @return string
+     */
+    public function getUserLanguageTemplate($name, $forceDefaultLanguage = false)
+    {
+        $lang = $forceDefaultLanguage ? $this->backendLang : $this->lang;
+        $filename = realpath(MODX_BASE_PATH . $this->langDir . $lang . '/' . $name . '.tpl');
+
+        if ($filename && is_readable($filename)) {
+            return '@CODE:' . file_get_contents($filename);
+        }
+
+        throw new \Exception('Template "' . print_r($name, true) . '" not found!');
     }
 
     public function setProcessor(Processor $processor)
