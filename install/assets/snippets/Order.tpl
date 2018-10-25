@@ -27,11 +27,11 @@ if (!empty($modx->commerce)) {
         'deliveryRowTpl'        => '@FILE:order_form_delivery_row',
         'paymentsTpl'           => '@FILE:order_form_payments',
         'paymentsRowTpl'        => '@FILE:order_form_payments_row',
-        'reportTpl'             => '@FILE:order_report',
+        'reportTpl'             => $modx->commerce->getUserLanguageTemplate('order_report', true),
         'to'                    => $modx->getConfig('emailsender'),
         'ccSender'              => '1',
         'ccSenderField'         => 'email',
-        'ccSenderTpl'           => '@FILE:order_reportback',
+        'ccSenderTpl'           => $modx->commerce->getUserLanguageTemplate('order_reportback'),
         'subjectTpl'            => $lang['order.subject'],
         'successTpl'            => $lang['order.success'],
         'rules'                 => [
