@@ -3,9 +3,8 @@
 namespace Commerce\Processors;
 
 use Commerce\Carts\OrderCart;
-use Commerce\CartsManager;
 
-class SimpleProcessor implements \Commerce\Interfaces\Processor
+class OrdersProcessor implements \Commerce\Interfaces\Processor
 {
     private $modx;
 
@@ -217,7 +216,7 @@ class SimpleProcessor implements \Commerce\Interfaces\Processor
             $this->cart = new OrderCart($this->modx);
             $this->cart->setCurrency($order['currency']);
 
-            CartsManager::getManager()->addCart('order', $this->cart);
+            ci()->carts->addCart('order', $this->cart);
 
             $query = $this->modx->db->select('*', $this->tableProducts, "`order_id` = '{$this->order_id}'", "`position`");
             $items = [];

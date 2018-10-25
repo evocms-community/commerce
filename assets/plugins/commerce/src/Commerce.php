@@ -41,21 +41,21 @@ class Commerce
 
         $modx->invokeEvent('OnInitializeCommerce');
 
-        $cartsManager = CartsManager::getManager();
-        $cartsManager->registerStore('session', new SessionCartStore());
+        $carts = ci()->carts;
+        $carts->registerStore('session', new SessionCartStore());
 
-        if (!$cartsManager->has('products')) {
+        if (!$carts->has('products')) {
             $this->cart = new ProductsCart($modx);
             $this->cart->setCurrency($this->currency->getCurrencyCode());
-            $cartsManager->addCart('products', $this->cart);
+            $carts->addCart('products', $this->cart);
         }
 
         $this->cart->setTitleField($this->getSetting('title_field', 'pagetitle'));
         $this->cart->setPriceField($this->getSetting('price_field', 'price'));
 
         foreach (['wishlist', 'comparison'] as $cart) {
-            if (!$cartsManager->has($cart)) {
-                $cartsManager->addCart($cart, new ProductsList($modx, $cart));
+            if (!$carts->has($cart)) {
+                $carts->addCart($cart, new ProductsList($modx, $cart));
             }
         }
     }
@@ -202,7 +202,7 @@ class Commerce
             $this->modx->invokeEvent('OnInitializeOrderProcessor');
 
             if (!($this->processor instanceof Processor)) {
-                $this->processor = new Processors\SimpleProcessor($this->modx);
+                $this->processor = new Processors\OrdersProcessor($this->modx);
             }
         }
 
@@ -335,7 +335,7 @@ class Commerce
         ];
 
         if (!empty($data['cart']['hash']) && is_string($data['cart']['hash'])) {
-            $cart = CartsManager::getManager()->getCartByHash($data['cart']['hash']);
+            $cart = ci()->carts->getCartByHash($data['cart']['hash']);
         }
 
         if (empty($cart)) {
