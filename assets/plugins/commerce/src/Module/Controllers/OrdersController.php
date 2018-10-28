@@ -4,6 +4,8 @@ namespace Commerce\Module\Controllers;
 
 class OrdersController extends Controller implements \Commerce\Module\Interfaces\Controller
 {
+    use \Commerce\Module\CustomizableFieldsTrait;
+
     private $lang;
 
     public function __construct($modx, $module)
