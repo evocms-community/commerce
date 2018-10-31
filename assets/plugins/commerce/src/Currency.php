@@ -7,6 +7,7 @@ class Currency
     protected $table = 'commerce_currency';
     protected $currencies;
     protected $defaultCurrency;
+    protected $activeCurrency;
     protected $key = 'commerce.currency';
 
     public function __construct()
