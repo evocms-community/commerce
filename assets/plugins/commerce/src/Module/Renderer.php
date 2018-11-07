@@ -30,6 +30,11 @@ class Renderer
         }
     }
 
+    public function setLang($lang)
+    {
+        $this->lang = array_merge($this->lang, $lang);
+    }
+
     public function render($template, array $data = [])
     {
         $template = rtrim($this->getSetting('path', MODX_BASE_PATH . 'assets/plugins/commerce/templates/module'), '/') . '/' . $template;
