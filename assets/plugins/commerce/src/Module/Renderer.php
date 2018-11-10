@@ -11,7 +11,8 @@ class Renderer
 
     protected $block;
     protected $blocks = [];
-    protected $levels = [];
+    protected $extensionLevels = [];
+    protected $templateLevels = [];
 
     public function __construct($modx, $module, array $params = [])
     {
@@ -37,10 +38,11 @@ class Renderer
 
     public function render($template, array $data = [])
     {
-        $template = rtrim($this->getSetting('path', MODX_BASE_PATH . 'assets/plugins/commerce/templates/module'), '/') . '/' . $template;
+        $this->templateLevels[] = $template;
+        $fullTemplate = rtrim($this->getSetting('path', MODX_BASE_PATH . 'assets/plugins/commerce/templates/module'), '/') . '/' . $template;
 
-        if (!is_readable($template)) {
-            throw new \Exception('Template "' . $template . '" is not readable!');
+        if (!is_readable($fullTemplate)) {
+            throw new \Exception('Template "' . $fullTemplate . '" is not readable!');
         }
 
         global $_style, $_lang, $lastInstallTime;
@@ -52,27 +54,30 @@ class Renderer
         extract($data);
 
         ob_start();
-        include $template;
+        include $fullTemplate;
 
-        if (!empty($this->levels)) {
-            ob_end_clean();
-            $template = array_shift($this->levels);
-            $data = compact(array_keys($data));
+        if (!empty($this->extensionLevels)) {
+            $parent = end($this->extensionLevels);
 
-            return $this->render($template, $data);
+            if (key($this->extensionLevels) == $template) {
+                ob_end_clean();
+                array_pop($this->extensionLevels);
+                return $this->render($parent, compact(array_keys($data)));
+            }
         }
 
+        array_pop($this->templateLevels);
         return ob_get_clean();
     }
 
     public function extend($parent)
     {
-        $this->levels[uniqid()] = $parent;
+        $this->extensionLevels[end($this->templateLevels)] = $parent;
     }
 
     public function block($name, $default = null)
     {
-        if (empty($this->levels)) {
+        if (empty($this->extensionLevels)) {
             return isset($this->blocks[$name]) ? $this->blocks[$name] : $default;
         }
 
