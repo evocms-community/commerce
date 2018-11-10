@@ -54,4 +54,5 @@
     <?= $custom ?>
 <?php endif; ?>
 
+<?= $this->block('footer') ?>
 <?php include MODX_MANAGER_PATH . 'includes/footer.inc.php'; ?>
