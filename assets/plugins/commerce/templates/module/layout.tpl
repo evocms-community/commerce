@@ -1,5 +1,6 @@
 <?php include MODX_MANAGER_PATH . 'includes/header.inc.php'; ?>
 <link rel="stylesheet" href="../assets/plugins/commerce/css/module.css">
+<?= $this->block('head') ?>
 
 <h1>
     <i class="fa fa-cog"></i><?= $this->block('title', $lang['module.orders_caption']) ?> 
