@@ -13,9 +13,8 @@ class Manager
 
     public function __construct($modx, array $params = [])
     {
-        $this->modx = $modx;
         $this->setSettings($params);
-ini_set('display_errors', 1);
+        $this->modx = $modx;
         $this->flash = new FlashMessages;
     }
 
