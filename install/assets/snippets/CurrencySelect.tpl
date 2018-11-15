@@ -12,7 +12,7 @@
 */
 
 if (!empty($modx->commerce)) {
-    $DLTemplate = DLTemplate::getInstance($modx);
+    $tpl = ci()->tpl;
 
     $params = array_merge([
         'templatePath'      => 'assets/plugins/commerce/templates/front/',
@@ -28,13 +28,13 @@ if (!empty($modx->commerce)) {
 
     $out = '';
 
-    $DLTemplate->setTemplatePath($params['templatePath']);
-    $DLTemplate->setTemplateExtension($params['templateExtension']);
+    $tpl->setTemplatePath($params['templatePath']);
+    $tpl->setTemplateExtension($params['templateExtension']);
 
     foreach ($rows as $row) {
-        $tpl = $row['code'] == $active ? $params['activeTpl'] : $params['tpl'];
-        $out .= $DLTemplate->parseChunk($tpl, $row);
+        $chunk = $row['code'] == $active ? $params['activeTpl'] : $params['tpl'];
+        $out  .= $tpl->parseChunk($chunk, $row);
     }
 
-    return $DLTemplate->parseChunk($params['outerTpl'], ['wrap' => $out]);
+    return $tpl->parseChunk($params['outerTpl'], ['wrap' => $out]);
 }

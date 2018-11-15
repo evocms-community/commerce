@@ -46,7 +46,7 @@ class YandexkassaPayment extends Payment implements \Commerce\Interfaces\Payment
                 'value'    => number_format($order['amount'], 2, '.', ''),
                 'currency' => 'RUB',
             ],
-            'description' => \DLTemplate::getInstance($this->modx)->parseChunk($this->lang['payments.payment_description'], [
+            'description' => ci()->tpl->parseChunk($this->lang['payments.payment_description'], [
                 'order_id'  => $order['id'],
                 'site_name' => $this->modx->getConfig('site_name'),
             ]),

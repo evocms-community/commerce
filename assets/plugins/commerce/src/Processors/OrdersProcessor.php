@@ -156,17 +156,17 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
         ], $this->tableHistory);
 
         if ($notify) {
-            $parser = \DLTemplate::getInstance($this->modx);
+            $tpl    = ci()->tpl;
             $lang   = $this->modx->commerce->getUserLanguage('order');
             $status = $this->modx->db->getValue($this->modx->db->select('title', $this->modx->getFullTablename('commerce_order_statuses'), "`id` = '" . intval($status_id) . "'"));
 
-            $body = $parser->parseChunk($template, [
+            $body = $tpl->parseChunk($template, [
                 'order_id' => $order_id,
                 'status'   => $status,
                 'comment'  => $comment,
             ], true);
 
-            $subject = $parser->parseChunk($lang['order.subject_status_changed'], [
+            $subject = $tpl->parseChunk($lang['order.subject_status_changed'], [
                 'order_id' => $order_id,
             ], true);
 
@@ -286,7 +286,7 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
         if (!is_null($order) && $order['amount'] == $amount) {
             $status = $this->modx->commerce->getSetting('status_id_after_payment', 3);
             $lang = $this->modx->commerce->getUserLanguage('order');
-            $comment = \DLTemplate::getInstance($this->modx)->parseChunk($lang['order.order_paid'], [
+            $comment = ci()->tpl->parseChunk($lang['order.order_paid'], [
                 'order_id' => $order_id,
             ]);
             $this->changeStatus($order_id, $status, $comment, true);

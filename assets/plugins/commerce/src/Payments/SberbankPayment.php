@@ -64,7 +64,7 @@ class SberbankPayment extends Payment implements \Commerce\Interfaces\Payment
             'orderNumber' => $order_id . '-' . time(),
             'amount'      => $amount,
             'returnUrl'   => $this->modx->getConfig('site_url') . 'commerce/sberbank/payment-process/',
-            'description' => \DLTemplate::getInstance($this->modx)->parseChunk($this->lang['payments.payment_description'], [
+            'description' => ci()->tpl->parseChunk($this->lang['payments.payment_description'], [
                 'order_id'  => $order_id,
                 'site_name' => $this->modx->getConfig('site_name'),
             ]),

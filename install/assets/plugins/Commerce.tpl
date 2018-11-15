@@ -42,6 +42,11 @@ if (!class_exists('Commerce\\Commerce')) {
     $ci->set('db', function($ci) {
         return $ci->modx->db;
     });
+
+    $ci->set('tpl', function($ci) use ($modx) {
+        require_once MODX_BASE_PATH . 'assets/snippets/DocLister/lib/DLTemplate.class.php';
+        return DLTemplate::getInstance($modx);
+    });
 }
 
 if (empty($modx->commerce) || isset($modx->commerce) && !($modx->commerce instanceof Commerce\Commerce)) {

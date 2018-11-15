@@ -63,7 +63,7 @@ class PaykeeperPayment extends Payment implements \Commerce\Interfaces\Payment
         $template = $this->getSetting('template', '@CODE:[+form+]');
         $form = file_get_contents($this->getSetting('pay_url'), false, $context);
         
-        return \DLTemplate::getInstance($this->modx)->parseChunk($template, [
+        return ci()->tpl->parseChunk($template, [
             'form' => $form,
         ]);
     }

@@ -31,7 +31,7 @@ class CartDocLister extends site_contentDocLister
 
     protected function renderSubtotals()
     {
-        $DLTemplate = \DLTemplate::getInstance($this->modx);
+        $DLTemplate = ci()->tpl;
         $tpl = $this->getCFGDef('subtotalsRowTpl');
         $result = '';
         $rows = [];
