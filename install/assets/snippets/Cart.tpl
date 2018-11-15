@@ -25,7 +25,6 @@ if (!empty($modx->commerce)) {
             'tpl'               => '@FILE:' . $theme . 'cart_row',
             'optionsTpl'        => '@FILE:' . $theme . 'cart_row_options_row',
             'ownerTPL'          => '@FILE:' . $theme . 'cart_wrap',
-            'noneTPL'           => '@FILE:' . $theme . 'cart_wrap_empty',
             'subtotalsRowTpl'   => '@FILE:' . $theme . 'cart_subtotals_row',
             'subtotalsTpl'      => '@FILE:' . $theme . 'cart_subtotals',
             'customLang'        => 'assets/plugins/commerce/lang/' . $lang . '/cart.inc.php',
