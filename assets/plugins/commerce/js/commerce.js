@@ -97,7 +97,7 @@ $(document).on('submit click change', '[data-commerce-action]', function(e) {
         row    = $self.attr('data-commerce-row') || $self.closest('[data-commerce-row]').attr('data-commerce-row'),
         data   = $self.data(),
         cart   = {
-            instance: $self.attr('data-instance'),
+            instance: $self.attr('data-instance') || 'products',
             hash:     $self.closest('[data-commerce-cart]').attr('data-commerce-cart')
         };
 
