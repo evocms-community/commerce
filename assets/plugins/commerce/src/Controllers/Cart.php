@@ -15,6 +15,10 @@ class CartDocLister extends site_contentDocLister
         $cfg['prepareWrap'][] = [$this, 'prepareCartOuter'];
 
         parent::__construct($modx, $cfg, $startTime);
+
+        if ($customLang = $this->getCFGDef('customLang')) {
+            $this->getCustomLang($customLang);
+        }
     }
 
     public function prepareCartOuter($data, $modx, $DL, $e)
@@ -162,5 +166,27 @@ class CartDocLister extends site_contentDocLister
         }
 
         return parent::_render($tpl);
+    }
+
+    public function getCustomLang($lang = '')
+    {
+        if (empty($lang)) {
+            $lang = $this->getCFGDef('lang', $this->modx->config['manager_language']);
+        }
+
+        $files = [
+            __DIR__ . "/../lang/$lang.php",
+            MODX_BASE_PATH . $lang,
+        ];
+
+        foreach ($files as $file) {
+            if (is_readable($file) && is_file($file)) {
+                $tmp = include $file;
+                $this->_customLang = is_array($tmp) ? $tmp : array();
+                break;
+            }
+        }
+
+        return $this->_customLang;
     }
 }
