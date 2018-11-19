@@ -93,7 +93,7 @@ $modx->db->query("
         `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
         `updated_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
         PRIMARY KEY (`id`)
-    ) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
+    ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 ");
 
 $modx->db->query("
@@ -109,7 +109,7 @@ $modx->db->query("
         `position` tinyint(3) unsigned NOT NULL,
         PRIMARY KEY (`id`),
         KEY `order_id` (`order_id`,`product_id`)
-    ) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
+    ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 ");
 
 $modx->db->query("
@@ -124,7 +124,7 @@ $modx->db->query("
         PRIMARY KEY (`id`),
         KEY `order_id` (`order_id`,`status_id`),
         KEY `user_id` (`user_id`)
-    ) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
+    ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 ");
 
 $table = $modx->getFullTablename('commerce_order_statuses');
@@ -137,7 +137,7 @@ if (!tableExists($modx, $table)) {
             `notify` tinyint(1) unsigned NOT NULL DEFAULT '0',
             `default` tinyint(1) unsigned NOT NULL DEFAULT '0',
             PRIMARY KEY (`id`)
-        ) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
+        ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
     ");
 
     $lang = $lexicon->loadLang('order');
@@ -171,7 +171,7 @@ if (!tableExists($modx, $table)) {
             `updated_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
             PRIMARY KEY (`id`),
             UNIQUE KEY `code` (`code`)
-        ) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
+        ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
     ");
 
     $lang = $lexicon->loadLang('common');
