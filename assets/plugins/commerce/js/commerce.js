@@ -88,7 +88,7 @@ var Commerce = {
 };
 
 $(document).on('submit click change', '[data-commerce-action]', function(e) {
-    if (e.currentTarget != e.target) {
+    if (e.currentTarget.tagName == 'FORM' && e.type != 'submit') {
         return;
     }
 
@@ -113,9 +113,7 @@ $(document).on('submit click change', '[data-commerce-action]', function(e) {
     }
 
     if (e.type == 'click') {
-        if (e.target.tagName == 'A') {
-            e.preventDefault();
-        }
+        e.preventDefault();
         
         switch (action) {
             case 'increase':
