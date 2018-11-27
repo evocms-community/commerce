@@ -19,6 +19,10 @@ if (!empty($modx->commerce)) {
         'convert' => 1,
     ], $params);
 
+    if (!is_numeric($params['price'])) {
+        return $params['price'];
+    }
+
     if ($params['convert']) {
         $params['price'] = $currency->convertToActive($params['price']);
     }
