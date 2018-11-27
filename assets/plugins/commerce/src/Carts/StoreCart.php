@@ -8,11 +8,12 @@ use Commerce\Interfaces\CartStore;
 class StoreCart extends SimpleCart implements Cart
 {
     protected $store;
+    protected $instance;
 
     public function __construct(CartStore $store, $instance = 'cart')
     {
-        $this->store = $store;
-        $this->items = $store->load($instance);
+        $this->instance = $instance;
+        $this->setStore($store);
     }
 
     public function setItems(array $items)
@@ -57,5 +58,11 @@ class StoreCart extends SimpleCart implements Cart
     {
         parent::setCurrency($code);
         $this->store->save($this->items);
+    }
+
+    public function setStore(CartStore $store)
+    {
+        $this->store = $store;
+        $this->items = $store->load($this->instance);
     }
 }

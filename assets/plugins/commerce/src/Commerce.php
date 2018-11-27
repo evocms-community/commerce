@@ -5,6 +5,7 @@ namespace Commerce;
 use Commerce\Interfaces\Cart;
 use Commerce\Interfaces\Processor;
 use Commerce\Carts\SessionCartStore;
+use Commerce\Carts\CookiesCartStore;
 use Commerce\Carts\ProductsCart;
 use Commerce\Carts\ProductsList;
 use Helpers\Lexicon;
@@ -53,9 +54,11 @@ class Commerce
         $this->cart->setTitleField($this->getSetting('title_field', 'pagetitle'));
         $this->cart->setPriceField($this->getSetting('price_field', 'price'));
 
-        foreach (['wishlist', 'comparison'] as $cart) {
-            if (!$carts->has($cart)) {
-                $carts->addCart($cart, new ProductsList($modx, $cart));
+        foreach (['wishlist', 'comparison'] as $listname) {
+            if (!$carts->has($listname)) {
+                $list = new ProductsList($modx, $listname);
+                $list->setStore(new CookiesCartStore($listname));
+                $carts->addCart($listname, $list);
             }
         }
     }
