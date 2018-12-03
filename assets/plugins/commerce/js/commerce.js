@@ -43,16 +43,21 @@ var Commerce = {
         }
     },
 
+    getCartsHashes: function() {
+        var hashes = [];
+
+        $('[data-commerce-cart]').each(function() {
+            hashes.push($(this).attr('data-commerce-cart'));
+        });
+
+        return hashes;
+    },
+
     updateCarts: function() {
-        var $carts = $('[data-commerce-cart]');
+        var $carts = $('[data-commerce-cart]'),
+            hashes = this.getCartsHashes();
 
         if ($carts.length) {
-            var hashes = [];
-
-            $carts.each(function() {
-                hashes.push($(this).attr('data-commerce-cart'));
-            });
-
             (function($carts) {
                 $.post('commerce/cart/contents', {hashes: hashes}, function(response) {
                     if (response.status == 'success' && response.markup) {
@@ -71,9 +76,34 @@ var Commerce = {
     },
 
     updateOrderData: function($form) {
-        $.post('commerce/data/update', $form.serializeObject(), function(response) {
+        var data = $form.serializeObject();
+
+        data.hashes = {
+            form: $form.attr('data-commerce-order'),
+            carts: this.getCartsHashes()
+        };
+
+        $.post('commerce/data/update', data, function(response) {
             if (response.status == 'success') {
-                Commerce.updateCarts();
+                if (response.markup.form) {
+                    if (response.markup.form.delivery) {
+                        $form.find('[data-commerce-deliveries]').replaceWith(response.markup.form.delivery);
+                    }
+
+                    if (response.markup.form.payments) {
+                        $form.find('[data-commerce-payments]').replaceWith(response.markup.form.payments);
+                    }
+                }
+
+                if (response.markup.carts) {
+                    for (var hash in response.markup.carts) {
+                        var $cart = $('[data-commerce-cart="' + hash + '"]');
+
+                        if ($cart.length) {
+                            $cart.replaceWith(response.markup.carts[hash]);
+                        }
+                    }
+                }
             }
         }, 'json');
     },

@@ -51,5 +51,7 @@ if (!empty($modx->commerce)) {
         'dir'        => 'assets/plugins/commerce/src/Controllers/',
     ]);
 
+    $params['form_hash'] = $modx->commerce->storeParams($params);
+
     return $modx->runSnippet('FormLister', $params);
 }

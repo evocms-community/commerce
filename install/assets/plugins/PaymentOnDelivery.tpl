@@ -15,12 +15,16 @@
 */
 
 if (!empty($modx->commerce)) {
-    $class = new \Commerce\Payments\Payment($modx, $params);
+    $processor = $modx->commerce->loadProcessor();
 
-    if (empty($params['title'])) {
-        $lang = $modx->commerce->getUserLanguage('payments');
-        $params['title'] = $lang['payments.on_delivery_title'];
+    if ($processor->isOrderStarted() && $processor->getCurrentDelivery() != 'pickup') {
+        $class = new \Commerce\Payments\Payment($modx, $params);
+
+        if (empty($params['title'])) {
+            $lang = $modx->commerce->getUserLanguage('payments');
+            $params['title'] = $lang['payments.on_delivery_title'];
+        }
+
+        $modx->commerce->registerPayment('on_delivery', $params['title'], $class);
     }
-
-    $modx->commerce->registerPayment('on_delivery', $params['title'], $class);
 }

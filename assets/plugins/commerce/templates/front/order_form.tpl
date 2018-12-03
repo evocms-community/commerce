@@ -1,4 +1,4 @@
-<form method="post" data-commerce-order>
+<form method="post" data-commerce-order="[+form_hash+]">
     <input type="hidden" name="formid" value="order">
 
     <div class="form-group [+name.errorClass+][+name.requiredClass+]">

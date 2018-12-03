@@ -142,7 +142,7 @@ class Commerce
         if ($code != $this->lang) {
             $this->lang = $code;
 
-            $this->lexicon = new Lexicon($modx, [
+            $this->lexicon = new Lexicon($this->modx, [
                 'langDir' => $this->langDir,
                 'lang'    => $this->lang,
             ]);
@@ -212,6 +212,25 @@ class Commerce
         return $this->processor;
     }
 
+    private function getCartsMarkup($hashes)
+    {
+        $result = [];
+
+        if (is_array($hashes)) {
+            foreach ($hashes as $hash) {
+                if (!is_string($hash)) {
+                    continue;
+                }
+
+                if (($params = $this->restoreParams($hash)) !== false) {
+                    $result[$hash] = $this->modx->runSnippet('Cart', $params);
+                }
+            }
+        }
+
+        return $result;
+    }
+
     public function processRoute($route)
     {
         switch ($route) {
@@ -236,22 +255,12 @@ class Commerce
                     'status' => 'failed',
                 ];
 
-                if (isset($_POST['hashes']) && is_array($_POST['hashes'])) {
-                    $manager = CartsManager::getManager();
+                if (isset($_POST['hashes'])) {
+                    $markup = $this->getCartsMarkup($_POST['hashes']);
 
-                    foreach ($_POST['hashes'] as $hash) {
-                        if (!is_string($hash)) {
-                            continue;
-                        }
-
-                        if (($params = $manager->restoreParams($hash)) !== false) {
-                            if (!isset($response['markup'])) {
-                                $response['markup'] = [];
-                                $response['status'] = 'success';
-                            }
-
-                            $response['markup'][$hash] = $this->modx->runSnippet('Cart', $params);
-                        }
+                    if (!empty($markup)) {
+                        $response['markup'] = $markup;
+                        $response['status'] = 'success';
                     }
                 }
 
@@ -262,7 +271,30 @@ class Commerce
             case 'commerce/data/update': {
                 if ($_SERVER['REQUEST_METHOD'] == 'POST' && !empty($_POST)) {
                     $this->loadProcessor()->updateRawData($_POST);
-                    echo json_encode(['status' => 'success']);
+
+                    $result = [
+                        'status' => 'success',
+                        'markup' => [],
+                    ];
+
+                    if (!empty($_POST['hashes']['form'])) {
+                        if (($params = $this->restoreParams($_POST['hashes']['form'])) !== false) {
+                            $controller = new \FormLister\Order($this->modx, $params);
+                            $output = $controller->getPaymentsAndDelivery();
+
+                            foreach ($output as $type => $markup) {
+                                $output[$type] = $this->lexicon->parseLang($markup);
+                            }
+                            
+                            $result['markup']['form'] = $output;
+                        }
+                    }
+
+                    if (!empty($_POST['hashes']['carts']) && is_array($_POST['hashes']['carts'])) {
+                        $result['markup']['carts'] = $this->getCartsMarkup($_POST['hashes']['carts']);
+                    }
+
+                    echo json_encode($result);
                     exit;
                 }
                 break;
@@ -405,5 +437,22 @@ class Commerce
         }
 
         return true;
+    }
+
+    public function storeParams(array $params)
+    {
+        $hash = md5(json_encode($params));
+        $_SESSION['commerce.' . $hash] = serialize($params);
+
+        return $hash;
+    }
+
+    public function restoreParams($hash)
+    {
+        if (!empty($_SESSION['commerce.' . $hash])) {
+            return unserialize($_SESSION['commerce.' . $hash]);
+        }
+
+        return false;
     }
 }

@@ -4,12 +4,13 @@ namespace FormLister;
 
 class Order extends Form
 {
-    public function render()
+    public function getPaymentsAndDelivery()
     {
         $processor = $this->modx->commerce->loadProcessor();
-        $delivery = $this->modx->commerce->getDeliveries();
+        $delivery  = $this->modx->commerce->getDeliveries();
+        $payments  = [];
+        $result    = [];
 
-        $payments = [];
         foreach ($this->modx->commerce->getPayments() as $code => $payment) {
             $payments[$code] = [
                 'title'  => $payment['title'],
@@ -22,6 +23,19 @@ class Order extends Form
             $rows   = $$type;
             $index  = 0;
             $markup = '';
+            $defaultValid = false;
+
+            foreach (array_keys($rows) as $code) {
+                if ($code == $default) {
+                    $defaultValid = true;
+                    break;
+                }
+            }
+
+            if (!$defaultValid) {
+                reset($rows);
+                $default = key($rows);
+            }
 
             foreach ($rows as $code => $row) {
                 $output .= $this->DLTemplate->parseChunk($this->getCFGDef($type . 'RowTpl'), [
@@ -33,7 +47,7 @@ class Order extends Form
                     'index'  => $index,
                 ]);
 
-                $markup .= isset($row['markup']) ? $row['markup'] : '';
+                $markup .= isset($row['markup']) && is_scalar($row['markup']) ? $row['markup'] : '';
             }
 
             if (!empty($output)) {
@@ -43,7 +57,18 @@ class Order extends Form
                 ]);
             }
 
-            $this->setPlaceholder($type, $output);
+            $result[$type] = $output;
+        }
+
+        return $result;
+    }
+
+    public function render()
+    {
+        $this->setPlaceholder('form_hash', $this->getCFGDef('form_hash'));
+
+        foreach ($this->getPaymentsAndDelivery() as $type => $markup) {
+            $this->setPlaceholder($type, $markup);
         }
 
         return parent::render();

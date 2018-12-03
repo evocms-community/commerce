@@ -12,10 +12,9 @@
 */
 
 if (!empty($modx->commerce)) {
-    $carts    = ci()->carts;
     $instance = isset($instance) ? $instance : 'products';
     $theme    = !empty($theme) ? $theme : '';
-    $cart     = $carts->getCart($instance);
+    $cart     = ci()->carts->getCart($instance);
     $lang     = $modx->getConfig('manager_language');
 
     if (!is_null($cart)) {
@@ -35,7 +34,7 @@ if (!empty($modx->commerce)) {
             'idType'     => 'documents',
             'documents'  => array_column($cart->getItems(), 'id'),
             'instance'   => $instance,
-            'hash'       => $carts->storeParams($params),
+            'hash'       => ci()->commerce->storeParams($params),
             'cart'       => $cart,
             'tree'       => 0,
         ]));
