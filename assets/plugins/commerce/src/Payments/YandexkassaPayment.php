@@ -65,7 +65,7 @@ class YandexkassaPayment extends Payment implements \Commerce\Interfaces\Payment
             foreach ($processor->getCart()->getItems() as $item) {
                 $receipt['items'][] = [
                     'description' => mb_substr($item['title'], 0, 64),
-                    'vat_code'    => $this->getSetting('var_code'),
+                    'vat_code'    => $this->getSetting('vat_code'),
                     'quantity'    => $item['count'],
                     'amount'      => [
                         'value'    => number_format($item['price'] * $item['count'], 2, '.', ''),
