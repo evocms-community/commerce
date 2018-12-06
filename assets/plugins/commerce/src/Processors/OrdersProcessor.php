@@ -273,7 +273,7 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
                 $markup = $payment['processor']->getPaymentMarkup();
 
                 if (!empty($markup)) {
-                    $FL->config->setConfig(['successTpl' => $markup]);
+                    $FL->config->setConfig(['successTpl' => '@CODE:' . $markup]);
                 }
             }
         }

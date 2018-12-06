@@ -65,6 +65,12 @@ class Order extends Form
 
     public function render()
     {
+        $items = $this->modx->commerce->getCart()->getItems();
+
+        if (empty($items)) {
+            return false;
+        }
+
         $this->setPlaceholder('form_hash', $this->getCFGDef('form_hash'));
 
         foreach ($this->getPaymentsAndDelivery() as $type => $markup) {
@@ -109,8 +115,11 @@ class Order extends Form
         }
 
         $processor->createOrder($items, $this->getFormData('fields'));
+
         parent::process();
+
         $processor->postProcessForm($this);
+        $this->renderTpl = $this->getCFGDef('successTpl', $this->lexicon->getMsg('form.default_successTpl'));
 
         $this->modx->invokeEvent('OnOrderProcessed', [
             'order' => $processor->getOrder(),
@@ -118,5 +127,16 @@ class Order extends Form
         ]);
 
         $this->redirect();
+    }
+
+    public function postProcess()
+    {
+        $this->setFormStatus(true);
+
+        if ($this->getCFGDef('deleteAttachments', 0)) {
+            $this->deleteAttachments();
+        }
+
+        $this->runPrepare('prepareAfterProcess');
     }
 }
