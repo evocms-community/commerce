@@ -82,7 +82,7 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
         ]);
 
         $values = $this->prepareValues($fields);
-        $values['amount']   = number_format((float)$total, 6);
+        $values['amount']   = number_format((float)$total, 6, '.', '');
         $values['currency'] = ci()->currency->getCurrencyCode();
 
         $this->modx->invokeEvent('OnBeforeOrderSaving', [
