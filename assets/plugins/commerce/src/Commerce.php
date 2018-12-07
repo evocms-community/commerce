@@ -285,7 +285,7 @@ class Commerce
                             foreach ($output as $type => $markup) {
                                 $output[$type] = $this->lexicon->parseLang($markup);
                             }
-                            
+
                             $result['markup']['form'] = $output;
                         }
                     }
