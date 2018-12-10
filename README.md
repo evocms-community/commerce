@@ -50,3 +50,11 @@ Show order form:
     &ccSenderTpl=`ccSenderTpl`
 !]
 ```
+
+Payments settings:
+
+```
+Process: POST /commerce/<payment_code>/payment-process
+Success: POST /commerce/<payment_code>/payment-success
+Failed:  POST /commerce/<payment_code>/payment-failed
+```
