@@ -125,7 +125,7 @@ $(document).on('submit click change', '[data-commerce-action]', function(e) {
     var $self  = $(this),
         action = $self.attr('data-commerce-action'),
         row    = $self.attr('data-commerce-row') || $self.closest('[data-commerce-row]').attr('data-commerce-row'),
-        data   = $self.data(),
+        data   = $self.serializeDataAttributes(),
         cart   = {
             instance: $self.attr('data-instance') || 'products',
             hash:     $self.closest('[data-commerce-cart]').attr('data-commerce-cart')
@@ -208,6 +208,24 @@ $(document).on('change', '[data-commerce-order]', function(e) {
         Commerce.updateOrderData($(this));
     }
 });
+
+$.fn.serializeDataAttributes = function() {
+    var data = {};
+
+    this.each(function() {
+        [].forEach.call(this.attributes, function(attr) {
+            if (/^data-/.test(attr.name)) {
+                var camelCaseName = attr.name.substr(5).replace(/-(.)/g, function ($0, $1) {
+                    return $1.toUpperCase();
+                });
+
+                data[camelCaseName] = attr.value;
+            }
+        });
+    });
+
+    return data;
+};
 
 
 /**
