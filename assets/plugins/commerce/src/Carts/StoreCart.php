@@ -69,6 +69,17 @@ class StoreCart extends SimpleCart implements Cart
             $items = [];
         }
 
+        foreach ($items as $row => $item) {
+            if (is_numeric($item)) {
+                $item = $this->prepareItem([
+                    'id'  => $item,
+                    'row' => $row,
+                ]);
+                $item['hash'] = $this->makeHash($item);
+                $items[$row] = $item;
+            }
+        }
+
         if (method_exists($this, 'validateItem')) {
             $items = array_filter($items, function($item) {
                 return $this->validateItem($item);
@@ -76,6 +87,5 @@ class StoreCart extends SimpleCart implements Cart
         }
 
         $this->items = $items;
-
     }
 }

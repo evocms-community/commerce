@@ -36,13 +36,20 @@ class ProductsCart extends StoreCart implements \Commerce\Interfaces\Cart
         parent::__construct(new SessionCartStore(), $instance);
     }
 
-    public function add(array $item)
+    public function prepareItem(array $item)
     {
+        $item = parent::prepareItem($item);
+
         if (!empty($item['id'])) {
             $item['name']  = $this->getItemName($item['id']);
             $item['price'] = $this->getItemPrice($item['id']);
         }
 
+        return $item;
+    }
+
+    public function add(array $item)
+    {
         $this->modx->invokeEvent('OnBeforeCartItemAdding', [
             'instance' => $this->instance,
             'item'     => &$item,

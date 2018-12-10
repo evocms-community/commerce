@@ -19,7 +19,7 @@ class ProductsList extends ProductsCart implements \Commerce\Interfaces\Cart
         return $this->defaults['price'];
     }
 
-    protected function prepareItem(array $item)
+    public function prepareItem(array $item)
     {
         $item['count'] = 1;
         return parent::prepareItem($item);

@@ -29,7 +29,13 @@ class CookiesCartStore implements \Commerce\Interfaces\CartStore
     public function save(array $items)
     {
         $secure  = ci()->modx->getConfig('server_protocol') == 'http';
-        $encoded = base64_encode(json_encode($items));
+        $ids = [];
+
+        foreach ($items as $row => $item) {
+            $ids[$row] = $item['id'];
+        }
+
+        $encoded = base64_encode(json_encode($ids));
 
         unset($_COOKIE[$this->instance]);
         setcookie($this->instance, '', time() - 3600, '/', $this->domain);

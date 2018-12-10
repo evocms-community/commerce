@@ -56,7 +56,7 @@ class SimpleCart implements \Commerce\Interfaces\Cart
         return true;
     }
 
-    protected function prepareItem(array $item)
+    public function prepareItem(array $item)
     {
         $item = array_filter(array_merge($this->defaults, $item), function($key) {
             return isset($this->defaults[$key]);
