@@ -63,6 +63,19 @@ class StoreCart extends SimpleCart implements Cart
     public function setStore(CartStore $store)
     {
         $this->store = $store;
-        $this->items = $store->load($this->instance);
+        $items = $store->load($this->instance);
+
+        if (!is_array($items)) {
+            $items = [];
+        }
+
+        if (method_exists($this, 'validateItem')) {
+            $items = array_filter($items, function($item) {
+                return $this->validateItem($item);
+            });
+        }
+
+        $this->items = $items;
+
     }
 }

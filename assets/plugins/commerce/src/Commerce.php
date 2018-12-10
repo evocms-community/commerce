@@ -39,14 +39,17 @@ class Commerce
         $this->currency = new Currency($modx);
 
         $this->backendLang = $modx->getConfig('manager_language');
+    }
 
-        $modx->invokeEvent('OnInitializeCommerce');
+    public function initializeCommerce()
+    {
+        $this->modx->invokeEvent('OnInitializeCommerce');
 
         $carts = ci()->carts;
         $carts->registerStore('session', new SessionCartStore());
 
         if (!$carts->has('products')) {
-            $this->cart = new ProductsCart($modx);
+            $this->cart = new ProductsCart($this->modx);
             $this->cart->setCurrency($this->currency->getCurrencyCode());
             $carts->addCart('products', $this->cart);
         }
@@ -56,7 +59,7 @@ class Commerce
 
         foreach (['wishlist', 'comparison'] as $listname) {
             if (!$carts->has($listname)) {
-                $list = new ProductsList($modx, $listname);
+                $list = new ProductsList($this->modx, $listname);
                 $list->setStore(new CookiesCartStore($listname));
                 $carts->addCart($listname, $list);
             }

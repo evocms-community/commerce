@@ -51,6 +51,7 @@ if (!class_exists('Commerce\\Commerce')) {
 
 if (empty($modx->commerce) || isset($modx->commerce) && !($modx->commerce instanceof Commerce\Commerce)) {
     $modx->commerce = $ci->commerce;
+    $modx->commerce->initializeCommerce();
 }
 
 $e = &$modx->Event;
