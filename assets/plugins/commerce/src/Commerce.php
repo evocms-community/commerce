@@ -283,10 +283,11 @@ class Commerce
                     if (!empty($_POST['hashes']['form'])) {
                         if (($params = $this->restoreParams($_POST['hashes']['form'])) !== false) {
                             $controller = new \FormLister\Order($this->modx, $params);
+                            $controller->initForm();
                             $output = $controller->getPaymentsAndDelivery();
 
                             foreach ($output as $type => $markup) {
-                                $output[$type] = $this->lexicon->parseLang($markup);
+                                $output[$type] = $controller->parseChunk('@CODE:' . $markup, [], true);
                             }
 
                             $result['markup']['form'] = $output;
