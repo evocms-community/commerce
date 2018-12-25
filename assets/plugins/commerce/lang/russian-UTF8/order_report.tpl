@@ -1,31 +1,19 @@
+<p>Новый заказ на сайте [(site_url)]</p>
+
+<h4>Данные покупателя:</h4>
+
 <p>
-    Новый заказ на сайте [(site_url)]
+    [+name.value+], [+email.value+], [+phone.value+]<br>
+    Способ доставки: [+delivery_method_title+]<br>
+    Способ оплаты: [+payment_method_title+]
 </p>
 
-<table>
-    <tr>
-        <th colspan="5">
-            Данные покупателя:
-        </th>
-    </tr>
+<h4>Состав заказа:</h4>
 
-    <tr>
-        <td colspan="5">
-            [+name.value+], [+email.value+], [+phone.value+]<br>
-            Способ доставки: [+delivery_method_title+]<br>
-            Способ оплаты: [+payment_method_title+]
-        </td>
-    </tr>
-
-    <tr>
-        <th colspan="5">
-            Состав заказа:
-        </th>
-    </tr>
-
-    [!Cart?
-        &instance=`order`
-        &tpl=`@FILE:order_report_items_row`
-        &ownerTPL=`@FILE:order_report_items`
-    !]
-</table>
+[!Cart?
+    &instance=`order`
+    &tpl=`@FILE:order_report_items_row`
+    &ownerTPL=`@FILE:order_report_items`
+    &subtotalsRowTpl=`@FILE:order_report_subtotals_row`
+    &urlScheme=`full`
+!]
