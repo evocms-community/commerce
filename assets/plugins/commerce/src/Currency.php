@@ -121,12 +121,16 @@ class Currency
         $amount = str_replace(',', '.', $amount);
         $currency = $this->getCurrency($code);
 
+        if (!is_numeric($amount)) {
+            return $amount;
+        }
+
         return $currency['left'] . number_format($amount, $currency['decimals'], $currency['decsep'], $currency['thsep']) . $currency['right'];
     }
 
     public function convert($amount, $from, $to)
     {
-        if (!is_scalar($amount)) {
+        if (!is_numeric($amount)) {
             return $amount;
         }
 
