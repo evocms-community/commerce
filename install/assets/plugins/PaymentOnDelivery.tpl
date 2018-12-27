@@ -17,7 +17,7 @@
 if (!empty($modx->commerce)) {
     $processor = $modx->commerce->loadProcessor();
 
-    if ($processor->isOrderStarted() && $processor->getCurrentDelivery() != 'pickup') {
+    if ($processor->getCurrentDelivery() != 'pickup') {
         $class = new \Commerce\Payments\Payment($modx, $params);
 
         if (empty($params['title'])) {
