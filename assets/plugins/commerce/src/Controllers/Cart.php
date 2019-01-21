@@ -108,10 +108,8 @@ class CartDocLister extends site_contentDocLister
                 $doc['count'] = (float)$doc['count'];
                 $count += $doc['count'];
 
-                if (!empty($doc['price'])) {
-                    $doc['total'] = $doc['price'] * $doc['count'];
-                    $total += $doc['total'];
-                }
+                $doc['total'] = $doc['price'] * $doc['count'];
+                $total += $doc['total'];
             }
 
             $this->_docs[$hash] = $doc;
