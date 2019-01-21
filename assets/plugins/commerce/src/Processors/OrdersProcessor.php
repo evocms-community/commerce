@@ -72,7 +72,7 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
         $total = 0;
 
         foreach ($items as $item) {
-            $total += $item['price'] * $item['count'];
+            $total += (float)$item['price'] * (float)$item['count'];
         }
 
         $subtotals = [];

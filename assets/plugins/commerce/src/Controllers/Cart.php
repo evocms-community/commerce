@@ -104,6 +104,8 @@ class CartDocLister extends site_contentDocLister
             $doc['id']   = $doc['docid'];
 
             if (!empty($doc['count'])) {
+                $doc['price'] = (float)$doc['price'];
+                $doc['count'] = (float)$doc['count'];
                 $count += $doc['count'];
 
                 if (!empty($doc['price'])) {
