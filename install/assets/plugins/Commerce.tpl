@@ -8,7 +8,7 @@
  * @version     0.1.0
  * @author      mnoskov
  * @internal    @events OnWebPageInit,OnManagerPageInit,OnPageNotFound,OnManagerMenuPrerender,OnCacheUpdate
- * @internal    @properties &payment_success_page_id=Page ID for redirect after successfull payment;text; &payment_failed_page_id=Page ID for redirect after payment error;text; &status_id_after_payment=Status ID after payment;text;
+ * @internal    @properties &payment_success_page_id=Page ID for redirect after successfull payment;text; &payment_failed_page_id=Page ID for redirect after payment error;text; &status_id_after_payment=Status ID after payment;text; &product_templates=Product templates IDs;text; &title_field=Product title field name;text;pagetitle &price_field=Product price field name;text;price
  * @internal    @modx_category Commerce
  * @internal    @disabled 1
  * @internal    @installset base
@@ -80,7 +80,7 @@ switch ($e->name) {
         break;
     }
 
-     case 'OnPageNotFound': {
+    case 'OnPageNotFound': {
         $url = trim(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), '/');
 
         if (strpos($url, 'commerce') === 0) {
