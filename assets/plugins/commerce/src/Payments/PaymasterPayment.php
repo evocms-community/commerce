@@ -154,7 +154,7 @@ class PaymasterPayment extends Payment implements \Commerce\Interfaces\Payment
 
     public function getRequestPaymentHash()
     {
-        if (isset($_REQUEST['COMMERCE_PAYMENT_HASH']) && is_numeric($_REQUEST['COMMERCE_PAYMENT_HASH'])) {
+        if (isset($_REQUEST['COMMERCE_PAYMENT_HASH']) && is_scalar($_REQUEST['COMMERCE_PAYMENT_HASH'])) {
             return $_REQUEST['COMMERCE_PAYMENT_HASH'];
         }
 

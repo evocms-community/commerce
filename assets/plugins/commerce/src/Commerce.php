@@ -353,7 +353,7 @@ class Commerce
 
                         $payment_hash = $paymentProcessor->getRequestPaymentHash();
 
-                        if (!empty($payment_hash) && is_numeric($payment_hash)) {
+                        if (!empty($payment_hash) && is_scalar($payment_hash)) {
                             $payment = $this->loadProcessor()->loadPaymentByHash($payment_hash);
 
                             if (!empty($payment)) {
