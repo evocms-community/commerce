@@ -41,6 +41,7 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
             'options'    => !empty($item['options']) ? $this->modx->db->escape(json_encode($item['options'], JSON_UNESCAPED_UNICODE)) : null,
             'meta'       => !empty($item['meta']) ? $this->modx->db->escape(json_encode($item['meta'], JSON_UNESCAPED_UNICODE)) : null,
             'position'   => $position,
+            'created_at' => date('Y-m-d H:i:s'),
         ];
     }
 

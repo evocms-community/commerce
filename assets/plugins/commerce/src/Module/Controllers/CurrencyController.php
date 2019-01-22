@@ -175,7 +175,9 @@ class CurrencyController extends Controller implements \Commerce\Module\Interfac
             if (!empty($currency['id'])) {
                 $db->update($fields, $this->table, "`id` = '" . $currency['id'] . "'");
             } else {
-                $currency['id'] = $db->insert($fields, $this->table);
+                $currency['id'] = $db->insert(array_merge($fields, [
+                    'created_at' => date('Y-m-d H:i:s'),
+                ]), $this->table);
             }
 
             if ($fields['default'] == 1) {
