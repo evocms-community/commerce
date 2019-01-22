@@ -5,16 +5,16 @@ namespace Commerce\Module;
 class FlashMessages
 {
     private $key = 'commerce.module.messages';
+    private $previous = [];
 
     public function __construct()
     {
-        if (empty($_SESSION[$this->key])) {
-            $_SESSION[$this->key] = [];
-        } else {
-            register_shutdown_function(function() {
-                $this->clean();
-            });
+        if (!empty($_SESSION[$this->key])) {
+            $this->previous = $_SESSION[$this->key];
+            $this->clean();
         }
+
+        $_SESSION[$this->key] = [];
 
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             foreach ($_POST as $key => $value) {
@@ -25,14 +25,13 @@ class FlashMessages
 
     public function has($name)
     {
-        return isset($_SESSION[$this->key][$name]);
+        return isset($this->previous[$name]);
     }
 
     public function get($name)
     {
-        if (isset($_SESSION[$this->key][$name])) {
-            $result = $_SESSION[$this->key][$name];
-            unset($_SESSION[$this->key][$name]);
+        if (isset($this->previous[$name])) {
+            $result = $this->previous[$name];
             return $result;
         }
 
