@@ -47,6 +47,10 @@ if (!class_exists('Commerce\\Commerce')) {
         require_once MODX_BASE_PATH . 'assets/snippets/DocLister/lib/DLTemplate.class.php';
         return DLTemplate::getInstance($modx);
     });
+
+    $ci->set('flash', function($ci) {
+        return new Commerce\Module\FlashMessages;
+    });
 }
 
 if (empty($modx->commerce) || isset($modx->commerce) && !($modx->commerce instanceof Commerce\Commerce)) {
@@ -61,6 +65,19 @@ switch ($e->name) {
         $modx->regClientScript('assets/plugins/commerce/js/commerce.js', [
             'version' => $modx->commerce->getVersion(),
         ]);
+
+        $order_id = $ci->flash->get('last_order_id');
+
+        if (!empty($order_id) && is_numeric($order_id)) {
+            $modx->commerce->loadProcessor()->populateOrderPlaceholders($order_id);
+        }
+
+        $payment_id = $ci->flash->get('last_payment_id');
+
+        if (!empty($payment_id) && is_numeric($payment_id)) {
+            $modx->commerce->loadProcessor()->populatePaymentPlaceholders($payment_id);
+        }
+
         break;
     }
 

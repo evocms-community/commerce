@@ -16,6 +16,7 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
     protected $tableStatuses = 'commerce_order_statuses';
     protected $tableProducts = 'commerce_order_products';
     protected $tableHistory  = 'commerce_order_history';
+    protected $tablePayments = 'commerce_order_payments';
 
     protected $sessionKey = 'commerce.order';
 
@@ -26,6 +27,7 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
         $this->tableProducts = $modx->getFullTablename($this->tableProducts);
         $this->tableStatuses = $modx->getFullTablename($this->tableStatuses);
         $this->tableHistory  = $modx->getFullTablename($this->tableHistory);
+        $this->tablePayments = $modx->getFullTablename($this->tablePayments);
     }
 
     protected function prepareItem($order_id, $position, $item)
@@ -183,7 +185,7 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
 
     public function getOrder()
     {
-        if (!empty($this->order) && !empty($this->order_id)) {
+        if (empty($this->order) && !empty($this->order_id)) {
             $this->loadOrder($this->order_id);
         }
 
@@ -262,9 +264,16 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
                 'payment' => $payment,
             ]);
 
+            ci()->flash->set('last_order_id', $order['id']);
+
+            $lang = $this->modx->commerce->getUserLanguage('order');
+            $successTpl = '@CODE:' . $lang['order.redirecting_to_payment'];
+            $redirectToPayment = false;
+
             $link = $payment['processor']->getPaymentLink();
 
             if (!empty($link)) {
+                $redirectToPayment = true;
                 $FL->config->setConfig(['redirectTo' => [
                     'page'   => $link,
                     'header' => 'HTTP/1.1 301 Moved Permanently',
@@ -273,27 +282,77 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
                 $markup = $payment['processor']->getPaymentMarkup();
 
                 if (!empty($markup)) {
-                    $FL->config->setConfig(['successTpl' => '@CODE:' . $markup]);
+                    $successTpl .= $markup;
+                    $redirectToPayment = true;
                 }
+            }
+
+            if ($redirectToPayment) {
+                $FL->config->setConfig(['successTpl' => $successTpl]);
             }
         }
     }
 
-    public function processPayment($order_id, $amount)
+    public function loadPayment($payment_id)
     {
+        $db = ci()->db;
+        $payment = $db->getRow($db->select('*', $this->tablePayments, "`id` = '" . intval($payment_id) . "'"));
+
+        if (!empty($payment)) {
+            return $payment;
+        }
+
+        return null;
+    }
+
+    public function loadPaymentByHash($hash)
+    {
+        $db = ci()->db;
+        $payment = $db->getRow($db->select('*', $this->tablePayments, "`hash` = '" . $db->escape($hash) . "'"));
+
+        if (!empty($payment)) {
+            return $payment;
+        }
+
+        return null;
+    }
+
+    public function processPayment($payment_id, $amount)
+    {
+        $db = ci()->db;
+        $payment = $this->loadPayment($payment_id);
+
+        if (empty($payment) || !empty($payment['paid'])) {
+            return false;
+        }
+
+        $order_id = $payment['order_id'];
+
         $order = $this->loadOrder($order_id);
 
-        if (!is_null($order) && $order['amount'] == $amount) {
+        if (is_null($order)) {
+            return false;
+        }
+
+        $db->update(['paid' => 1], $this->tablePayments, "`id` = '" . intval($payment_id) . "'");
+
+        $total = 0;
+        $query = $db->select('*', $this->tablePayments, "`order_id` = '$order_id' AND `paid` > '0'");
+
+        while ($row = $db->getRow($query)) {
+            $total += (float)$row['amount'];
+        }
+
+        if ($order['amount'] >= $amount) {
             $status = $this->modx->commerce->getSetting('status_id_after_payment', 3);
             $lang = $this->modx->commerce->getUserLanguage('order');
             $comment = ci()->tpl->parseChunk($lang['order.order_paid'], [
                 'order_id' => $order_id,
             ]);
             $this->changeStatus($order_id, $status, $comment, true);
-            return true;
         }
 
-        return false;
+        return true;
     }
 
     public function startOrder()
@@ -321,6 +380,32 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
         }
 
         return [];
+    }
+
+    public function populateOrderPlaceholders($order_id)
+    {
+        $order = $this->loadOrder($order_id);
+
+        if (!empty($order)) {
+            $this->modx->setPlaceholder('commerce_order', $order);
+
+            foreach ($order as $key => $value) {
+                $this->modx->setPlaceholder('commerce_order.' . $key, $value);
+            }
+        }
+    }
+
+    public function populatePaymentPlaceholders($payment_id)
+    {
+        $payment = $this->loadPayment($payment_id);
+
+        if (!empty($payment) && $payment['paid'] == 1) {
+            $this->modx->setPlaceholder('commerce_payment', $payment);
+
+            foreach ($payment as $key => $value) {
+                $this->modx->setPlaceholder('commerce_payment.' . $key, $value);
+            }
+        }
     }
 
     public function getCurrentDelivery()

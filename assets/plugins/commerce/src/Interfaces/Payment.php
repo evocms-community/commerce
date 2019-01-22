@@ -17,4 +17,8 @@ interface Payment
     public function handleSuccess();
 
     public function handleError();
+
+    public function createPayment($order_id, $amount);
+
+    public function getRequestPaymentHash();
 }

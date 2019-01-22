@@ -10,5 +10,5 @@ interface Processor
 
     public function postProcessForm($FL);
 
-    public function processPayment($order_id, $amount);
+    public function processPayment($payment_id, $amount);
 }

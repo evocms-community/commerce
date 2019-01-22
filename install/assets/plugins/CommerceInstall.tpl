@@ -90,8 +90,8 @@ $modx->db->query("
         `currency` varchar(8) NOT NULL,
         `fields` text,
         `status_id` tinyint(3) unsigned NOT NULL DEFAULT '0',
-        `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-        `updated_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+        `created_at` timestamp NULL DEFAULT NULL,
+        `updated_at` timestamp NULL DEFAULT ON UPDATE CURRENT_TIMESTAMP,
         PRIMARY KEY (`id`)
     ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 ");
@@ -120,10 +120,25 @@ $modx->db->query("
         `comment` text NOT NULL,
         `notify` tinyint(1) unsigned NOT NULL DEFAULT '1',
         `user_id` int(11) DEFAULT NULL,
-        `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        `created_at` timestamp NULL DEFAULT NULL,
         PRIMARY KEY (`id`),
         KEY `order_id` (`order_id`,`status_id`),
         KEY `user_id` (`user_id`)
+    ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
+");
+
+$modx->db->query("
+    CREATE TABLE IF NOT EXISTS " . $modx->getFullTablename('commerce_order_payments') . " (
+        `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+        `order_id` int(10) unsigned NOT NULL,
+        `amount` float NOT NULL DEFAULT '0',
+        `paid` tinyint(1) unsigned NOT NULL DEFAULT '0',
+        `hash` varchar(16) NOT NULL,
+        `created_at` timestamp NULL DEFAULT NULL,
+        `updated_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+        PRIMARY KEY (`id`),
+        KEY `order_id` (`order_id`),
+        KEY `hash` (`hash`)
     ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 ");
 
@@ -167,8 +182,8 @@ if (!tableExists($modx, $table)) {
             `thsep` varchar(8) NOT NULL,
             `active` tinyint(1) unsigned NOT NULL DEFAULT '1',
             `default` tinyint(1) unsigned NOT NULL DEFAULT '0',
-            `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-            `updated_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+            `created_at` timestamp NULL DEFAULT NULL,
+            `updated_at` timestamp NULL DEFAULT ON UPDATE CURRENT_TIMESTAMP,
             PRIMARY KEY (`id`),
             UNIQUE KEY `code` (`code`)
         ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;

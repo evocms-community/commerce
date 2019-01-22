@@ -336,18 +336,34 @@ class Commerce
                 return;
             }
 
+            $paymentProcessor = $payment['processor'];
+
             switch ($parts[2]) {
                 case 'payment-process': {
-                    if ($payment['processor']->handleCallback()) {
+                    if ($paymentProcessor->handleCallback()) {
                         exit;
                     }
                     break;
                 }
 
                 case 'payment-success': {
-                    if ($payment['processor']->handleSuccess()) {
+                    if ($paymentProcessor->handleSuccess()) {
                         $docid = $this->getSetting('payment_success_page_id', $this->modx->getConfig('site_start'));
                         $url   = $this->modx->makeUrl($docid);
+
+                        $payment_hash = $paymentProcessor->getRequestPaymentHash();
+
+                        if (!empty($payment_hash) && is_numeric($payment_hash)) {
+                            $payment = $this->loadProcessor()->loadPaymentByHash($payment_hash);
+
+                            if (!empty($payment)) {
+                                ci()->flash->setMultiple([
+                                    'last_order_id'   => $payment['order_id'],
+                                    'last_payment_id' => $payment['id'],
+                                ]);
+                            }
+                        }
+
                         $this->modx->sendRedirect($url);
                         exit;
                     }
@@ -355,7 +371,7 @@ class Commerce
                 }
 
                 case 'payment-failed': {
-                    if ($payment['processor']->handleError()) {
+                    if ($paymentProcessor->handleError()) {
                         $docid = $this->getSetting('payment_failed_page_id', $this->modx->getConfig('site_start'));
                         $url   = $this->modx->makeUrl($docid);
                         $this->modx->sendRedirect($url);

@@ -41,13 +41,16 @@ class PaymasterPayment extends Payment implements \Commerce\Interfaces\Payment
         $order     = $processor->getOrder();
         $fields    = $order['fields'];
         $currency  = ci()->currency->getCurrency($order['currency']);
+        $payment   = $this->createPayment($order['id'], ci()->currency->convertToDefault($order['amount'], $currency['code']));
 
         $data = [
-            'LMI_MERCHANT_ID'    => $this->getSetting('shop_id'),
-            'LMI_PAYMENT_AMOUNT' => $order['amount'],
-            'LMI_CURRENCY'       => $currency['code'],
-            'LMI_PAYMENT_NO'     => $order['id'],
-            'LMI_PAYMENT_DESC'   => \DLTemplate::getInstance($this->modx)->parseChunk($this->lang['payments.payment_description'], [
+            'COMMERCE_PAYMENT_ID'   => $payment['id'],
+            'COMMERCE_PAYMENT_HASH' => $payment['hash'],
+            'LMI_MERCHANT_ID'       => $this->getSetting('shop_id'),
+            'LMI_PAYMENT_AMOUNT'    => $order['amount'],
+            'LMI_CURRENCY'          => $currency['code'],
+            'LMI_PAYMENT_NO'        => $order['id'],
+            'LMI_PAYMENT_DESC'      => \DLTemplate::getInstance($this->modx)->parseChunk($this->lang['payments.payment_description'], [
                 'order_id'  => $order['id'],
                 'site_name' => $this->modx->getConfig('site_name'),
             ]),
@@ -106,6 +109,8 @@ class PaymasterPayment extends Payment implements \Commerce\Interfaces\Payment
             empty($data['LMI_PAID_AMOUNT']) ||
             empty($data['LMI_PAID_CURRENCY']) ||
             empty($data['LMI_PAYMENT_SYSTEM']) ||
+            empty($data['COMMERCE_PAYMENT_ID']) ||
+            empty($data['COMMERCE_PAYMENT_HASH']) ||
             !isset($data['LMI_HASH'])
         ) {
             $this->modx->logEvent(0, 3, 'Not enough data', 'Commerce Paymaster Payment');
@@ -138,12 +143,21 @@ class PaymasterPayment extends Payment implements \Commerce\Interfaces\Payment
         $processor = $this->modx->commerce->loadProcessor();
 
         try {
-            $processor->processPayment($data['LMI_PAYMENT_NO'], floatval($data['LMI_PAID_AMOUNT']));
+            $processor->processPayment($data['COMMERCE_PAYMENT_ID'], floatval($data['LMI_PAID_AMOUNT']));
         } catch (\Exception $e) {
             $this->modx->logEvent(0, 3, 'JSON processing failed: ' . $e->getMessage(), 'Commerce Paymaster Payment');
             return false;
         }
 
         return true;
+    }
+
+    public function getRequestPaymentHash()
+    {
+        if (isset($_REQUEST['COMMERCE_PAYMENT_HASH']) && is_numeric($_REQUEST['COMMERCE_PAYMENT_HASH'])) {
+            return $_REQUEST['COMMERCE_PAYMENT_HASH'];
+        }
+
+        return null;
     }
 }

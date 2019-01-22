@@ -8,6 +8,7 @@ class Payment implements \Commerce\Interfaces\Payment
 
     protected $modx;
     protected $lang;
+    protected $payment_id = null;
 
     public function __construct($modx, array $params = [])
     {
@@ -49,5 +50,27 @@ class Payment implements \Commerce\Interfaces\Payment
     public function handleError()
     {
         return true;
+    }
+
+    public function createPayment($order_id, $amount)
+    {
+        $db = ci()->db;
+
+        $payment = [
+            'order_id'   => $order_id,
+            'amount'     => $amount,
+            'hash'       => uniqid(),
+            'created_at' => date('Y-m-d H:i:s'),
+        ];
+
+        $db->insert($payment, ci()->modx->getFullTablename('commerce_order_payments'));
+        $payment['id'] = $db->getInsertId();
+
+        return $payment;
+    }
+
+    public function getRequestPaymentHash()
+    {
+        return null;
     }
 }
