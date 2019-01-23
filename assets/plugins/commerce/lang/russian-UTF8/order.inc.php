@@ -32,7 +32,7 @@ return [
     'order.order_info' => 'Сведения о заказе',
     'order.order_id' => 'Номер заказа',
     'order.created_at' => 'Дата и время создания',
-    'order.' => '',
+    'order.redirecting_to_payment' => 'Перенаправление на оплату...',
     'order.' => '',
     'order.' => '',
     'order.' => '',
