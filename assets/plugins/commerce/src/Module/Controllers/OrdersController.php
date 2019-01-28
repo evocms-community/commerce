@@ -18,7 +18,8 @@ class OrdersController extends Controller implements \Commerce\Module\Interfaces
     {
         return [
             'index'         => 'index',
-            'edit'          => 'show',
+            'edit'          => 'edit',
+            'view'          => 'view',
             'change-status' => 'changeStatus',
         ];
     }
@@ -69,7 +70,7 @@ class OrdersController extends Controller implements \Commerce\Module\Interfaces
         ]);
     }
 
-    public function show()
+    public function view()
     {
         $order_id = filter_input(INPUT_GET, 'order_id', FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
 

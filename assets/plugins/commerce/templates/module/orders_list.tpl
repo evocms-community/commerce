@@ -30,7 +30,7 @@
                                 <?php endforeach; ?>
                 
                                 <td>
-                                    <a href="<?= $this->module->makeUrl('orders/edit', 'order_id=' . $order['id']) ?>" class="btn btn-primary">
+                                    <a href="<?= $this->module->makeUrl('orders/view', 'order_id=' . $order['id']) ?>" class="btn btn-primary">
                                         <?= $lang['module.show_order_btn'] ?>
                                     </a>
                                 </td>
