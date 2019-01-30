@@ -56,6 +56,10 @@ class PaymasterPayment extends Payment implements \Commerce\Interfaces\Payment
             ]),
         ];
 
+        if (!empty($this->getSetting('debug'))) {
+            $data['LMI_SIM_MODE'] = $this->getSetting('debug_mode');
+        }
+
         if (!empty($order['email']) && filter_var($order['email'], FILTER_VALIDATE_EMAIL)) {
             $data['LMI_PAYER_EMAIL'] = $order['email'];
         }
@@ -127,7 +131,7 @@ class PaymasterPayment extends Payment implements \Commerce\Interfaces\Payment
             $data['LMI_PAID_AMOUNT'],
             $data['LMI_PAID_CURRENCY'],
             $data['LMI_PAYMENT_SYSTEM'],
-            isset( $data['LMI_SIM_MODE'] ) ? $data['LMI_SIM_MODE'] : '',
+            isset($data['LMI_SIM_MODE']) ? $data['LMI_SIM_MODE'] : '',
             $this->getSetting('secret'),
         ]), true));
 
