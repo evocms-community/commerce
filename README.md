@@ -1,4 +1,6 @@
-# Commerce
+## Commerce
+
+<img src="https://img.shields.io/badge/CMS-%3E%3D1.4.6-green.svg"> <img src="https://img.shields.io/badge/PHP-%3E=5.6-green.svg?php=5.6">
 
 Add product to cart:
 ```html
