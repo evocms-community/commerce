@@ -91,7 +91,7 @@ $modx->db->query("
         `fields` text,
         `status_id` tinyint(3) unsigned NOT NULL DEFAULT '0',
         `created_at` timestamp NULL DEFAULT NULL,
-        `updated_at` timestamp NULL DEFAULT ON UPDATE CURRENT_TIMESTAMP,
+        `updated_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
         PRIMARY KEY (`id`)
     ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 ");
@@ -183,7 +183,7 @@ if (!tableExists($modx, $table)) {
             `active` tinyint(1) unsigned NOT NULL DEFAULT '1',
             `default` tinyint(1) unsigned NOT NULL DEFAULT '0',
             `created_at` timestamp NULL DEFAULT NULL,
-            `updated_at` timestamp NULL DEFAULT ON UPDATE CURRENT_TIMESTAMP,
+            `updated_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
             PRIMARY KEY (`id`),
             UNIQUE KEY `code` (`code`)
         ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
