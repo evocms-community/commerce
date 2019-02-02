@@ -138,5 +138,6 @@ class Order extends Form
         }
 
         $this->runPrepare('prepareAfterProcess');
+        $this->modx->commerce->getCart()->clean();
     }
 }
