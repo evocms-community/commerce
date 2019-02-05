@@ -325,14 +325,30 @@ class Commerce
                     exit;
                 }
 
-                exit;
+                break;
+            }
+
+            case 'commerce/module/action': {
+                if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+                    $manager = new \Commerce\Module\Manager($this->modx, []);
+
+                    $route = filter_input(INPUT_POST, 'route', FILTER_VALIDATE_REGEXP, ['options' => [
+                        'regexp'  => '/^[a-z]+(:?\/[a-z-]+)*$/',
+                        'default' => '',
+                    ]]);
+
+                    echo $manager->processRoute($route);
+                    exit;
+                }
+
+                break;
             }
         }
 
         if (preg_match('/^commerce\/([a-z-_]+?)\/([a-z-]+?)$/', $route, $parts)) {
-            $payment = $this->getPayment($parts[1]);
-
-            if (is_null($payment)) {
+            try {
+                $payment = $this->getPayment($parts[1]);
+            } catch (\Exception $e) {
                 return;
             }
 
