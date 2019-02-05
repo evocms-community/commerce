@@ -7,7 +7,8 @@ return [
     
     'currency.title' => 'Euro',
     'currency.code' => 'EUR',
-    'currency.right_symbol' => '€ ',
+    'currency.left_symbol' => '€ ',
+    'currency.right_symbol' => '',
     'currency.decimals' => '2',
     'currency.decimals_separator' => ',',
     'currency.thousands_separator' => '.',

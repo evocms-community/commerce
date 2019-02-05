@@ -194,6 +194,7 @@ if (!tableExists($modx, $table)) {
     $modx->db->insert([
         'title'    => $lang['currency.title'],
         'code'     => $lang['currency.code'],
+        'left'     => $lang['currency.left_symbol'],
         'right'    => $lang['currency.right_symbol'],
         'decimals' => $lang['currency.decimals'],
         'decsep'   => $lang['currency.decimals_separator'],
