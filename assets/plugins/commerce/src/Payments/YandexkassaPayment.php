@@ -40,6 +40,8 @@ class YandexkassaPayment extends Payment implements \Commerce\Interfaces\Payment
         $processor = $this->modx->commerce->loadProcessor();
         $order     = $processor->getOrder();
         $fields    = $order['fields'];
+        $currency  = ci()->currency->getCurrency($order['currency']);
+        $payment   = $this->createPayment($order['id'], ci()->currency->convertToDefault($order['amount'], $currency['code']));
 
         $data = [
             'amount' => [
@@ -55,7 +57,9 @@ class YandexkassaPayment extends Payment implements \Commerce\Interfaces\Payment
                 'return_url' => $this->modx->getConfig('site_url') . 'commerce/yandexkassa/payment-success',
             ],
             'metadata'     => [
-                'order_id' => $order['id'],
+                'order_id'     => $order['id'],
+                'payment_id'   => $payment['id'],
+                'payment_hash' => $payment['hash'],
             ],
         ];
 
@@ -130,7 +134,7 @@ class YandexkassaPayment extends Payment implements \Commerce\Interfaces\Payment
             $processor = $this->modx->commerce->loadProcessor();
 
             try {
-                $processor->processPayment($payment['metadata']['order_id'], floatval($payment['amount']['value']));
+                $processor->processPayment($payment['metadata']['payment_id'], floatval($payment['amount']['value']));
             } catch (\Exception $e) {
                 $this->modx->logEvent(0, 3, 'JSON processing failed: ' . $e->getMessage(), 'Commerce YandexKassa Payment');
                 return false;
@@ -144,7 +148,28 @@ class YandexkassaPayment extends Payment implements \Commerce\Interfaces\Payment
         return true;
     }
 
-    protected function request($method, $data)
+    public function getRequestPaymentHash()
+    {
+        if (!empty($_SERVER['HTTP_REFERER']) && is_scalar($_SERVER['HTTP_REFERER'])) {
+            $url = parse_url($_SERVER['HTTP_REFERER']);
+
+            if (isset($url['query']) && isset($url['host']) && $url['host'] == 'money.yandex.ru') {
+                parse_str($url['query'], $query);
+
+                if (isset($query['orderId']) && is_scalar($query['orderId'])) {
+                    $response = $this->request('payments/' . $query['orderId']);
+
+                    if (!empty($response) && !empty($response['metadata']['payment_hash'])) {
+                        return $response['metadata']['payment_hash'];
+                    }
+                }
+            }
+        }
+
+        return null;
+    }
+
+    protected function request($method, $data = [])
     {
         $url     = 'https://payment.yandex.net/api/v3/';
         $shop_id = $this->getSetting('shop_id');
@@ -156,8 +181,6 @@ class YandexkassaPayment extends Payment implements \Commerce\Interfaces\Payment
             CURLOPT_URL            => $url . $method,
             CURLOPT_HTTPAUTH       => CURLAUTH_BASIC,
             CURLOPT_USERPWD        => "$shop_id:$secret",    
-            CURLOPT_POSTFIELDS     => json_encode($data, JSON_UNESCAPED_UNICODE),
-            CURLOPT_POST           => true,
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_VERBOSE        => false,
             CURLOPT_SSL_VERIFYHOST => false,
@@ -169,6 +192,13 @@ class YandexkassaPayment extends Payment implements \Commerce\Interfaces\Payment
                 'charset="utf-8"',
             ],
         ]);
+
+        if (!empty($data)) {
+            curl_setopt_array($curl, [
+                CURLOPT_POSTFIELDS => json_encode($data, JSON_UNESCAPED_UNICODE),
+                CURLOPT_POST       => true,
+            ]);
+        }
 
         $result = curl_exec($curl);
         $code = curl_getinfo($curl, CURLINFO_HTTP_CODE);
