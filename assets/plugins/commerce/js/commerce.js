@@ -140,6 +140,7 @@ $(document).on('submit click change', '[data-commerce-action]', function(e) {
         data.cart = cart;
 
         Commerce.action('cart/add', data, $self);
+        return;
     }
 
     if (e.type == 'click') {

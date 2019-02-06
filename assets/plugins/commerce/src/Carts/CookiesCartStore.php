@@ -39,7 +39,7 @@ class CookiesCartStore implements \Commerce\Interfaces\CartStore
         $encoded = base64_encode(json_encode($ids));
 
         unset($_COOKIE[$this->instance]);
-        setcookie($this->instance, '', time() - 3600, MODX_BASE_URL, $cookieDomain);
+        //setcookie($this->instance, '', time() - 3600, MODX_BASE_URL, $cookieDomain);
         setcookie($this->instance, $encoded, time() + 60*60*24*30, MODX_BASE_URL, $cookieDomain, $secure, true);
         $_COOKIE[$this->instance] = $encoded;
     }
