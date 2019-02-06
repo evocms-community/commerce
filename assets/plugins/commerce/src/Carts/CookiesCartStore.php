@@ -29,7 +29,7 @@ class CookiesCartStore implements \Commerce\Interfaces\CartStore
         global $session_cookie_domain;
         $cookieDomain = !empty($session_cookie_domain) ? $session_cookie_domain : '';
 
-        $secure  = ci()->modx->getConfig('server_protocol') == 'http';
+        $secure  = ci()->modx->getConfig('server_protocol') == 'https';
         $ids = [];
 
         foreach ($items as $row => $item) {
