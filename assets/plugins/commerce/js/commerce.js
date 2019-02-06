@@ -132,6 +132,8 @@ $(document).on('submit click change', '[data-commerce-action]', function(e) {
         };
 
     if (action == 'add') {
+        e.preventDefault();
+
         if (e.type == 'submit') {
             e.preventDefault();
             data = $self.serializeObject();
