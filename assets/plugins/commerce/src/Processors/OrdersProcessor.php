@@ -65,7 +65,8 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
             }
         }
 
-        $values['fields'] = $this->modx->db->escape(json_encode($fields, JSON_UNESCAPED_UNICODE));
+        $values['fields']     = $this->modx->db->escape(json_encode($fields, JSON_UNESCAPED_UNICODE));
+        $values['created_at'] = date('Y-m-d H:i:s');
         return $values;
     }
 
