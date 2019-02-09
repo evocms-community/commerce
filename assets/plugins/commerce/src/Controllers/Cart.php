@@ -135,6 +135,7 @@ class CartDocLister extends site_contentDocLister
 
             $this->config->setConfig([
                 'selectFields' => $this->getCFGDef('selectFields', 'c.*') . ', c.id AS docid, hashes.hash AS id',
+                'groupBy'      => 'hashes.hash',
             ]);
         }
 
