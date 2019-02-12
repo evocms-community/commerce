@@ -2,6 +2,24 @@ ul.order-groups { margin: 0 -0.25rem; padding: 0; list-style: none; }
 ul.order-groups > li { margin: 0 0 1rem; padding: 0 0.5rem; vertical-align: top; display: inline-block; }
 ul.order-groups > li > .sectionHeader { margin: 0; }
 ul.order-groups > li > .sectionBody { margin: 0; }
-.cart-contents .sectionHeader { margin: 0 0.25rem; }
+.cart-contents .sectionHeader, .editable-cart .sectionHeader, .editable-order .sectionHeader { margin: 0 0.25rem; }
 .cart-contents .table.data td { vertical-align: middle; }
 .cart-contents .table.data td pre { margin: 0; }
+.editable-order { margin-bottom: 1.5rem; }
+.editable-cart .table.data td, .editable-order .table.data td { vertical-align: middle; }
+
+#product-select { position: fixed; left: 0; top: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.25); display: block; z-index: 9999; overflow-y: auto; white-space: nowrap; text-align: center; }
+#product-select:before { content: ''; display: inline-block; min-height: 100vh; width: 0; vertical-align: middle; }
+#product-select > .evo-popup { display: inline-block !important; vertical-align: middle; height: auto; margin: 1rem; text-align: left; position: relative; width: 80%; white-space: normal; }
+#product-select ul { margin: 0; padding: 0; list-style: none; }
+#product-select ul li { margin: 0; padding: 0 0 0 11px; position: relative; white-space: nowrap; }
+#product-select ul > li:before { content: '' !important; display: block !important; position: absolute; left: -4px; top: 0; bottom: 0; border-left: 1px solid #ddd; }
+#product-select ul ul > li:first-child:before { top: -12px; }
+#product-select ul > li:last-child:not(:first-child):before { bottom: auto; height: 12px; }
+#product-select ul > li:last-child:first-child:before { bottom: auto; height: 24px; }
+#product-select ul > li:after { content: '' !important; display: block !important; position: absolute; left: -3px; top: 11px; width: 14px; border-bottom: 1px solid #ddd; }
+#product-select ul li .expand { position: absolute; left: -4px; top: 12px; border: 1px solid #ddd; width: 12px; height: 12px; line-height: 10px; transform: translate(-50%, -50%); background: #fff; z-index: 1; text-align: center; cursor: default; }
+#product-select ul li .expand:before { content: '+'; }
+#product-select ul li .expand.expanded:before { content: '-'; }
+#product-select ul li .title { display: inline-block; padding: 1px 3px; border: 1px solid #fff; cursor: pointer; transition: all 0.2s ease; }
+#product-select ul li .title:hover { border-color: #ddd; background: #f8f8f8; }

@@ -19,6 +19,8 @@ class OrdersController extends Controller implements \Commerce\Module\Interfaces
         return [
             'index'         => 'index',
             'edit'          => 'edit',
+            'save'          => 'save',
+            'get-tree'      => 'getTree',
             'view'          => 'view',
             'change-status' => 'changeStatus',
         ];
@@ -72,20 +74,13 @@ class OrdersController extends Controller implements \Commerce\Module\Interfaces
 
     public function view()
     {
-        $order_id = filter_input(INPUT_GET, 'order_id', FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
-
-        $processor = $this->modx->commerce->loadProcessor();
-        $order = $processor->loadOrder($order_id);
+        $order = $this->loadOrderFromRequest();
 
         if (empty($order)) {
             $this->module->sendRedirect('orders', ['error' => $this->lang['module.error.order_not_found']]);
         }
 
-        $config  = [
-            'imageField' => 'tv.image',
-            'tvList'     => 'image',
-        ];
-
+        $config     = $this->getDefaultDocListerCartConfig();
         $groups     = $this->getOrderGroups();
         $columns    = $this->getOrderCartColumns();
         $subcolumns = $this->getOrderSubtotalsColumns();
@@ -112,7 +107,7 @@ class OrdersController extends Controller implements \Commerce\Module\Interfaces
         $columns = $this->sortFields($columns);
         $config  = $this->injectPrepare($config, $columns);
 
-        $cart = $processor->getCart();
+        $cart = $this->modx->commerce->loadProcessor()->getCart();
         $cartData = $this->modx->runSnippet('DocLister', array_merge($config, [
             'controller' => 'Cart',
             'dir'        => 'assets/plugins/commerce/src/Controllers/',
@@ -155,6 +150,180 @@ class OrdersController extends Controller implements \Commerce\Module\Interfaces
             'users'      => $users,
             'custom'     => $this->module->invokeTemplateEvent('OnManagerOrderRender'),
         ]);
+    }
+
+    public function edit()
+    {
+        $order = $this->loadOrderFromRequest();
+
+        if (empty($order)) {
+            $this->module->sendRedirect('orders', ['error' => $this->lang['module.error.order_not_found']]);
+        }
+
+        $lang = $this->modx->commerce->getUserLanguage('order');
+        $this->view->setLang($lang);
+
+        $fields     = $this->getOrderEditableFields();
+        $config     = $this->getDefaultDocListerCartConfig();
+        $columns    = $this->getOrderCartEditableColumns();
+        $subcolumns = $this->getOrderSubtotalsEditableColumns();
+
+        $this->modx->invokeEvent('OnManagerBeforeOrderEditRender', [
+            'fields'     => &$fields,
+            'config'     => &$config,
+            'columns'    => &$columns,
+            'subcolumns' => &$subcolumns,
+        ]);
+
+        $fields = $this->sortFields($fields);
+        $values = $this->processFields($fields, ['data' => $order]);
+
+        array_walk($fields, function(&$item, $key) use ($values) {
+            $item['content'] = $values[$key];
+        });
+
+        $cart    = $this->modx->commerce->loadProcessor()->getCart();
+        $columns = $this->sortFields($columns);
+        $config  = $this->injectPrepare($config, $columns);
+
+        $products = $this->modx->runSnippet('DocLister', array_merge($config, [
+            'controller' => 'Cart',
+            'dir'        => 'assets/plugins/commerce/src/Controllers/',
+            'sortType'   => 'doclist',
+            'idType'     => 'documents',
+            'documents'  => array_column($cart->getItems(), 'id'),
+            'instance'   => 'order',
+            'cart'       => $cart,
+            'tree'       => 0,
+            'api'        => 1,
+        ]));
+
+        $documents = $this->getDocuments($order);
+
+        $subcolumns = $this->sortFields($subcolumns);
+        $subtotals  = [];
+        $cart->getSubtotals($subtotals, $total);
+
+        foreach ($subtotals as $i => $row) {
+            $subtotals[$i]['cells'] = $this->processFields($subcolumns, ['data' => array_merge(['iteration' => $i + 1], $row)]);
+        }
+
+        $productBlank = [
+            'id'        => '{%id%}',
+            'iteration' => '{%iteration%}',
+            'title'     => '{%pagetitle%}',
+            'count'     => 1,
+            'price'     => '{%tv_price%}',
+            'currency'  => $order['currency'],
+        ];
+
+        $productBlank = array_merge($productBlank, [
+            'cells' => $this->processFields($columns, [
+                'data' => $productBlank,
+                'DL'   => null,
+                'eDL'  => null,
+            ]),
+        ]);
+
+        $subtotalBlank = [
+            'id'        => '',
+            'iteration' => '{%iteration%}',
+            'title'     => '',
+            'price'     => '0',
+            'currency'  => $order['currency'],
+        ];
+
+        $subtotalBlank = array_merge($subtotalBlank, [
+            'cells' => $this->processFields($subcolumns, ['data' => $subtotalBlank]),
+        ]);
+
+        return $this->view->render('order_edit.tpl', [
+            'order'         => $order,
+            'fields'        => $fields,
+            'products'      => json_decode($products, true),
+            'columns'       => $columns,
+            'subcolumns'    => $subcolumns,
+            'subtotals'     => $subtotals,
+            'productBlank'  => $productBlank,
+            'subtotalBlank' => $subtotalBlank,
+            'documents'     => $documents,
+            'custom'        => $this->module->invokeTemplateEvent('OnManagerOrderEditRender'),
+        ]);
+    }
+
+    public function save()
+    {
+        echo '<pre>';print_r($_POST);die();
+    }
+
+    public function getTree()
+    {
+        $order = $this->loadOrderFromRequest();
+        $parent_id = filter_input(INPUT_POST, 'parent_id', FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
+
+        return json_encode([
+            'status' => 'success',
+            'markup' => $this->view->render('selector_tree.tpl', [
+                'rows' => $this->getDocuments($order, $parent_id),
+            ]),
+        ], JSON_UNESCAPED_UNICODE);
+    }
+
+    private function getDocuments($order, $parent_id = 0)
+    {
+        $config = [
+            'tvList' => ['image', 'price'],
+            'api'    => ['id', 'pagetitle', 'isfolder', 'tv.image', 'tv.price'],
+        ];
+
+        $this->modx->invokeEvent('OnManagerBeforeSelectorLevelRender', [
+            'config' => &$config,
+            'order'  => $order,
+        ]);
+
+        if (!isset($config['prepare'])) {
+            $config['prepare'] = [];
+        } else if (!is_array($config['prepare']) && !is_callable($config['prepare'])) {
+            $config['prepare'] = [$config['prepare']];
+        }
+
+        $currency = ci()->currency;
+
+        $config['prepare'][] = function($data, $modx, $DL, $eDL) use ($order, $currency) {
+            if (!empty($data['tv.price'])) {
+                $data['tv.price'] = $currency->convertFromDefault($data['tv.price'], $order['currency']);
+            }
+
+            return $data;
+        };
+
+        $result = $this->modx->runSnippet('DocLister', array_merge($config, [
+            'depth'   => 0,
+            'idType'  => 'parents',
+            'parents' => $parent_id,
+            'orderBy' => 'menuindex ASC',
+        ]));
+
+        $result = json_decode($result, true);
+
+        if (!is_array($result)) {
+            $result = [];
+        }
+
+        return $result;
+    }
+
+    private function loadOrderFromRequest()
+    {
+        $type = !empty($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST' ? INPUT_POST : INPUT_GET;
+        $order_id = filter_input($type, 'order_id', FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
+
+        if (!empty($order_id)) {
+            $processor = $this->modx->commerce->loadProcessor();
+            return $processor->loadOrder($order_id);
+        }
+
+        return null;
     }
 
     public function changeStatus()
@@ -201,6 +370,14 @@ class OrdersController extends Controller implements \Commerce\Module\Interfaces
         }
 
         return $this->statuses;
+    }
+
+    private function getDefaultDocListerCartConfig()
+    {
+        return [
+            'imageField' => 'tv.image',
+            'tvList'     => 'image',
+        ];
     }
 
     private function getOrdersListColumns()
@@ -504,6 +681,153 @@ class OrdersController extends Controller implements \Commerce\Module\Interfaces
                 },
                 'style' => 'text-align: right; white-space: nowrap;',
                 'sort' => 20,
+            ],
+        ];
+    }
+
+    private function getOrderEditableFields()
+    {
+        return [
+            'name' => [
+                'title'   => $this->lang['order.name_field'],
+                'content' => function($data) {
+                    return '<input type="text" class="form-control" name="order[name]" value="' . htmlentities($data['name']) . '">';
+                },
+                'sort'    => 10,
+            ],
+            'phone' => [
+                'title'   => $this->lang['order.phone_field'],
+                'content' => function($data) {
+                    return '<input type="text" class="form-control" name="order[phone]" value="' . htmlentities($data['phone']) . '">';
+                },
+                'sort'    => 20,
+            ],
+            'email' => [
+                'title'   => $this->lang['order.email_field'],
+                'content' => function($data) {
+                    return '<input type="text" class="form-control" name="order[email]" value="' . htmlentities($data['email']) . '">';
+                },
+                'sort' => 30,
+            ],
+            'delivery' => [
+                'title' => $this->lang['order.delivery_title'],
+                'content' => function($data) {
+                    $list = ci()->commerce->getDeliveries();
+                    $out = '';
+
+                    foreach ($list as $name => $row) {
+                        $out .= '<option value="' . $name . '"' . (isset($data['fields']['delivery_method']) && $name == $data['fields']['delivery_method']) . '>' . $row['title'] . '</option>';
+                    }
+
+                    return '<select class="form-control" name="order[fields][delivery_method]">' . $out . '</select>';
+                },
+                'sort' => 40,
+            ],
+            'payment' => [
+                'title' => $this->lang['order.payment_title'],
+                'content' => function($data) {
+                    $list = ci()->commerce->getPayments();
+                    $out = '';
+
+                    foreach ($list as $name => $row) {
+                        $out .= '<option value="' . $name . '"' . (isset($data['fields']['payment_method']) && $name == $data['fields']['payment_method']) . '>' . $row['title'] . '</option>';
+                    }
+
+                    return '<select class="form-control" name="order[fields][payment_method]">' . $out . '</select>';
+                },
+                'sort' => 50,
+            ],
+        ];
+    }
+
+    private function getOrderCartEditableColumns()
+    {
+        $lang  = ci()->commerce->getUserLanguage('cart');
+        $order = ci()->commerce->loadProcessor()->getOrder();
+
+        return [
+            'number' => [
+                'title'   => '#',
+                'content' => 'iteration',
+                'style'   => 'width: 1%; text-align: center;',
+                'sort'    => 10,
+            ],
+            'id' => [
+                'title'   => 'ID',
+                'content' => 'id',
+                'style'   => 'width: 1%; text-align: center;',
+                'sort'    => 10,
+            ],
+            'title' => [
+                'title'   => $lang['cart.item_title'],
+                'content' => function($data, $DL, $eDL) {
+                    return '
+                        <input type="hidden" name="order[cart][' . $data['iteration'] . '][id]" value="' . htmlentities($data['id']) . '">
+                        <input type="text" class="form-control" name="order[cart][' . $data['iteration'] . '][title]" value="' . htmlentities($data['title']) . '">
+                    ';
+                },
+                'sort'    => 20,
+            ],
+            'count' => [
+                'title'   => $lang['cart.count'],
+                'content' => function($data, $DL, $eDL) {
+                    return '
+                        <input type="text" class="form-control" name="order[cart][' . $data['iteration'] . '][count]" value="' . htmlentities($data['count']) . '">
+                    ';
+                },
+                'style'   => 'width: 10%; text-align: right;',
+                'sort'    => 30,
+            ],
+            'price' => [
+                'title'   => $lang['cart.item_price'],
+                'content' => function($data) use ($order) {
+                    return '
+                        <div style="white-space: nowrap;">
+                            <input type="text" class="form-control" name="order[cart][' . $data['iteration'] . '][price]" value="' . htmlentities($data['price']) . '" style="width: 80px; text-align: right;">
+                            ' . $order['currency'] . '
+                        </div>
+                    ';
+                },
+                'sort'    => 30,
+                'style'   => 'white-space: nowrap; width: 10%; text-align: right;',
+            ],
+        ];
+    }
+
+    private function getOrderSubtotalsEditableColumns()
+    {
+        $lang  = ci()->commerce->getUserLanguage('cart');
+        $order = ci()->commerce->loadProcessor()->getOrder();
+
+        return [
+            'number' => [
+                'title'   => '#',
+                'content' => 'iteration',
+                'sort'    => 10,
+                'style'   => 'width: 1%;',
+            ],
+            'title' => [
+                'title'   => $lang['cart.item_title'],
+                'content' => function($data) {
+                    return '
+                        <input type="hidden" name="order[subtotals][' . $data['iteration'] . '][id]" value="' . htmlentities($data['id']) . '">
+                        <input type="text" class="form-control" name="order[subtotals][' . $data['iteration'] . '][title]" value="' . htmlentities($data['title']) . '">
+                    ';
+                },
+                'sort'    => 20,
+            ],
+            'price' => [
+                'title'   => $lang['cart.item_price'],
+                'content' => function($data) use ($order) {
+                    return '
+                        <div style="white-space: nowrap;">
+                            <input type="text" class="form-control" name="order[subtotals][' . $data['iteration'] . '][price]" value="' . htmlentities($data['price']) . '" style="width: 80px; text-align: right;">
+                            ' . $order['currency'] . '
+                        </div>
+                    ';
+                },
+                'sort'    => 30,
+                'style'   => 'width: 10%; text-align: right;',
             ],
         ];
     }

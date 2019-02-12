@@ -5,6 +5,7 @@ setlocale(LC_ALL, 'ru_RU.UTF-8');
 return [
     'module.orders_caption' => 'Заказы',
     'module.order_caption' => 'Заказ #%s',
+    'module.order_edit_caption' => 'Редактирование заказа #%s',
     'module.error.order_not_found' => 'Заказ не найден!',
     'module.order_updated' => 'Заказ обновлен',
     'module.show_order_btn' => 'Просмотр',
@@ -56,4 +57,10 @@ return [
     'module.add_currency' => 'Добавить валюту',
     'module.add_status' => 'Добавить статус',
     'module.user' => 'Пользователь',
+    'module.image' => 'Изображение',
+    'module.remove_product' => 'Удалить',
+    'module.add_product' => 'Добавить товар',
+    'module.add_subtotal' => 'Добавить строку',
+    'module.products_selector_title' => 'Выберите товар',
+    'module.order_change_notify' => 'Уведомить покупателя об изменении данных заказа',
 ];
