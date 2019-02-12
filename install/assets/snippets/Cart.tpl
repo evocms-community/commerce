@@ -15,7 +15,6 @@ if (!empty($modx->commerce)) {
     $instance = isset($instance) ? $instance : 'products';
     $theme    = !empty($theme) ? $theme : '';
     $cart     = ci()->carts->getCart($instance);
-    $lang     = $modx->getConfig('manager_language');
 
     if (!is_null($cart)) {
         return $modx->runSnippet('DocLister', array_merge([
@@ -26,7 +25,7 @@ if (!empty($modx->commerce)) {
             'ownerTPL'          => '@FILE:' . $theme . 'cart_wrap',
             'subtotalsRowTpl'   => '@FILE:' . $theme . 'cart_subtotals_row',
             'subtotalsTpl'      => '@FILE:' . $theme . 'cart_subtotals',
-            'customLang'        => 'assets/plugins/commerce/lang/' . $lang . '/cart.inc.php',
+            'customLang'        => 'cart',
         ], $params, [
             'controller' => 'Cart',
             'dir'        => 'assets/plugins/commerce/src/Controllers/',
