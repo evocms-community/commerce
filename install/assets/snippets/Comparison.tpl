@@ -13,6 +13,7 @@
 
 /**
  * [!Comparison
+ *      &showCategories=`1`
  *      &tvCategory=`10`
  *      &excludeTV=`category`
  *      &includeTV=`best`
@@ -34,54 +35,61 @@ if (empty($items)) {
     return;
 }
 
-$table   = $modx->getFullTablename('site_content');
-$parents = $modx->db->getColumn('parent', $modx->db->select('parent', $table, "`id` IN (" . implode(',', $items) . ")"));
-$parents = array_unique($parents);
+$showCategories = isset($params['showCategories']) ? $params['showCategories'] : 1;
 
-$categoryParams = [];
+if ($showCategories) {
+    $table   = $modx->getFullTablename('site_content');
+    $parents = $modx->db->getColumn('parent', $modx->db->select('parent', $table, "`id` IN (" . implode(',', $items) . ")"));
+    $parents = array_unique($parents);
 
-foreach ($params as $key => $value) {
-    if (strpos($key, 'category') === 0) {
-        unset($params[$key]);
-        $key = preg_replace('/^category/', '', $key);
-        $key = lcfirst($key);
-        $categoryParams[$key] = $value;
+    $categoryParams = [];
+
+    foreach ($params as $key => $value) {
+        if (strpos($key, 'category') === 0) {
+            unset($params[$key]);
+            $key = preg_replace('/^category/', '', $key);
+            $key = lcfirst($key);
+            $categoryParams[$key] = $value;
+        }
     }
+
+    if (isset($_GET['category']) && is_scalar($_GET['category']) && in_array($_GET['category'], $parents)) {
+        $currentCategory = $_GET['category'];
+    }
+
+    if (empty($currentCategory)) {
+        $currentCategory = reset($parents);
+    }
+
+    $categories = '';
+
+    if (count($parents) > 1) {
+        $categoryParams = array_merge([
+            'templatePath'      => 'assets/plugins/commerce/templates/front/',
+            'templateExtension' => 'tpl',
+            'tpl'               => '@FILE:comparison_category',
+            'ownerTPL'          => '@FILE:comparison_categories',
+            'itemClass'         => 'btn-secondary',
+            'activeClass'       => 'btn-primary',
+            'prepare'           => function($data, $modx, $DL, $eDL) {
+                $data['class'] = $DL->getCFGDef('currentId') == $data['id'] ? $DL->getCFGDef('activeClass') : $DL->getCFGDef('itemClass');
+                return $data;
+            },
+        ], $categoryParams, [
+            'currentId' => $currentCategory,
+            'idType'    => 'documents',
+            'documents' => $parents,
+            'sortType'  => 'doclist',
+        ]);
+
+        $categories = $modx->runSnippet('DocLister', $categoryParams);
+    }
+
+    $ids = $modx->db->getColumn('id', $modx->db->select('id', $table, "`parent` = '$currentCategory' AND `id` IN ('" . implode("','", array_unique($items)) . "')"));
+} else {
+    $ids = array_values(array_unique($items));
+    $currentCategory = 0;
 }
-
-if (isset($_GET['category']) && is_scalar($_GET['category']) && in_array($_GET['category'], $parents)) {
-    $currentCategory = $_GET['category'];
-}
-
-if (empty($currentCategory)) {
-    $currentCategory = reset($parents);
-}
-
-$categories = '';
-
-if (count($parents) > 1) {
-    $categoryParams = array_merge([
-        'templatePath'      => 'assets/plugins/commerce/templates/front/',
-        'templateExtension' => 'tpl',
-        'tpl'               => '@FILE:comparison_category',
-        'ownerTPL'          => '@FILE:comparison_categories',
-        'itemClass'         => 'btn-secondary',
-        'activeClass'       => 'btn-primary',
-        'prepare'           => function($data, $modx, $DL, $eDL) {
-            $data['class'] = $DL->getCFGDef('currentId') == $data['id'] ? $DL->getCFGDef('activeClass') : $DL->getCFGDef('itemClass');
-            return $data;
-        },
-    ], $categoryParams, [
-        'currentId' => $currentCategory,
-        'idType'    => 'documents',
-        'documents' => $parents,
-        'sortType'  => 'doclist',
-    ]);
-
-    $categories = $modx->runSnippet('DocLister', $categoryParams);
-}
-
-$ids = $modx->db->getColumn('id', $modx->db->select('id', $table, "`parent` = '$currentCategory' AND `id` IN ('" . implode("','", $items) . "')"));
 
 $params = array_merge([
     'templatePath'      => 'assets/plugins/commerce/templates/front/',
