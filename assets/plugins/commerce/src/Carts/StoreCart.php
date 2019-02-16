@@ -72,10 +72,10 @@ class StoreCart extends SimpleCart implements Cart
         foreach ($items as $row => $item) {
             if (is_numeric($item)) {
                 $item = $this->prepareItem([
-                    'id'  => $item,
-                    'row' => $row,
+                    'id' => $item,
                 ]);
                 $item['hash'] = $this->makeHash($item);
+                $item['row'] = $row;
                 $items[$row] = $item;
             }
         }
