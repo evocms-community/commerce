@@ -164,10 +164,10 @@ $(document).on('submit click change', '[data-commerce-action]', function(e) {
                     count = Math.max(0, count);
 
                     if (!count) {
-                        Commerce.action('cart/remove', {row: row, cart: cart}, $self);
+                        Commerce.action('cart/remove', {row: row, cart: cart, data: data}, $self);
                     } else {
                         $count.val(count);
-                        Commerce.action('cart/update', {row: row, cart: cart, attributes: {count: count}}, $self);
+                        Commerce.action('cart/update', {row: row, cart: cart, data: data, attributes: {count: count}}, $self);
                     }
                 }
 
@@ -175,7 +175,7 @@ $(document).on('submit click change', '[data-commerce-action]', function(e) {
             }
 
             case 'remove': {
-                Commerce.action('cart/remove', {row: row, cart: cart}, $self);
+                Commerce.action('cart/remove', {row: row, cart: cart, data: data}, $self);
                 break;
             }
         }
@@ -188,9 +188,9 @@ $(document).on('submit click change', '[data-commerce-action]', function(e) {
 
                 if (typeof count != 'NaN' && count >= 0) {
                     if (!count) {
-                        Commerce.action('cart/remove', {row: row}, $self);
+                        Commerce.action('cart/remove', {row: row, data: data}, $self);
                     } else {
-                        Commerce.action('cart/update', {row: row, attributes: {count: count}}, $self);
+                        Commerce.action('cart/update', {row: row, data: data, attributes: {count: count}}, $self);
                     }
                 }
 

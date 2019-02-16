@@ -437,7 +437,7 @@ class Commerce
                 }
 
                 case 'cart/update': {
-                    if ($cart->update($data['row'], $data['attributes'])) {
+                    if (!empty($data['row']) && !empty($data['attributes']) && $cart->update($data['row'], $data['attributes'])) {
                         $response['status'] = 'success';
                     }
 
@@ -445,9 +445,16 @@ class Commerce
                 }
 
                 case 'cart/remove': {
-                    if ($cart->remove($data['row'])) {
-                        $response['status'] = 'success';
+                    if (!empty($data['row'])) {
+                        if ($cart->remove($data['row'])) {
+                            $response['status'] = 'success';
+                        }
+                    } else if (!empty($data['data']['id'])) {
+                        if ($cart->removeById($data['data']['id'])) {
+                            $response['status'] = 'success';
+                        }
                     }
+
                     break;
                 }
             }

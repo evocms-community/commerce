@@ -137,6 +137,22 @@ class SimpleCart implements \Commerce\Interfaces\Cart
         return false;
     }
 
+    public function removeById($id)
+    {
+        $result = false;
+
+        if (!empty($this->items)) {
+            foreach ($this->items as $row => $item) {
+                if (!empty($item['id']) && $item['id'] == $id) {
+                    unset($this->items[$row]);
+                    $result = true;
+                }
+            }
+        }
+
+        return $result;
+    }
+
     public function clean()
     {
         $this->items = [];

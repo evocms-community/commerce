@@ -48,6 +48,15 @@ class StoreCart extends SimpleCart implements Cart
         return $result;
     }
 
+    public function removeById($row)
+    {
+        if ($result = parent::removeById($row)) {
+            $this->store->save($this->items);
+        }
+
+        return $result;
+    }
+
     public function clean()
     {
         parent::clean();

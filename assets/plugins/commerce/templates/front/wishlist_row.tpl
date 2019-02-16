@@ -12,4 +12,8 @@
         <a href="#" class="btn btn-primary" data-commerce-action="add" data-id="[+id+]">
             [%common.add_to_cart%]
         </a>
+
+        <a href="#" class="btn btn-danger" data-commerce-action="remove" data-instance="wishlist" data-id="[+id+]">
+            [%cart.remove%]
+        </a>
 </tr>
