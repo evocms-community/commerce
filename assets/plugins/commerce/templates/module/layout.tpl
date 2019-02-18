@@ -32,13 +32,15 @@
     </div>
 <?php endif; ?>
 
-<?php if (!empty($this->block('buttons'))): ?>
-    <div id="actions">
-        <div class="btn-group">
-            <?= $this->block('buttons') ?>
-        </div>
+<div id="actions">
+    <div class="btn-group">
+        <?= $this->block('buttons') ?>
+
+        <a class="btn btn-danger" href="<?= $managerPath ?>index.php?a=2">
+            <i class="fa fa-times-circle"></i><span><?= $_lang['close'] ?></span>
+        </a>
     </div>
-<?php endif; ?>
+</div>
 
 <div class="sectionBody">
     <div class="tab-pane" id="commercePane">
