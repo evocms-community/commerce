@@ -5,7 +5,7 @@
 <?php $this->endBlock(); ?>
 
 <?php $this->block('buttons'); ?>
-    <a href="<?= $this->module->makeUrl('orders') ?>" class="btn btn-secondary">
+    <a href="<?= $this->module->makeUrl('orders') ?>" class="btn btn-secondary" title="<?= $_lang['cancel'] ?>">
         <i class="fa fa-times-circle"></i>
         <span><?= $_lang['cancel'] ?></span>
     </a>
