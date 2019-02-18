@@ -5,8 +5,14 @@
 <?php $this->endBlock(); ?>
 
 <?php $this->block('buttons'); ?>
-    <a href="javascript:;" class="btn btn-success" onclick="document.getElementById('currency_form').submit();"><?= $_lang['save'] ?></a>
-    <a href="<?= $this->module->makeUrl('currency') ?>" class="btn btn-secondary"><?= $_lang['cancel'] ?></a>
+    <a href="javascript:;" class="btn btn-success" onclick="document.getElementById('currency_form').submit();" title="<?= $_lang['save'] ?>">
+        <i class="fa fa-floppy-o"></i>
+        <span><?= $_lang['save'] ?></span>
+    </a>
+    <a href="<?= $this->module->makeUrl('currency') ?>" class="btn btn-secondary" title="<?= $_lang['cancel'] ?>">
+        <i class="fa fa-times-circle"></i>
+        <span><?= $_lang['cancel'] ?></span>
+    </a>
 <?php $this->endBlock(); ?>
 
 <?php $this->block('content'); ?>
