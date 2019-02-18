@@ -449,6 +449,10 @@ class Commerce
                         if ($cart->remove($data['row'])) {
                             $response['status'] = 'success';
                         }
+                    } else if (!empty($data['data']['row'])) {
+                        if ($cart->remove($data['data']['row'])) {
+                            $response['status'] = 'success';
+                        }
                     } else if (!empty($data['data']['id'])) {
                         if ($cart->removeById($data['data']['id'])) {
                             $response['status'] = 'success';
