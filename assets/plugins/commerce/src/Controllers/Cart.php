@@ -7,26 +7,28 @@ class CartDocLister extends CustomLangDocLister
         if (isset($cfg['prepareWrap'])) {
             if (!is_array($cfg['prepareWrap'])) {
                 $cfg['prepareWrap'] = explode(',', $cfg['prepareWrap']);
+            } else if (is_callable($cfg['prepareWrap'])) {
+                $cfg['prepareWrap'] = [$cfg['prepareWrap']];
             }
         } else {
             $cfg['prepareWrap'] = [];
         }
 
-        $cfg['prepareWrap'][] = [$this, 'prepareCartOuter'];
-
+        array_unshift($cfg['prepareWrap'], [$this, 'prepareCartOuter']);
         parent::__construct($modx, $cfg, $startTime);
     }
 
     public function prepareCartOuter($data, $modx, $DL, $e)
     {
-        $placeholders = $data['placeholders'];
+        $placeholders = &$data['placeholders'];
 
         $placeholders['hash']      = $this->getCFGDef('hash');
         $placeholders['subtotals'] = $this->renderSubtotals();
         $placeholders['total']     = $this->totalPrice;
         $placeholders['count']     = $this->itemsCount;
+        unset($placeholders);
 
-        return $placeholders;
+        return $data;
     }
 
     protected function renderSubtotals()
