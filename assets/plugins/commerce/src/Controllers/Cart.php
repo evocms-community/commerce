@@ -2,6 +2,10 @@
 
 class CartDocLister extends CustomLangDocLister
 {
+    protected $productsCount = 0;
+    protected $rowsCount     = 0;
+    protected $priceTotal    = 0;
+
     public function __construct($modx, $cfg = [], $startTime = null)
     {
         if (isset($cfg['prepareWrap'])) {
@@ -22,10 +26,11 @@ class CartDocLister extends CustomLangDocLister
     {
         $placeholders = &$data['placeholders'];
 
-        $placeholders['hash']      = $this->getCFGDef('hash');
-        $placeholders['subtotals'] = $this->renderSubtotals();
-        $placeholders['total']     = $this->totalPrice;
-        $placeholders['count']     = $this->itemsCount;
+        $placeholders['hash']       = $this->getCFGDef('hash');
+        $placeholders['subtotals']  = $this->renderSubtotals();
+        $placeholders['total']      = $this->priceTotal;
+        $placeholders['count']      = $this->productsCount;
+        $placeholders['rows_count'] = $this->rowsCount;
         unset($placeholders);
 
         return $data;
@@ -38,7 +43,7 @@ class CartDocLister extends CustomLangDocLister
         $result = '';
         $rows = [];
 
-        $this->getCFGDef('cart')->getSubtotals($rows, $this->totalPrice);
+        $this->getCFGDef('cart')->getSubtotals($rows, $this->priceTotal);
 
         foreach ($rows as $row) {
             $result .= $DLTemplate->parseChunk($tpl, $row);
@@ -90,8 +95,6 @@ class CartDocLister extends CustomLangDocLister
         }
 
         $cartItems = $this->getCFGDef('cart')->getItems();
-        $total = 0;
-        $count = 0;
 
         foreach ($this->_docs as $hash => $doc) {
             if (isset($cartItems[$hash])) {
@@ -104,17 +107,16 @@ class CartDocLister extends CustomLangDocLister
             if (!empty($doc['count'])) {
                 $doc['price'] = (float)$doc['price'];
                 $doc['count'] = (float)$doc['count'];
-                $count += $doc['count'];
+
+                $this->productsCount += $doc['count'];
+                $this->rowsCount++;
 
                 $doc['total'] = $doc['price'] * $doc['count'];
-                $total += $doc['total'];
+                $this->priceTotal += $doc['total'];
             }
 
             $this->_docs[$hash] = $doc;
         }
-
-        $this->totalPrice = $total;
-        $this->itemsCount = $count;
 
         return $this->_docs;
     }
