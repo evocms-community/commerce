@@ -8,7 +8,7 @@ use Commerce\Carts\SessionCartStore;
 use Commerce\Carts\CookiesCartStore;
 use Commerce\Carts\ProductsCart;
 use Commerce\Carts\ProductsList;
-use Helpers\Lexicon;
+use Commerce\Lexicon;
 
 class Commerce
 {
@@ -477,6 +477,7 @@ class Commerce
         $formlister = new \FormLister\Form($this->modx);
         $validator  = new \FormLister\Validator;
 
+        setlocale(LC_NUMERIC, 'C');
         $result = $formlister->validate($validator, $rules, $data);
 
         if ($result !== true && !empty($result)) {

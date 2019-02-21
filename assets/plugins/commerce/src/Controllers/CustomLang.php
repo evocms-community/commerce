@@ -38,6 +38,8 @@ class CustomLangDocLister extends site_contentDocLister
             }
         }
 
+        setlocale(LC_NUMERIC, 'C');
+
         return $this->_customLang;
     }
 }

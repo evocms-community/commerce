@@ -2,8 +2,20 @@
 
 namespace FormLister;
 
+use Commerce\Lexicon;
+
 class Order extends Form
 {
+    public function __construct (\DocumentParser $modx, $cfg = array())
+    {
+        parent::__construct($modx, $cfg);
+
+        $this->lexicon = new Lexicon($modx, array(
+            'langDir' => 'assets/snippets/FormLister/core/lang/',
+            'lang'    => $this->getCFGDef('lang', $this->modx->getConfig('manager_language'))
+        ));
+    }
+
     public function getPaymentsAndDelivery()
     {
         $processor = $this->modx->commerce->loadProcessor();

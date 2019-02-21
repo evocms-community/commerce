@@ -159,7 +159,7 @@ $(document).on('submit click change', '[data-commerce-action]', function(e) {
                 }
 
                 if ($count.length == 1) {
-                    var count = parseInt($count.val()) || 0;
+                    var count = parseFloat($count.val()) || 0;
                     count += action == 'increase' ? 1 : -1;
                     count = Math.max(0, count);
 
@@ -184,7 +184,7 @@ $(document).on('submit click change', '[data-commerce-action]', function(e) {
     if (e.type == 'change') {
         switch (action) {
             case 'recount': {
-                var count = parseInt($self.val());
+                var count = parseFloat($self.val());
 
                 if (typeof count != 'NaN' && count >= 0) {
                     if (!count) {
