@@ -83,7 +83,16 @@ var Commerce = {
             carts: this.getCartsHashes()
         };
 
+        $form.trigger('order-data-update.commerce', {
+            data: data
+        });
+
         $.post('commerce/data/update', data, function(response) {
+            $form.trigger('order-data-updated.commerce', {
+                data: data,
+                response: response
+            });
+
             if (response.status == 'success') {
                 if (response.markup.form) {
                     if (typeof response.markup.form.delivery != 'undefined') {
