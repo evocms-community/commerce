@@ -56,7 +56,7 @@ class Order extends Form
                     'price'  => isset($row['price']) ? $row['price'] : '',
                     'markup' => isset($row['markup']) ? $row['markup'] : '',
                     'active' => 1 * ($default == $code),
-                    'index'  => $index,
+                    'index'  => $index++,
                 ]);
 
                 $markup .= isset($row['markup']) && is_scalar($row['markup']) ? $row['markup'] : '';
