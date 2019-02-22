@@ -26,11 +26,12 @@ class CartDocLister extends CustomLangDocLister
     {
         $placeholders = &$data['placeholders'];
 
-        $placeholders['hash']       = $this->getCFGDef('hash');
-        $placeholders['subtotals']  = $this->renderSubtotals();
-        $placeholders['total']      = $this->priceTotal;
-        $placeholders['count']      = $this->productsCount;
-        $placeholders['rows_count'] = $this->rowsCount;
+        $placeholders['hash']        = $this->getCFGDef('hash');
+        $placeholders['items_price'] = $this->priceTotal;
+        $placeholders['subtotals']   = $this->renderSubtotals();
+        $placeholders['total']       = $this->priceTotal;
+        $placeholders['count']       = $this->productsCount;
+        $placeholders['rows_count']  = $this->rowsCount;
         unset($placeholders);
 
         return $data;
