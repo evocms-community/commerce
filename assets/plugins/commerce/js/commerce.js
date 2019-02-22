@@ -86,12 +86,12 @@ var Commerce = {
         $.post('commerce/data/update', data, function(response) {
             if (response.status == 'success') {
                 if (response.markup.form) {
-                    if (response.markup.form.delivery) {
-                        $form.find('[data-commerce-deliveries]').replaceWith(response.markup.form.delivery);
+                    if (typeof response.markup.form.delivery != 'undefined') {
+                        $form.find('[data-commerce-deliveries]').html(response.markup.form.delivery);
                     }
 
-                    if (response.markup.form.payments) {
-                        $form.find('[data-commerce-payments]').replaceWith(response.markup.form.payments);
+                    if (typeof response.markup.form.payments != 'undefined') {
+                        $form.find('[data-commerce-payments]').html(response.markup.form.payments);
                     }
                 }
 

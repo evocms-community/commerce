@@ -1,4 +1,4 @@
-<div class="panel" data-commerce-deliveries>
+<div class="panel">
     <p>[%delivery.caption%]:</p>
     [+wrap+]
 </div>

@@ -16,9 +16,13 @@
         [+phone.error+]
     </div>
 
-    [+delivery+]
+    <div data-commerce-deliveries>
+        [+delivery+]
+    </div>
 
-    [+payments+]
+    <div data-commerce-payments>
+        [+payments+]
+    </div>
 
     [+form.messages+]
 

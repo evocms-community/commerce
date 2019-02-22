@@ -1,4 +1,4 @@
-<div class="panel" data-commerce-payments>
+<div class="panel">
     <p>[%payments.caption%]:</p>
     [+wrap+]
 </div>
