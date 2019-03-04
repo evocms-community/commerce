@@ -53,6 +53,7 @@ $events = [
     'OnManagerBeforeDefaultCurrencyChange',
     'OnManagerRegisterCommerceController',
     'OnBeforeCurrencyChange',
+    'OnCommerceAjaxResponse',
 ];
 
 $query  = $modx->db->select('*', $tableEventnames, "`groupname` = 'Commerce'");
