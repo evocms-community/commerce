@@ -5,7 +5,7 @@
  * Commerce solution
  *
  * @category    module
- * @version     0.1.0
+ * @version     0.2.0
  * @author      mnoskov
  * @internal    @modx_category Commerce
  * @internal    @installset base

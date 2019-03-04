@@ -5,7 +5,7 @@
  * Order form, FormLister based
  *
  * @category    snippet
- * @version     0.1.0
+ * @version     0.2.0
  * @author      mnoskov
  * @internal    @properties &default_payment=Default payment code;text; &default_delivery=Default delivery code;text;
  * @internal    @modx_category Commerce

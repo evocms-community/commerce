@@ -5,7 +5,7 @@
  * Commerce solution
  *
  * @category    plugin
- * @version     0.1.0
+ * @version     0.2.0
  * @author      mnoskov
  * @internal    @events OnWebPageInit,OnManagerPageInit,OnPageNotFound,OnManagerMenuPrerender,OnCacheUpdate
  * @internal    @properties &payment_success_page_id=Page ID for redirect after successfull payment;text; &payment_failed_page_id=Page ID for redirect after payment error;text; &status_id_after_payment=Status ID after payment;text; &product_templates=Product templates IDs;text; &title_field=Product title field name;text;pagetitle &price_field=Product price field name;text;price
