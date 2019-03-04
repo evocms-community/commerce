@@ -131,13 +131,14 @@ class Order extends Form
         parent::process();
 
         $processor->postProcessForm($this);
-        $this->renderTpl = $this->getCFGDef('successTpl', $this->lexicon->getMsg('form.default_successTpl'));
 
         $this->modx->invokeEvent('OnOrderProcessed', [
             'order' => $processor->getOrder(),
             'cart'  => $processor->getCart(),
+            'FL'    => $this,
         ]);
 
+        $this->renderTpl = $this->getCFGDef('successTpl', $this->lexicon->getMsg('form.default_successTpl'));
         $this->redirect();
     }
 

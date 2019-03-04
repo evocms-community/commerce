@@ -55,11 +55,11 @@ class CartsManager
         }
     }
 
-    public function getCartByHash($hash)
+    public function getInstanceByHash($hash)
     {
         if ($params = ci()->commerce->restoreParams($hash)) {
             $instance = !empty($params['instance']) ? $params['instance'] : 'products';
-            return $this->getCart($instance);
+            return $instance;
         }
 
         return null;

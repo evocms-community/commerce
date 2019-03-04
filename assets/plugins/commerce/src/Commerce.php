@@ -240,14 +240,13 @@ class Commerce
             case 'commerce/action': {
                 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action']) && is_string($_POST['action']) && preg_match('/^[a-z]+\/[a-z]+$/', $_POST['action'])) {
                     try {
-                        echo $this->runAction($_POST['action'], isset($_POST['data']) ? $_POST['data'] : []);
+                        $response = $this->runAction($_POST['action'], isset($_POST['data']) ? $_POST['data'] : []);
+                        echo $this->prepareResponse($response);
                         exit;
-                    } catch (\Exception $exc) {
-                        $this->modx->logEvent(0, 3, $exc->getMessage());
-                        throw $exc;
-                    } catch (\TypeError $exc) {
-                        $this->modx->logEvent(0, 3, $exc->getMessage());
-                        throw $exc;
+                    } catch (\Exception $e) {
+                        $this->modx->logEvent(0, 3, $e->getMessage());
+                    } catch (\TypeError $e) {
+                        $this->modx->logEvent(0, 3, $e->getMessage());
                     }
                 }
                 break;
@@ -267,7 +266,7 @@ class Commerce
                     }
                 }
 
-                echo json_encode($response);
+                echo $this->prepareResponse($response);
                 exit;
             }
 
@@ -298,7 +297,7 @@ class Commerce
                         $result['markup']['carts'] = $this->getCartsMarkup($_POST['hashes']['carts']);
                     }
 
-                    echo json_encode($result);
+                    echo $this->prepareResponse($result);
                     exit;
                 }
                 break;
@@ -314,14 +313,14 @@ class Commerce
                         $this->currency->setCurrency($_POST['code']);
                     } catch (\Exception $e) {
                         $response['error'] = $e->getMessage();
-                        echo json_encode($response);
+                        echo $this->prepareResponse($response);
                         exit;
                     }
 
                     ci()->carts->changeCurrency($this->currency->getCurrencyCode());
 
                     $response['status'] = 'success';
-                    echo json_encode($response);
+                    echo $this->prepareResponse($response);
                     exit;
                 }
 
@@ -406,7 +405,12 @@ class Commerce
         ];
 
         if (!empty($data['cart']['hash']) && is_string($data['cart']['hash'])) {
-            $cart = ci()->carts->getCartByHash($data['cart']['hash']);
+            $instance = ci()->carts->getInstanceByHash($data['cart']['hash']);
+
+            if (!is_null($instance)) {
+                $response['instance'] = $instance;
+                $cart = ci()->carts->getCart($instance);
+            }
         }
 
         if (empty($cart)) {
@@ -418,7 +422,9 @@ class Commerce
                 $instance = $data['instance'];
             }
 
-            $cart = CartsManager::getManager()->getCart($instance);
+            $response['instance'] = $instance;
+
+            $cart = ci()->carts->getCart($instance);
         }
 
         if (!is_null($cart)) {
@@ -427,10 +433,8 @@ class Commerce
                     $row = $cart->add($data);
 
                     if ($row !== false) {
-                        $response = [
-                            'status' => 'success',
-                            'row'    => $row,
-                        ];
+                        $response['status'] = 'success';
+                        $response['row']    = $row;
                     }
 
                     break;
@@ -464,7 +468,7 @@ class Commerce
             }
         }
 
-        return json_encode($response);
+        return $response;
     }
 
     public function formatPrice($price, $currency = null)
@@ -502,5 +506,14 @@ class Commerce
         }
 
         return false;
+    }
+
+    protected function prepareResponse($response)
+    {
+        $this->modx->invokeEvent('OnCommerceAjaxResponse', [
+            'response' => &$response,
+        ]);
+
+        return json_encode($response);
     }
 }
