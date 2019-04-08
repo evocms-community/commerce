@@ -8,6 +8,8 @@ class OrdersController extends Controller implements \Commerce\Module\Interfaces
 
     private $lang;
 
+    protected $statuses = null;
+
     public function __construct($modx, $module)
     {
         parent::__construct($modx, $module);
