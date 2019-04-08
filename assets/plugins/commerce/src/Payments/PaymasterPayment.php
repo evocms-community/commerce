@@ -89,7 +89,8 @@ class PaymasterPayment extends Payment implements \Commerce\Interfaces\Payment
             'path' => 'assets/plugins/commerce/templates/front/',
         ]);
 
-        return $view->render('paymaster_form.tpl', [
+        return $view->render('payment_form.tpl', [
+            'url'  => 'https://paymaster.ru/Payment/Init',
             'data' => $data,
         ]);
     }
@@ -149,7 +150,7 @@ class PaymasterPayment extends Payment implements \Commerce\Interfaces\Payment
         try {
             $processor->processPayment($data['COMMERCE_PAYMENT_ID'], floatval($data['LMI_PAID_AMOUNT']));
         } catch (\Exception $e) {
-            $this->modx->logEvent(0, 3, 'JSON processing failed: ' . $e->getMessage(), 'Commerce Paymaster Payment');
+            $this->modx->logEvent(0, 3, 'Signature check failed: ' . $signature . ' != ' . $data['LMI_HASH'], 'Commerce Paymaster Payment');
             return false;
         }
 
