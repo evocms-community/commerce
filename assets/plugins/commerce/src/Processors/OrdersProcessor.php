@@ -132,12 +132,20 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
         $this->getCart();
     }
 
-    public function changeStatus($order_id, $status_id, $comment = '', $notify = false, $template = 'order_notify')
+    public function changeStatus($order_id, $status_id, $comment = '', $notify = false, $template = null)
     {
         $order = $this->loadOrder($order_id);
 
         if (empty($order) || empty($order['email'])) {
             return false;
+        }
+
+        if (is_null($template)) {
+            $template = $this->modx->commerce->getSetting('status_notification');
+
+            if (empty($template)) {
+                $template = $this->modx->commerce->getUserLanguageTemplate('status_notification');
+            }
         }
 
         $this->modx->invokeEvent('OnBeforeOrderHistoryUpdate', [
@@ -178,7 +186,7 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
                 'subject' => $subject,
             ]);
 
-            $mailer->send($body);
+            return $mailer->send($body);
         }
 
         return true;

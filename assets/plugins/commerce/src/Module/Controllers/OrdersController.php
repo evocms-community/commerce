@@ -186,7 +186,16 @@ class OrdersController extends Controller implements \Commerce\Module\Interfaces
             $this->module->sendRedirectBack(['error' => $this->lang['module.error.order_not_found']]);
         }
 
-        $processor->changeStatus($order['id'], $data['status_id'], !empty($data['description']) ? $data['description'] : '', !empty($data['notify']));
+        $shouldNotify = false;
+
+        if (isset($data['notify'])) {
+            $shouldNotify = !empty($data['notify']);
+        } else {
+            $query = $this->modx->db->select('notify', $this->modx->getFullTablename('commerce_order_statuses'), "`id` = '" . $this->modx->db->escape($data['status_id']) . "'");
+            $shouldNotify = !empty($this->modx->db->getValue($query));
+        }
+
+        $processor->changeStatus($order['id'], $data['status_id'], !empty($data['description']) ? $data['description'] : '', $shouldNotify);
 
         $this->module->sendRedirectBack(['success' => $this->lang['module.status_changed']]);
     }
