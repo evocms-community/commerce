@@ -163,8 +163,8 @@ class OrdersController extends Controller implements \Commerce\Module\Interfaces
         $lang = $this->modx->commerce->getUserLanguage('order');
         $this->view->setLang($lang);
 
-        $fields     = $this->getOrderEditableFields();
         $config     = $this->getDefaultDocListerCartConfig();
+        $fields     = $this->getOrderEditableFields();
         $columns    = $this->getOrderCartEditableColumns();
         $subcolumns = $this->getOrderSubtotalsEditableColumns();
 
@@ -762,7 +762,7 @@ class OrdersController extends Controller implements \Commerce\Module\Interfaces
                 'title'   => $lang['cart.item_title'],
                 'content' => function($data, $DL, $eDL) {
                     return '
-                        <input type="hidden" name="order[cart][' . $data['iteration'] . '][id]" value="' . htmlentities($data['id']) . '">
+                        <input type="hidden" name="order[cart][' . $data['iteration'] . '][order_row_id]" value="' . htmlentities($data['order_row_id']) . '">
                         <input type="text" class="form-control" name="order[cart][' . $data['iteration'] . '][title]" value="' . htmlentities($data['title']) . '">
                     ';
                 },

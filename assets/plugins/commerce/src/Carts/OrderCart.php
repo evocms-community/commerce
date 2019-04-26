@@ -6,6 +6,11 @@ class OrderCart extends SimpleCart implements \Commerce\Interfaces\Cart
 {
     protected $subtotals = [];
 
+    public function __construct()
+    {
+        $this->defaults['order_row_id'] = 0;
+    }
+
     public function setSubtotals($subtotals)
     {
         $this->subtotals = $subtotals;

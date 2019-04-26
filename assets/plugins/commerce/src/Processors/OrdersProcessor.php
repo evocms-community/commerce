@@ -232,6 +232,7 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
                 if (!is_null($item['product_id'])) {
                     $this->cart->add([
                         'id'      => $item['product_id'],
+                        'order_row_id' => $item['id'],
                         'name'    => $item['title'],
                         'count'   => $item['count'],
                         'price'   => $item['price'],
