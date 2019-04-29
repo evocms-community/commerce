@@ -141,11 +141,7 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
         }
 
         if (is_null($template)) {
-            $template = $this->modx->commerce->getSetting('status_notification');
-
-            if (empty($template)) {
-                $template = $this->modx->commerce->getUserLanguageTemplate('status_notification');
-            }
+            $template = $this->modx->commerce->getSetting('status_notification', $this->modx->commerce->getUserLanguageTemplate('status_notification'));
         }
 
         $this->modx->invokeEvent('OnBeforeOrderHistoryUpdate', [
@@ -173,6 +169,7 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
 
             $body = $tpl->parseChunk($template, [
                 'order_id' => $order_id,
+                'order'    => $order,
                 'status'   => $status,
                 'comment'  => $comment,
             ], true);
@@ -353,12 +350,32 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
         }
 
         if ($order['amount'] >= $amount) {
+            $tpl = ci()->tpl;
             $status = $this->modx->commerce->getSetting('status_id_after_payment', 3);
             $lang = $this->modx->commerce->getUserLanguage('order');
-            $comment = ci()->tpl->parseChunk($lang['order.order_paid'], [
+            $comment = $tpl->parseChunk($lang['order.order_paid'], [
                 'order_id' => $order_id,
             ]);
             $this->changeStatus($order_id, $status, $comment, true);
+
+            $template = $this->modx->commerce->getSetting('order_paid', $this->modx->commerce->getUserLanguageTemplate('order_paid'));
+
+            $body = $tpl->parseChunk($template, [
+                'payment' => $payment,
+                'amount'  => $amount,
+                'order'   => $order,
+            ], true);
+
+            $subject = $tpl->parseChunk($lang['order.subject_order_paid'], [
+                'order_id' => $order_id,
+            ], true);
+
+            $mailer = new \Helpers\Mailer($this->modx, [
+                'to'      => $this->modx->commerce->getSetting('email', $this->modx->getConfig('emailsender')),
+                'subject' => $subject,
+            ]);
+
+            $mailer->send($body);
         }
 
         return true;
