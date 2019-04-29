@@ -141,7 +141,7 @@ class PaymasterPayment extends Payment implements \Commerce\Interfaces\Payment
         }
 
         if ($signature != $data['LMI_HASH']) {
-            $this->modx->logEvent(0, 3, 'JSON processing failed: ' . $e->getMessage(), 'Commerce Paymaster Payment');
+            $this->modx->logEvent(0, 3, 'Signature check failed!', 'Commerce Paymaster Payment');
             return false;
         }
 
