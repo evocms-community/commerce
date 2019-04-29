@@ -5,6 +5,7 @@ namespace Commerce\Carts;
 class OrderCart extends SimpleCart implements \Commerce\Interfaces\Cart
 {
     protected $subtotals = [];
+    protected $total = null;
 
     public function setSubtotals($subtotals)
     {
@@ -15,19 +16,32 @@ class OrderCart extends SimpleCart implements \Commerce\Interfaces\Cart
     {
         $rows = $this->subtotals;
 
-        foreach ($rows as $row) {
-            $total += $row['price'];
+        if (is_null($this->total)) {
+            $this->total = $total;
+
+            foreach ($rows as $row) {
+                $this->total += $row['price'];
+            }
         }
+
+        $total = $this->total;
+    }
+
+    public function setTotal($total)
+    {
+        $this->total = $total;
     }
 
     public function getTotal()
     {
-        $total = parent::getTotal();
+        if (is_null($this->total)) {
+            $this->total = parent::getTotal();
 
-        foreach ($this->subtotals as $subtotal) {
-            $total += $subtotal['price'];
+            foreach ($this->subtotals as $subtotal) {
+                $this->total += $subtotal['price'];
+            }
         }
 
-        return $total;
+        return $this->total;
     }
 }

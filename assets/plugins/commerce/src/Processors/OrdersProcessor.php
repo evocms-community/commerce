@@ -250,6 +250,7 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
             }
 
             $this->cart->setSubtotals($subtotals);
+            $this->cart->setTotal($order['amount']);
         }
 
         return $this->cart;
