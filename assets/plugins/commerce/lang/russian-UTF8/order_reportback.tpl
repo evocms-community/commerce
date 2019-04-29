@@ -10,6 +10,8 @@
     Способ оплаты: [+payment_method_title+]
 </p>
 
+[+extra+]
+
 <h4>Состав заказа:</h4>
 
 [!Cart?

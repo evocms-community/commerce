@@ -10,6 +10,8 @@
     Payment method: [+payment_method_title+]
 </p>
 
+[+extra+]
+
 <h4>Order list:</h4>
 
 [!Cart?

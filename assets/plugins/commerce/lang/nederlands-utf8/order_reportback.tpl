@@ -10,6 +10,8 @@
     Betaalmethode: [+payment_method_title+]
 </p>
 
+[+extra+]
+
 <h4>De opsomming van de bestelling:</h4>
 
 [!Cart?
