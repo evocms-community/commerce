@@ -50,7 +50,7 @@ class PaymasterPayment extends Payment implements \Commerce\Interfaces\Payment
             'LMI_PAYMENT_AMOUNT'    => $order['amount'],
             'LMI_CURRENCY'          => $currency['code'],
             'LMI_PAYMENT_NO'        => $order['id'],
-            'LMI_PAYMENT_DESC'      => \DLTemplate::getInstance($this->modx)->parseChunk($this->lang['payments.payment_description'], [
+            'LMI_PAYMENT_DESC'      => ci()->tpl->parseChunk($this->lang['payments.payment_description'], [
                 'order_id'  => $order['id'],
                 'site_name' => $this->modx->getConfig('site_name'),
             ]),

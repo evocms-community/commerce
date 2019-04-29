@@ -146,7 +146,6 @@ class CartDocLister extends CustomLangDocLister
     public function _render($tpl = '')
     {
         if (!empty($this->getCFGDef('defaultOptionsRender', 1))) {
-            $DLTemplate = \DLTemplate::getInstance($this->modx);
             $optionsTpl = $this->getCFGDef('optionsTpl');
 
             foreach ($this->_docs as $id => $item) {
@@ -154,7 +153,7 @@ class CartDocLister extends CustomLangDocLister
 
                 if (isset($item['options']) && is_array($item['options'])) {
                     foreach ($item['options'] as $key => $option) {
-                        $options .= $DLTemplate->parseChunk($optionsTpl, [
+                        $options .= ci()->tpl->parseChunk($optionsTpl, [
                             'key'    => htmlentities($key),
                             'option' => htmlentities(is_scalar($option) ? $option : json_encode($option)),
                         ]);

@@ -272,25 +272,21 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
             ]);
 
             ci()->flash->set('last_order_id', $order['id']);
-
-            $lang = $this->modx->commerce->getUserLanguage('order');
-            $successTpl = '@CODE:' . $lang['order.redirecting_to_payment'];
-            $redirectToPayment = false;
-
             $redirect = $payment['processor']->createPaymentRedirect();
 
-            if (!empty($redirect['link'])) {
-                $redirectToPayment = true;
-                $FL->config->setConfig(['redirectTo' => [
-                    'page'   => $redirect['link'],
-                    'header' => 'HTTP/1.1 301 Moved Permanently',
-                ]]);
-            } else if (!empty($redirect['markup'])) {
-                $redirectToPayment = true;
-                $successTpl .= $redirect['markup'];
-            }
+            if ($redirect) {
+                $lang = $this->modx->commerce->getUserLanguage('order');
+                $successTpl = '@CODE:' . $lang['order.redirecting_to_payment'];
+    
+                if (!empty($redirect['link'])) {
+                    $FL->config->setConfig(['redirectTo' => [
+                        'page'   => $redirect['link'],
+                        'header' => 'HTTP/1.1 301 Moved Permanently',
+                    ]]);
+                } else {
+                    $successTpl .= $redirect['markup'];
+                }
 
-            if ($redirectToPayment) {
                 $FL->config->setConfig(['successTpl' => $successTpl]);
             }
         }
@@ -327,13 +323,15 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
 
                 $redirect = $payment['processor']->createPaymentRedirect();
 
-                if (!empty($redirect['link'])) {
-                    $this->modx->sendRedirect($redirect['link']);
-                } else if (!empty($redirect['markup'])) {
-                    echo $redirect['markup'];
-                }
+                if ($redirect) {
+                    if (!empty($redirect['link'])) {
+                        $this->modx->sendRedirect($redirect['link']);
+                    } else {
+                        echo $redirect['markup'];
+                    }
 
-                return true;
+                    return true;
+                }
             }
         }
 

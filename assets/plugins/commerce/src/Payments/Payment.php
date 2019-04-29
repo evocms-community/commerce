@@ -77,7 +77,13 @@ class Payment implements \Commerce\Interfaces\Payment
             return ['link' => $link];
         }
 
-        return ['markup' => $this->getPaymentMarkup()];
+        $markup = $this->getPaymentMarkup();
+
+        if (!empty($markup)) {
+            return ['markup' => $markup];
+        }
+
+        return false;
     }
 
     public function getRequestPaymentHash()

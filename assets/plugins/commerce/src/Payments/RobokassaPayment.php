@@ -56,7 +56,7 @@ class RobokassaPayment extends Payment implements \Commerce\Interfaces\Payment
             'Shp_PaymentHash' => $payment['hash'],
             'Shp_PaymentId' => $payment['id'],
             'Encoding' => 'utf-8',
-            'InvDesc' => \DLTemplate::getInstance($this->modx)->parseChunk($this->lang['payments.payment_description'], [
+            'InvDesc' => ci()->tpl->parseChunk($this->lang['payments.payment_description'], [
                 'order_id' => $order['id'],
                 'site_name' => $this->modx->getConfig('site_name'),
             ]),
