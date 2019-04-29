@@ -104,15 +104,9 @@ class Order extends Form
         $cart = $this->modx->commerce->getCart();
         $items = $cart->getItems();
         $params = [
-            '_FL'   => $this,
+            'FL'   => $this,
             'items' => &$items,
         ];
-
-        $this->modx->invokeEvent('OnBeforeOrderProcessing', $params);
-
-        if (is_array($params['items'])) {
-            $cart->setItems($items);
-        }
 
         $fields = $this->getFormData('fields');
 
@@ -124,6 +118,12 @@ class Order extends Form
         if (!empty($fields['delivery_method'])) {
             $delivery = $this->modx->commerce->getDelivery($fields['delivery_method']);
             $this->setField('delivery_method_title', $delivery['title']);
+        }
+
+        $this->modx->invokeEvent('OnBeforeOrderProcessing', $params);
+
+        if (is_array($params['items'])) {
+            $cart->setItems($items);
         }
 
         $processor->createOrder($items, $this->getFormData('fields'));

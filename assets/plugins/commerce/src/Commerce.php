@@ -14,7 +14,7 @@ class Commerce
 {
     use SettingsTrait;
 
-    const VERSION = 'v0.2.1';
+    const VERSION = 'v0.2.2';
 
     public $currency;
 
@@ -249,7 +249,8 @@ class Commerce
                         $this->modx->logEvent(0, 3, $e->getMessage());
                     }
                 }
-                break;
+
+                return;
             }
 
             case 'commerce/cart/contents': {
@@ -300,7 +301,8 @@ class Commerce
                     echo $this->prepareResponse($result);
                     exit;
                 }
-                break;
+
+                return;
             }
 
             case 'commerce/currency/set': {
@@ -324,7 +326,15 @@ class Commerce
                     exit;
                 }
 
-                break;
+                return;
+            }
+
+            case 'commerce/payorder': {
+                if (!empty($_GET['hash']) && is_scalar($_GET['hash']) && $this->loadProcessor()->payOrderByHash($_GET['hash'])) {
+                    exit;
+                }
+
+                return;
             }
 
             case 'commerce/module/action': {
@@ -340,7 +350,7 @@ class Commerce
                     exit;
                 }
 
-                break;
+                return;
             }
         }
 

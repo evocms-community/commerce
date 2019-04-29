@@ -49,7 +49,7 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
         return [
             'order_id' => $order_id,
             'title'    => $this->modx->db->escape($item['title']),
-            'price'    => number_format((float)$item['price'], 6),
+            'price'    => number_format((float)$item['price'], 6, '.', ''),
             'position' => $position,
         ];
     }
@@ -87,6 +87,7 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
         $values = $this->prepareValues($fields);
         $values['amount']   = number_format((float)$total, 6, '.', '');
         $values['currency'] = ci()->currency->getCurrencyCode();
+        $values['hash']     = substr(bin2hex(random_bytes(16)), 0, 32);
 
         $this->modx->invokeEvent('OnBeforeOrderSaving', [
             'values'    => &$values,
@@ -276,27 +277,67 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
             $successTpl = '@CODE:' . $lang['order.redirecting_to_payment'];
             $redirectToPayment = false;
 
-            $link = $payment['processor']->getPaymentLink();
+            $redirect = $payment['processor']->createPaymentRedirect();
 
-            if (!empty($link)) {
+            if (!empty($redirect['link'])) {
                 $redirectToPayment = true;
                 $FL->config->setConfig(['redirectTo' => [
-                    'page'   => $link,
+                    'page'   => $redirect['link'],
                     'header' => 'HTTP/1.1 301 Moved Permanently',
                 ]]);
-            } else {
-                $markup = $payment['processor']->getPaymentMarkup();
-
-                if (!empty($markup)) {
-                    $successTpl .= $markup;
-                    $redirectToPayment = true;
-                }
+            } else if (!empty($redirect['markup'])) {
+                $redirectToPayment = true;
+                $successTpl .= $redirect['markup'];
             }
 
             if ($redirectToPayment) {
                 $FL->config->setConfig(['successTpl' => $successTpl]);
             }
         }
+    }
+
+    public function payOrderByHash($hash)
+    {
+        $db = ci()->db;
+        $order = $db->getRow($db->select('*', $this->tableOrders, "`hash` = '" . $db->escape($hash) . "'"));
+
+        if (!empty($order)) {
+            $payments = $db->select('*', $this->tablePayments, "`order_id` = '" . $order['id'] . "' AND `paid` = 1");
+            $amount = 0;
+
+            while ($payment = $db->getRow($payments)) {
+                $amount += $payment['amount'];
+            }
+
+            if ($amount >= $order['amount']) {
+                return false;
+            }
+
+            $order = $this->loadOrder($order['id']);
+
+            if (!empty($order['fields']['payment_method'])) {
+                $payment = $this->modx->commerce->getPayment($order['fields']['payment_method']);
+
+                $this->modx->invokeEvent('OnBeforePaymentProcess', [
+                    'order'   => &$order,
+                    'payment' => $payment,
+                ]);
+
+                ci()->flash->set('last_order_id', $order['id']);
+
+                $redirect = $payment['processor']->createPaymentRedirect();
+
+                if (!empty($redirect['link'])) {
+                    $this->modx->sendRedirect($redirect['link']);
+                } else if (!empty($redirect['markup'])) {
+                    echo $redirect['markup'];
+                }
+
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public function loadPayment($payment_id)
@@ -358,6 +399,7 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
             ]);
             $this->changeStatus($order_id, $status, $comment, true);
 
+            $this->getCart();
             $template = $this->modx->commerce->getSetting('order_paid', $this->modx->commerce->getUserLanguageTemplate('order_paid'));
 
             $body = $tpl->parseChunk($template, [
