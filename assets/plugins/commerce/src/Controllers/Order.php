@@ -77,6 +77,7 @@ class Order extends Form
 
     public function render()
     {
+        $this->modx->commerce->loadProcessor()->startOrder();
         $items = $this->modx->commerce->getCart()->getItems();
 
         if (empty($items)) {
@@ -126,16 +127,22 @@ class Order extends Form
             $cart->setItems($items);
         }
 
-        $processor->createOrder($items, $this->getFormData('fields'));
+        $order = $processor->createOrder($items, $this->getFormData('fields'));
+
+        $this->modx->invokeEvent('OnBeforeOrderSend', [
+            'FL'    => $this,
+            'order' => $order,
+            'cart'  => $processor->getCart(),
+        ]);
 
         parent::process();
 
         $processor->postProcessForm($this);
 
         $this->modx->invokeEvent('OnOrderProcessed', [
-            'order' => $processor->getOrder(),
-            'cart'  => $processor->getCart(),
             'FL'    => $this,
+            'order' => $order,
+            'cart'  => $processor->getCart(),
         ]);
 
         $this->renderTpl = $this->getCFGDef('successTpl', $this->lexicon->getMsg('form.default_successTpl'));

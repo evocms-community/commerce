@@ -34,7 +34,7 @@ return [
     'order.order_id' => 'Номер заказа',
     'order.created_at' => 'Дата и время создания',
     'order.redirecting_to_payment' => 'Перенаправление на оплату...',
-    'order.' => '',
+    'order.order_payment_link' => '@CODE:<p>Для оплаты заказа перейдите по ссылке <a href="[(site_url)]commerce/payorder?hash=[+order.hash+]">[(site_url)]/commerce/payorder?hash=[+order.hash+]</a></p>',
     'order.' => '',
     'order.' => '',
 ];

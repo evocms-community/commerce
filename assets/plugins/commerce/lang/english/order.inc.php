@@ -34,7 +34,7 @@ return [
     'order.order_id' => 'Order number',
     'order.created_at' => 'Date and time of creation',
     'order.redirecting_to_payment' => 'Redirect to payment ...',
-    'order.' => '',
+    'order.order_payment_link' => '@CODE:<p>To pay for the order, follow the link <a href="[(site_url)]commerce/payorder?hash=[+order.hash+]">[(site_url)]/commerce/payorder?hash=[+order.hash+]</a></p>',
     'order.' => '',
     'order.' => '',
 ];

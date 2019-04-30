@@ -129,8 +129,10 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
             'subtotals' => &$subtotals,
         ]);
 
-        $this->loadOrder($order_id);
+        $order = $this->loadOrder($order_id);
         $this->getCart();
+
+        return $order;
     }
 
     public function changeStatus($order_id, $status_id, $comment = '', $notify = false, $template = null)
@@ -268,6 +270,7 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
             $payment = $this->modx->commerce->getPayment($order['fields']['payment_method']);
 
             $this->modx->invokeEvent('OnBeforePaymentProcess', [
+                'FL'      => $FL,
                 'order'   => &$order,
                 'payment' => $payment,
             ]);
@@ -473,6 +476,20 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
                 $this->modx->setPlaceholder('commerce_payment.' . $key, $value);
             }
         }
+    }
+
+    public function populateOrderPaymentLink()
+    {
+        $order = $this->getOrder();
+
+        if ($order) {
+            $lang = $this->modx->commerce->getUserLanguage('order');
+            return ci()->tpl->parseChunk($lang['order.order_payment_link'], [
+                'order' => $order,
+            ], true);
+        }
+
+        return '';
     }
 
     public function getCurrentDelivery()
