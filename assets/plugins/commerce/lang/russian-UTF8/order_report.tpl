@@ -1,11 +1,11 @@
-<p>Новый заказ на сайте [(site_url)]</p>
+<p>Новый заказ #[+order.id+] на сайте [(site_url)]</p>
 
 <h4>Данные покупателя:</h4>
 
 <p>
-    [+name.value+], [+email.value+], [+phone.value+]<br>
-    Способ доставки: [+delivery_method_title+]<br>
-    Способ оплаты: [+payment_method_title+]
+    [+order.name+], [+order.email+], [+order.phone+]<br>
+    Способ доставки: [+order.fields.delivery_method_title+]<br>
+    Способ оплаты: [+order.fields.payment_method_title+]
 </p>
 
 <h4>Состав заказа:</h4>

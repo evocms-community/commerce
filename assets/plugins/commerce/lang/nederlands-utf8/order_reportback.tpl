@@ -1,6 +1,7 @@
 <p>
     Hallo!<br>
-    Je hebt een bestelling via [(site_url)] achtergelaten.
+    Je hebt een bestelling via [(site_url)] achtergelaten.<br>
+    Uw volgnummer: [+order.id+]
 </p>
 
 <h4>Gegevens van de klant:</h4>

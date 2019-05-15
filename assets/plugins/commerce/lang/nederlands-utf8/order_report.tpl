@@ -1,11 +1,11 @@
-<p>Nieuwe online bestelling via [(site_url)]</p>
+<p>Nieuwe online bestelling #[+order.id+] via [(site_url)]</p>
 
 <h4>Gegevens van de klant:</h4>
 
 <p>
-    [+name.value+], [+email.value+], [+phone.value+]<br>
-    Bezorgmethode: [+delivery_method_title+]<br>
-    Betaalmethode: [+payment_method_title+]
+    [+order.name+], [+order.email+], [+order.phone+]<br>
+    Bezorgmethode: [+order.fields.delivery_method_title+]<br>
+    Betaalmethode: [+order.fields.payment_method_title+]
 </p>
 
 <h4>De opsomming van de bestelling:</h4>

@@ -135,6 +135,7 @@ class Order extends Form
             'cart'  => $processor->getCart(),
         ]);
 
+        $this->setPlaceholder('order', $order);
         parent::process();
 
         $processor->postProcessForm($this);

@@ -1,6 +1,7 @@
 <p>
     Hello!<br>
-    You left an order on the site [(site_url)]
+    You left an order on the site [(site_url)].<br>
+    Your order number is [+order.id+]
 </p>
 
 <h4>Buyer data:</h4>
