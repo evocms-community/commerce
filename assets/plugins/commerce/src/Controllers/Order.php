@@ -129,7 +129,7 @@ class Order extends Form
 
         $order = $processor->createOrder($items, $this->getFormData('fields'));
 
-        $this->modx->invokeEvent('OnBeforeOrderSend', [
+        $this->modx->invokeEvent('OnBeforeOrderSending', [
             'FL'    => $this,
             'order' => $order,
             'cart'  => $processor->getCart(),
