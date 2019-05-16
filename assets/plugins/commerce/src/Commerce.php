@@ -354,7 +354,7 @@ class Commerce
             }
         }
 
-        if (preg_match('/^commerce\/([a-z-_]+?)\/([a-z-]+?)$/', $route, $parts)) {
+        if (preg_match('/^commerce\/([a-z-_]+?)\/(payment-[a-z-]+?)$/', $route, $parts)) {
             try {
                 $payment = $this->getPayment($parts[1]);
             } catch (\Exception $e) {
