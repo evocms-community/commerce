@@ -59,7 +59,7 @@ class Payment implements \Commerce\Interfaces\Payment
         $payment = [
             'order_id'   => $order_id,
             'amount'     => $amount,
-            'hash'       => substr(bin2hex(random_bytes(8)), 0, 16),
+            'hash'       => ci()->commerce->generateRandomString(16),
             'created_at' => date('Y-m-d H:i:s'),
         ];
 

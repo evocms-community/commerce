@@ -526,4 +526,19 @@ class Commerce
 
         return json_encode($response);
     }
+
+    public function generateRandomString($length = 32)
+    {
+        $result = '';
+
+        if (function_exists('random_bytes')) {
+            $result = bin2hex(random_bytes($length * 0.5));
+        } else if (function_exists('openssl_random_pseudo_bytes')) {
+            $result = bin2hex(openssl_random_pseudo_bytes($length * 0.5));
+        } else {
+            $result = md5(rand() . rand() . rand());
+        }
+
+        return substr($result, 0, $length);
+    }
 }

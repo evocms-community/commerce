@@ -87,7 +87,7 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
         $values = $this->prepareValues($fields);
         $values['amount']   = number_format((float)$total, 6, '.', '');
         $values['currency'] = ci()->currency->getCurrencyCode();
-        $values['hash']     = substr(bin2hex(random_bytes(16)), 0, 32);
+        $values['hash']     = $this->modx->commerce->generateRandomString();
 
         $this->modx->invokeEvent('OnBeforeOrderSaving', [
             'values'    => &$values,
