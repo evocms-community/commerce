@@ -139,7 +139,7 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
     {
         $order = $this->loadOrder($order_id);
 
-        if (empty($order) || empty($order['email'])) {
+        if (empty($order)) {
             return false;
         }
 
@@ -165,7 +165,7 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
             'user_id'   => $this->modx->getLoginUserID('mgr'),
         ], $this->tableHistory);
 
-        if ($notify) {
+        if ($notify && !empty($order['email'])) {
             $tpl    = ci()->tpl;
             $lang   = $this->modx->commerce->getUserLanguage('order');
             $status = $this->modx->db->getValue($this->modx->db->select('title', $this->modx->getFullTablename('commerce_order_statuses'), "`id` = '" . intval($status_id) . "'"));
