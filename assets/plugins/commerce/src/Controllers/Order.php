@@ -14,6 +14,10 @@ class Order extends Form
             'langDir' => 'assets/snippets/FormLister/core/lang/',
             'lang'    => $this->getCFGDef('lang', $this->modx->getConfig('manager_language'))
         ));
+
+        if (strtolower($this->getCFGDef('formMethod', 'post')) == 'manual') {
+            $this->_rq = $this->getCFGDef('formData', []);
+        }
     }
 
     public function getPaymentsAndDelivery()
@@ -78,7 +82,9 @@ class Order extends Form
     public function render()
     {
         $this->modx->commerce->loadProcessor()->startOrder();
-        $items = $this->modx->commerce->getCart()->getItems();
+
+        $cartName = $this->getCFGDef('cartName', 'products');
+        $items = ci()->carts->getCart($cartName)->getItems();
 
         if (empty($items)) {
             return false;
@@ -102,8 +108,10 @@ class Order extends Form
         $processor = $this->modx->commerce->loadProcessor();
         $processor->startOrder();
 
-        $cart = $this->modx->commerce->getCart();
+        $cartName = $this->getCFGDef('cartName', 'products');
+        $cart = ci()->carts->getCart($cartName);
         $items = $cart->getItems();
+
         $params = [
             'FL'   => $this,
             'items' => &$items,
