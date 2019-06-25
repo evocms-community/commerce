@@ -15,6 +15,11 @@ class Order extends Form
             'lang'    => $this->getCFGDef('lang', $this->modx->getConfig('manager_language'))
         ));
 
+        $lang = $this->lexicon->loadLang('form');
+        if ($lang) {
+            $this->log('Lexicon loaded', array('lexicon' => $lang));
+        }
+
         if (strtolower($this->getCFGDef('formMethod', 'post')) == 'manual') {
             $this->_rq = $this->getCFGDef('formData', []);
         }
@@ -167,6 +172,8 @@ class Order extends Form
         }
 
         $this->runPrepare('prepareAfterProcess');
-        $this->modx->commerce->getCart()->clean();
+
+        $cartName = $this->getCFGDef('cartName', 'products');
+        ci()->carts->getCart($cartName)->clean();
     }
 }

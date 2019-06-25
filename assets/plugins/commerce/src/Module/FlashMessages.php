@@ -16,7 +16,7 @@ class FlashMessages
 
         $_SESSION[$this->key] = [];
 
-        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+        if (!empty($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
             foreach ($_POST as $key => $value) {
                 $this->set('form_' . $key, $value);
             }

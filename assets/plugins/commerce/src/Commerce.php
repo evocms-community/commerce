@@ -238,7 +238,7 @@ class Commerce
     {
         switch ($route) {
             case 'commerce/action': {
-                if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action']) && is_string($_POST['action']) && preg_match('/^[a-z]+\/[a-z]+$/', $_POST['action'])) {
+                if (!empty($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action']) && is_string($_POST['action']) && preg_match('/^[a-z]+\/[a-z]+$/', $_POST['action'])) {
                     try {
                         $response = $this->runAction($_POST['action'], isset($_POST['data']) ? $_POST['data'] : []);
                         echo $this->prepareResponse($response);
