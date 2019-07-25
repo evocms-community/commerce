@@ -5,8 +5,14 @@
 <?php $this->endBlock(); ?>
 
 <?php $this->block('buttons'); ?>
-    <a href="<?= $this->module->makeUrl('orders/edit', 'order_id=' . $order['id']) ?>" class="btn btn-primary"><?= $_lang['edit'] ?></a>
-    <a href="<?= $this->module->makeUrl('orders') ?>" class="btn btn-secondary"><?= $_lang['cancel'] ?></a>
+    <a href="<?= $this->module->makeUrl('orders/edit', 'order_id=' . $order['id']) ?>" class="btn btn-primary">
+        <i class="fa fa-pencil"></i>
+        <span><?= $_lang['edit'] ?></span>
+    </a>
+    <a href="<?= $this->module->makeUrl('orders') ?>" class="btn btn-secondary" title="<?= $_lang['cancel'] ?>">
+        <i class="fa fa-times-circle"></i>
+        <span><?= $_lang['cancel'] ?></span>
+    </a>
 <?php $this->endBlock(); ?>
 
 <?php $this->block('content'); ?>

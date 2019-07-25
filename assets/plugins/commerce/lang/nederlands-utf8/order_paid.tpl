@@ -1,4 +1,6 @@
-<p>Nieuwe online bestelling #[+order.id+] via [(site_url)]</p>
+<p>Bestelnummer #[+order_id+] betaald!</p>
+
+<p>Bedrag van de uitkering: [[PriceFormat? &price=`[+amount+]`]]</p>
 
 <h4>Gegevens van de klant:</h4>
 

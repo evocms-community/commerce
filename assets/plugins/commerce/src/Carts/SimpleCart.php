@@ -85,7 +85,7 @@ class SimpleCart implements \Commerce\Interfaces\Cart
 
             foreach ($this->items as $row => $item) {
                 if ($item['hash'] == $new['hash']) {
-                    $this->update($row, ['count' => $item['count'] + 1]);
+                    $this->update($row, ['count' => $item['count'] + (!empty($new['count']) ? $new['count'] : 1)]);
                     return $row;
                 }
             }
@@ -135,6 +135,22 @@ class SimpleCart implements \Commerce\Interfaces\Cart
         }
 
         return false;
+    }
+
+    public function removeById($id)
+    {
+        $result = false;
+
+        if (!empty($this->items)) {
+            foreach ($this->items as $row => $item) {
+                if (!empty($item['id']) && $item['id'] == $id) {
+                    unset($this->items[$row]);
+                    $result = true;
+                }
+            }
+        }
+
+        return $result;
     }
 
     public function clean()

@@ -48,6 +48,15 @@ class StoreCart extends SimpleCart implements Cart
         return $result;
     }
 
+    public function removeById($row)
+    {
+        if ($result = parent::removeById($row)) {
+            $this->store->save($this->items);
+        }
+
+        return $result;
+    }
+
     public function clean()
     {
         parent::clean();
@@ -72,10 +81,10 @@ class StoreCart extends SimpleCart implements Cart
         foreach ($items as $row => $item) {
             if (is_numeric($item)) {
                 $item = $this->prepareItem([
-                    'id'  => $item,
-                    'row' => $row,
+                    'id' => $item,
                 ]);
                 $item['hash'] = $this->makeHash($item);
+                $item['row'] = $row;
                 $items[$row] = $item;
             }
         }

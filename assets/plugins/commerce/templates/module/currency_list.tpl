@@ -5,7 +5,10 @@
 <?php $this->endBlock(); ?>
 
 <?php $this->block('buttons'); ?>
-    <a href="<?= $module->makeUrl('currency/edit') ?>" class="btn btn-success"><?= $lang['module.add_currency'] ?></a>
+    <a href="<?= $module->makeUrl('currency/edit') ?>" class="btn btn-success" title="<?= $lang['module.add_currency'] ?>">
+        <i class="fa fa-plus-circle"></i>
+        <span><?= $lang['module.add_currency'] ?></span>
+    </a>
 <?php $this->endBlock(); ?>
 
 <?php $this->block('content'); ?>

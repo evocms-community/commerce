@@ -83,15 +83,24 @@ var Commerce = {
             carts: this.getCartsHashes()
         };
 
+        $form.trigger('order-data-update.commerce', {
+            data: data
+        });
+
         $.post('commerce/data/update', data, function(response) {
+            $form.trigger('order-data-updated.commerce', {
+                data: data,
+                response: response
+            });
+
             if (response.status == 'success') {
                 if (response.markup.form) {
-                    if (response.markup.form.delivery) {
-                        $form.find('[data-commerce-deliveries]').replaceWith(response.markup.form.delivery);
+                    if (typeof response.markup.form.delivery != 'undefined') {
+                        $form.find('[data-commerce-deliveries]').html(response.markup.form.delivery);
                     }
 
-                    if (response.markup.form.payments) {
-                        $form.find('[data-commerce-payments]').replaceWith(response.markup.form.payments);
+                    if (typeof response.markup.form.payments != 'undefined') {
+                        $form.find('[data-commerce-payments]').html(response.markup.form.payments);
                     }
                 }
 
@@ -159,15 +168,15 @@ $(document).on('submit click change', '[data-commerce-action]', function(e) {
                 }
 
                 if ($count.length == 1) {
-                    var count = parseInt($count.val()) || 0;
+                    var count = parseFloat($count.val()) || 0;
                     count += action == 'increase' ? 1 : -1;
                     count = Math.max(0, count);
 
                     if (!count) {
-                        Commerce.action('cart/remove', {row: row, cart: cart});
+                        Commerce.action('cart/remove', {row: row, cart: cart, data: data}, $self);
                     } else {
                         $count.val(count);
-                        Commerce.action('cart/update', {row: row, cart: cart, attributes: {count: count}});
+                        Commerce.action('cart/update', {row: row, cart: cart, data: data, attributes: {count: count}}, $self);
                     }
                 }
 
@@ -175,7 +184,7 @@ $(document).on('submit click change', '[data-commerce-action]', function(e) {
             }
 
             case 'remove': {
-                Commerce.action('cart/remove', {row: row, cart: cart});
+                Commerce.action('cart/remove', {row: row, cart: cart, data: data}, $self);
                 break;
             }
         }
@@ -184,13 +193,13 @@ $(document).on('submit click change', '[data-commerce-action]', function(e) {
     if (e.type == 'change') {
         switch (action) {
             case 'recount': {
-                var count = parseInt($self.val());
+                var count = parseFloat($self.val());
 
                 if (typeof count != 'NaN' && count >= 0) {
                     if (!count) {
-                        Commerce.action('cart/remove', {row: row});
+                        Commerce.action('cart/remove', {row: row, data: data}, $self);
                     } else {
-                        Commerce.action('cart/update', {row: row, attributes: {count: count}});
+                        Commerce.action('cart/update', {row: row, data: data, attributes: {count: count}}, $self);
                     }
                 }
 

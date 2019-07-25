@@ -1,6 +1,7 @@
 <p>
     Hallo!<br>
-    Je hebt een bestelling via [(site_url)] achtergelaten.
+    Je hebt een bestelling via [(site_url)] achtergelaten.<br>
+    Uw volgnummer: [+order.id+]
 </p>
 
 <h4>Gegevens van de klant:</h4>
@@ -9,6 +10,8 @@
     Bezorgmethode: [+delivery_method_title+]<br>
     Betaalmethode: [+payment_method_title+]
 </p>
+
+[+extra+]
 
 <h4>De opsomming van de bestelling:</h4>
 

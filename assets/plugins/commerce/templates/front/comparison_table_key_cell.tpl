@@ -1,0 +1,3 @@
+<td>
+    [+caption+]
+</td>

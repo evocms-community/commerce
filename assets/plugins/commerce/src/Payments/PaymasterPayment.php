@@ -50,7 +50,7 @@ class PaymasterPayment extends Payment implements \Commerce\Interfaces\Payment
             'LMI_PAYMENT_AMOUNT'    => $order['amount'],
             'LMI_CURRENCY'          => $currency['code'],
             'LMI_PAYMENT_NO'        => $order['id'],
-            'LMI_PAYMENT_DESC'      => \DLTemplate::getInstance($this->modx)->parseChunk($this->lang['payments.payment_description'], [
+            'LMI_PAYMENT_DESC'      => ci()->tpl->parseChunk($this->lang['payments.payment_description'], [
                 'order_id'  => $order['id'],
                 'site_name' => $this->modx->getConfig('site_name'),
             ]),
@@ -89,7 +89,8 @@ class PaymasterPayment extends Payment implements \Commerce\Interfaces\Payment
             'path' => 'assets/plugins/commerce/templates/front/',
         ]);
 
-        return $view->render('paymaster_form.tpl', [
+        return $view->render('payment_form.tpl', [
+            'url'  => 'https://paymaster.ru/Payment/Init',
             'data' => $data,
         ]);
     }
@@ -140,7 +141,7 @@ class PaymasterPayment extends Payment implements \Commerce\Interfaces\Payment
         }
 
         if ($signature != $data['LMI_HASH']) {
-            $this->modx->logEvent(0, 3, 'JSON processing failed: ' . $e->getMessage(), 'Commerce Paymaster Payment');
+            $this->modx->logEvent(0, 3, 'Signature check failed!', 'Commerce Paymaster Payment');
             return false;
         }
 
@@ -149,7 +150,7 @@ class PaymasterPayment extends Payment implements \Commerce\Interfaces\Payment
         try {
             $processor->processPayment($data['COMMERCE_PAYMENT_ID'], floatval($data['LMI_PAID_AMOUNT']));
         } catch (\Exception $e) {
-            $this->modx->logEvent(0, 3, 'JSON processing failed: ' . $e->getMessage(), 'Commerce Paymaster Payment');
+            $this->modx->logEvent(0, 3, 'Signature check failed: ' . $signature . ' != ' . $data['LMI_HASH'], 'Commerce Paymaster Payment');
             return false;
         }
 

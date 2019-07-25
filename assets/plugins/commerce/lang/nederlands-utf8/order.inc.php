@@ -14,7 +14,8 @@ return [
     'order.success' => '@CODE:<div>Bedankt voor je bestelling.</div>',
     'order.subject' => '@CODE:Nieuwe online bestelling via [(site_name)]',
     'order.subject_status_changed' => '@CODE:Bestellingsstatus #[+order_id+] is aangepast',
-    'order.order_paid' => '@CODE:Bestelnummer [+order_id+] betaald!',
+    'order.order_paid' => '@CODE:Bestelnummer #[+order_id+] betaald!',
+    'order.subject_order_paid' => '@CODE:Bestelnummer #[+order_id+] betaald!',
     'order.status.new' => 'Nieuw',
     'order.status.processing' => 'In verwerking',
     'order.status.paid' => 'Betaald',
@@ -33,7 +34,7 @@ return [
     'order.order_id' => 'Bestelnummer',
     'order.created_at' => 'Aanmaakdatum',
     'order.redirecting_to_payment' => 'Doorsturen betaling...',
-    'order.' => '',
+    'order.order_payment_link' => '@CODE:<p>Om te betalen voor de bestelling, klikt u op de link <a href="[(site_url)]commerce/payorder?hash=[+order.hash+]">[(site_url)]/commerce/payorder?hash=[+order.hash+]</a></p>',
     'order.' => '',
     'order.' => '',
 ];

@@ -12,4 +12,6 @@ return [
     'currency.decimals' => '2',
     'currency.decimals_separator' => '.',
     'currency.thousands_separator' => ',',
+
+    'common.add_to_cart' => 'Add to cart',
 ];

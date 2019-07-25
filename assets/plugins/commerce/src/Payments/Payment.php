@@ -59,7 +59,7 @@ class Payment implements \Commerce\Interfaces\Payment
         $payment = [
             'order_id'   => $order_id,
             'amount'     => $amount,
-            'hash'       => uniqid(),
+            'hash'       => ci()->commerce->generateRandomString(16),
             'created_at' => date('Y-m-d H:i:s'),
         ];
 
@@ -67,6 +67,23 @@ class Payment implements \Commerce\Interfaces\Payment
         $payment['id'] = $db->getInsertId();
 
         return $payment;
+    }
+
+    public function createPaymentRedirect()
+    {
+        $link = $this->getPaymentLink();
+
+        if (!empty($link)) {
+            return ['link' => $link];
+        }
+
+        $markup = $this->getPaymentMarkup();
+
+        if (!empty($markup)) {
+            return ['markup' => $markup];
+        }
+
+        return false;
     }
 
     public function getRequestPaymentHash()

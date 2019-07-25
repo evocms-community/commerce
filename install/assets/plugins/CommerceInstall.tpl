@@ -11,6 +11,11 @@
  * @internal    @installset base
 */
 
+$installedVersion = '0.0.0';
+if (!empty($modx->commerce)) {
+    $installedVersion = str_replace('v', '', Commerce\Commerce::VERSION);
+}
+
 function tableExists($modx, $table)
 {
     try {
@@ -40,6 +45,7 @@ $events = [
     'OnBeforeOrderProcessing',
     'OnBeforePaymentProcess',
     'OnBeforeOrderSaving',
+    'OnBeforeOrderSending',
     'OnOrderSaved',
     'OnOrderProcessed',
     'OnBeforeOrderHistoryUpdate',
@@ -57,6 +63,7 @@ $events = [
     'OnManagerBeforeDefaultCurrencyChange',
     'OnManagerRegisterCommerceController',
     'OnBeforeCurrencyChange',
+    'OnCommerceAjaxResponse',
 ];
 
 $query  = $modx->db->select('*', $tableEventnames, "`groupname` = 'Commerce'");
@@ -99,6 +106,10 @@ $modx->db->query("
         PRIMARY KEY (`id`)
     ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 ");
+
+if (version_compare($installedVersion, '0.2.2', '<')) {
+    $modx->db->query("ALTER TABLE " . $modx->getFullTablename('commerce_orders') . " ADD `hash` VARCHAR(32) NOT NULL AFTER `status_id`, ADD INDEX (`hash`);");
+}
 
 $modx->db->query("
     CREATE TABLE IF NOT EXISTS " . $modx->getFullTablename('commerce_order_products') . " (
@@ -209,8 +220,6 @@ if (!tableExists($modx, $table)) {
 }
 
 $modx->db->update(['disabled' => 0], $modx->getFullTablename('site_plugins'), "`name` = 'Commerce'");
-
-// TODO store all parameters in main plugin, link plugins and snippets
 
 // remove installer
 $query = $modx->db->select('id', $tablePlugins, "`name` = 'CommerceInstall'");

@@ -1,36 +1,40 @@
 <?php
 
-class CartDocLister extends site_contentDocLister
+class CartDocLister extends CustomLangDocLister
 {
+    protected $productsCount = 0;
+    protected $rowsCount     = 0;
+    protected $priceTotal    = 0;
+
     public function __construct($modx, $cfg = [], $startTime = null)
     {
         if (isset($cfg['prepareWrap'])) {
             if (!is_array($cfg['prepareWrap'])) {
                 $cfg['prepareWrap'] = explode(',', $cfg['prepareWrap']);
+            } else if (is_callable($cfg['prepareWrap'])) {
+                $cfg['prepareWrap'] = [$cfg['prepareWrap']];
             }
         } else {
             $cfg['prepareWrap'] = [];
         }
 
-        $cfg['prepareWrap'][] = [$this, 'prepareCartOuter'];
-
+        array_unshift($cfg['prepareWrap'], [$this, 'prepareCartOuter']);
         parent::__construct($modx, $cfg, $startTime);
-
-        if ($customLang = $this->getCFGDef('customLang')) {
-            $this->getCustomLang($customLang);
-        }
     }
 
     public function prepareCartOuter($data, $modx, $DL, $e)
     {
-        $placeholders = $data['placeholders'];
+        $placeholders = &$data['placeholders'];
 
-        $placeholders['hash']      = $this->getCFGDef('hash');
-        $placeholders['subtotals'] = $this->renderSubtotals();
-        $placeholders['total']     = $this->totalPrice;
-        $placeholders['count']     = $this->itemsCount;
+        $placeholders['hash']        = $this->getCFGDef('hash');
+        $placeholders['items_price'] = $this->priceTotal;
+        $placeholders['subtotals']   = $this->renderSubtotals();
+        $placeholders['total']       = $this->priceTotal;
+        $placeholders['count']       = $this->productsCount;
+        $placeholders['rows_count']  = $this->rowsCount;
+        unset($placeholders);
 
-        return $placeholders;
+        return $data;
     }
 
     protected function renderSubtotals()
@@ -40,7 +44,7 @@ class CartDocLister extends site_contentDocLister
         $result = '';
         $rows = [];
 
-        $this->getCFGDef('cart')->getSubtotals($rows, $this->totalPrice);
+        $this->getCFGDef('cart')->getSubtotals($rows, $this->priceTotal);
 
         foreach ($rows as $row) {
             $result .= $DLTemplate->parseChunk($tpl, $row);
@@ -92,8 +96,6 @@ class CartDocLister extends site_contentDocLister
         }
 
         $cartItems = $this->getCFGDef('cart')->getItems();
-        $total = 0;
-        $count = 0;
 
         foreach ($this->_docs as $hash => $doc) {
             if (isset($cartItems[$hash])) {
@@ -106,17 +108,16 @@ class CartDocLister extends site_contentDocLister
             if (!empty($doc['count'])) {
                 $doc['price'] = (float)$doc['price'];
                 $doc['count'] = (float)$doc['count'];
-                $count += $doc['count'];
+
+                $this->productsCount += $doc['count'];
+                $this->rowsCount++;
 
                 $doc['total'] = $doc['price'] * $doc['count'];
-                $total += $doc['total'];
+                $this->priceTotal += $doc['total'];
             }
 
             $this->_docs[$hash] = $doc;
         }
-
-        $this->totalPrice = $total;
-        $this->itemsCount = $count;
 
         return $this->_docs;
     }
@@ -145,7 +146,6 @@ class CartDocLister extends site_contentDocLister
     public function _render($tpl = '')
     {
         if (!empty($this->getCFGDef('defaultOptionsRender', 1))) {
-            $DLTemplate = \DLTemplate::getInstance($this->modx);
             $optionsTpl = $this->getCFGDef('optionsTpl');
 
             foreach ($this->_docs as $id => $item) {
@@ -153,7 +153,7 @@ class CartDocLister extends site_contentDocLister
 
                 if (isset($item['options']) && is_array($item['options'])) {
                     foreach ($item['options'] as $key => $option) {
-                        $options .= $DLTemplate->parseChunk($optionsTpl, [
+                        $options .= ci()->tpl->parseChunk($optionsTpl, [
                             'key'    => htmlentities($key),
                             'option' => htmlentities(is_scalar($option) ? $option : json_encode($option)),
                         ]);
@@ -167,27 +167,5 @@ class CartDocLister extends site_contentDocLister
         }
 
         return parent::_render($tpl);
-    }
-
-    public function getCustomLang($lang = '')
-    {
-        if (empty($lang)) {
-            $lang = $this->getCFGDef('lang', $this->modx->config['manager_language']);
-        }
-
-        $files = [
-            __DIR__ . "/../lang/$lang.php",
-            MODX_BASE_PATH . $lang,
-        ];
-
-        foreach ($files as $file) {
-            if (is_readable($file) && is_file($file)) {
-                $tmp = include $file;
-                $this->_customLang = is_array($tmp) ? $tmp : array();
-                break;
-            }
-        }
-
-        return $this->_customLang;
     }
 }

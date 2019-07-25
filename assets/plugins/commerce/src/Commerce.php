@@ -8,13 +8,13 @@ use Commerce\Carts\SessionCartStore;
 use Commerce\Carts\CookiesCartStore;
 use Commerce\Carts\ProductsCart;
 use Commerce\Carts\ProductsList;
-use Helpers\Lexicon;
+use Commerce\Lexicon;
 
 class Commerce
 {
     use SettingsTrait;
 
-    const VERSION = 'v0.1.0';
+    const VERSION = 'v0.2.2';
 
     public $currency;
 
@@ -238,19 +238,19 @@ class Commerce
     {
         switch ($route) {
             case 'commerce/action': {
-                if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action']) && is_string($_POST['action']) && preg_match('/^[a-z]+\/[a-z]+$/', $_POST['action'])) {
+                if (!empty($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action']) && is_string($_POST['action']) && preg_match('/^[a-z]+\/[a-z]+$/', $_POST['action'])) {
                     try {
-                        echo $this->runAction($_POST['action'], isset($_POST['data']) ? $_POST['data'] : []);
+                        $response = $this->runAction($_POST['action'], isset($_POST['data']) ? $_POST['data'] : []);
+                        echo $this->prepareResponse($response);
                         exit;
-                    } catch (\Exception $exc) {
-                        $this->modx->logEvent(0, 3, $exc->getMessage());
-                        throw $exc;
-                    } catch (\TypeError $exc) {
-                        $this->modx->logEvent(0, 3, $exc->getMessage());
-                        throw $exc;
+                    } catch (\Exception $e) {
+                        $this->modx->logEvent(0, 3, $e->getMessage());
+                    } catch (\TypeError $e) {
+                        $this->modx->logEvent(0, 3, $e->getMessage());
                     }
                 }
-                break;
+
+                return;
             }
 
             case 'commerce/cart/contents': {
@@ -267,7 +267,7 @@ class Commerce
                     }
                 }
 
-                echo json_encode($response);
+                echo $this->prepareResponse($response);
                 exit;
             }
 
@@ -298,10 +298,11 @@ class Commerce
                         $result['markup']['carts'] = $this->getCartsMarkup($_POST['hashes']['carts']);
                     }
 
-                    echo json_encode($result);
+                    echo $this->prepareResponse($result);
                     exit;
                 }
-                break;
+
+                return;
             }
 
             case 'commerce/currency/set': {
@@ -314,18 +315,26 @@ class Commerce
                         $this->currency->setCurrency($_POST['code']);
                     } catch (\Exception $e) {
                         $response['error'] = $e->getMessage();
-                        echo json_encode($response);
+                        echo $this->prepareResponse($response);
                         exit;
                     }
 
                     ci()->carts->changeCurrency($this->currency->getCurrencyCode());
 
                     $response['status'] = 'success';
-                    echo json_encode($response);
+                    echo $this->prepareResponse($response);
                     exit;
                 }
 
-                break;
+                return;
+            }
+
+            case 'commerce/payorder': {
+                if (!empty($_GET['hash']) && is_scalar($_GET['hash']) && $this->loadProcessor()->payOrderByHash($_GET['hash'])) {
+                    exit;
+                }
+
+                return;
             }
 
             case 'commerce/module/action': {
@@ -341,11 +350,11 @@ class Commerce
                     exit;
                 }
 
-                break;
+                return;
             }
         }
 
-        if (preg_match('/^commerce\/([a-z-_]+?)\/([a-z-]+?)$/', $route, $parts)) {
+        if (preg_match('/^commerce\/([a-z-_]+?)\/(payment-[a-z-]+?)$/', $route, $parts)) {
             try {
                 $payment = $this->getPayment($parts[1]);
             } catch (\Exception $e) {
@@ -406,7 +415,12 @@ class Commerce
         ];
 
         if (!empty($data['cart']['hash']) && is_string($data['cart']['hash'])) {
-            $cart = ci()->carts->getCartByHash($data['cart']['hash']);
+            $instance = ci()->carts->getInstanceByHash($data['cart']['hash']);
+
+            if (!is_null($instance)) {
+                $response['instance'] = $instance;
+                $cart = ci()->carts->getCart($instance);
+            }
         }
 
         if (empty($cart)) {
@@ -418,7 +432,9 @@ class Commerce
                 $instance = $data['instance'];
             }
 
-            $cart = CartsManager::getManager()->getCart($instance);
+            $response['instance'] = $instance;
+
+            $cart = ci()->carts->getCart($instance);
         }
 
         if (!is_null($cart)) {
@@ -427,17 +443,15 @@ class Commerce
                     $row = $cart->add($data);
 
                     if ($row !== false) {
-                        $response = [
-                            'status' => 'success',
-                            'row'    => $row,
-                        ];
+                        $response['status'] = 'success';
+                        $response['row']    = $row;
                     }
 
                     break;
                 }
 
                 case 'cart/update': {
-                    if ($cart->update($data['row'], $data['attributes'])) {
+                    if (!empty($data['row']) && !empty($data['attributes']) && $cart->update($data['row'], $data['attributes'])) {
                         $response['status'] = 'success';
                     }
 
@@ -445,15 +459,26 @@ class Commerce
                 }
 
                 case 'cart/remove': {
-                    if ($cart->remove($data['row'])) {
-                        $response['status'] = 'success';
+                    if (!empty($data['row'])) {
+                        if ($cart->remove($data['row'])) {
+                            $response['status'] = 'success';
+                        }
+                    } else if (!empty($data['data']['row'])) {
+                        if ($cart->remove($data['data']['row'])) {
+                            $response['status'] = 'success';
+                        }
+                    } else if (!empty($data['data']['id'])) {
+                        if ($cart->removeById($data['data']['id'])) {
+                            $response['status'] = 'success';
+                        }
                     }
+
                     break;
                 }
             }
         }
 
-        return json_encode($response);
+        return $response;
     }
 
     public function formatPrice($price, $currency = null)
@@ -466,6 +491,7 @@ class Commerce
         $formlister = new \FormLister\Form($this->modx);
         $validator  = new \FormLister\Validator;
 
+        setlocale(LC_NUMERIC, 'C');
         $result = $formlister->validate($validator, $rules, $data);
 
         if ($result !== true && !empty($result)) {
@@ -490,5 +516,29 @@ class Commerce
         }
 
         return false;
+    }
+
+    protected function prepareResponse($response)
+    {
+        $this->modx->invokeEvent('OnCommerceAjaxResponse', [
+            'response' => &$response,
+        ]);
+
+        return json_encode($response);
+    }
+
+    public function generateRandomString($length = 32)
+    {
+        $result = '';
+
+        if (function_exists('random_bytes')) {
+            $result = bin2hex(random_bytes($length * 0.5));
+        } else if (function_exists('openssl_random_pseudo_bytes')) {
+            $result = bin2hex(openssl_random_pseudo_bytes($length * 0.5));
+        } else {
+            $result = md5(rand() . rand() . rand());
+        }
+
+        return substr($result, 0, $length);
     }
 }

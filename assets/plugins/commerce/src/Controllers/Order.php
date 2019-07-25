@@ -2,8 +2,29 @@
 
 namespace FormLister;
 
+use Commerce\Lexicon;
+
 class Order extends Form
 {
+    public function __construct (\DocumentParser $modx, $cfg = array())
+    {
+        parent::__construct($modx, $cfg);
+
+        $this->lexicon = new Lexicon($modx, array(
+            'langDir' => 'assets/snippets/FormLister/core/lang/',
+            'lang'    => $this->getCFGDef('lang', $this->modx->getConfig('manager_language'))
+        ));
+
+        $lang = $this->lexicon->loadLang('form');
+        if ($lang) {
+            $this->log('Lexicon loaded', array('lexicon' => $lang));
+        }
+
+        if (strtolower($this->getCFGDef('formMethod', 'post')) == 'manual') {
+            $this->_rq = $this->getCFGDef('formData', []);
+        }
+    }
+
     public function getPaymentsAndDelivery()
     {
         $processor = $this->modx->commerce->loadProcessor();
@@ -46,7 +67,7 @@ class Order extends Form
                     'price'  => isset($row['price']) ? $row['price'] : '',
                     'markup' => isset($row['markup']) ? $row['markup'] : '',
                     'active' => 1 * ($default == $code),
-                    'index'  => $index,
+                    'index'  => $index++,
                 ]);
 
                 $markup .= isset($row['markup']) && is_scalar($row['markup']) ? $row['markup'] : '';
@@ -67,7 +88,10 @@ class Order extends Form
 
     public function render()
     {
-        $items = $this->modx->commerce->getCart()->getItems();
+        $this->modx->commerce->loadProcessor()->startOrder();
+
+        $cartName = $this->getCFGDef('cartName', 'products');
+        $items = ci()->carts->getCart($cartName)->getItems();
 
         if (empty($items)) {
             return false;
@@ -91,18 +115,14 @@ class Order extends Form
         $processor = $this->modx->commerce->loadProcessor();
         $processor->startOrder();
 
-        $cart = $this->modx->commerce->getCart();
+        $cartName = $this->getCFGDef('cartName', 'products');
+        $cart = ci()->carts->getCart($cartName);
         $items = $cart->getItems();
+
         $params = [
-            '_FL'   => $this,
+            'FL'   => $this,
             'items' => &$items,
         ];
-
-        $this->modx->invokeEvent('OnBeforeOrderProcessing', $params);
-
-        if (is_array($params['items'])) {
-            $cart->setItems($items);
-        }
 
         $fields = $this->getFormData('fields');
 
@@ -116,18 +136,32 @@ class Order extends Form
             $this->setField('delivery_method_title', $delivery['title']);
         }
 
-        $processor->createOrder($items, $this->getFormData('fields'));
+        $this->modx->invokeEvent('OnBeforeOrderProcessing', $params);
 
-        parent::process();
+        if (is_array($params['items'])) {
+            $cart->setItems($items);
+        }
 
-        $processor->postProcessForm($this);
-        $this->renderTpl = $this->getCFGDef('successTpl', $this->lexicon->getMsg('form.default_successTpl'));
+        $order = $processor->createOrder($items, $this->getFormData('fields'));
 
-        $this->modx->invokeEvent('OnOrderProcessed', [
-            'order' => $processor->getOrder(),
+        $this->modx->invokeEvent('OnBeforeOrderSending', [
+            'FL'    => $this,
+            'order' => $order,
             'cart'  => $processor->getCart(),
         ]);
 
+        $this->setPlaceholder('order', $order);
+        parent::process();
+
+        $processor->postProcessForm($this);
+
+        $this->modx->invokeEvent('OnOrderProcessed', [
+            'FL'    => $this,
+            'order' => $order,
+            'cart'  => $processor->getCart(),
+        ]);
+
+        $this->renderTpl = $this->getCFGDef('successTpl', $this->lexicon->getMsg('form.default_successTpl'));
         $this->redirect();
     }
 
@@ -140,6 +174,8 @@ class Order extends Form
         }
 
         $this->runPrepare('prepareAfterProcess');
-        $this->modx->commerce->getCart()->clean();
+
+        $cartName = $this->getCFGDef('cartName', 'products');
+        ci()->carts->getCart($cartName)->clean();
     }
 }

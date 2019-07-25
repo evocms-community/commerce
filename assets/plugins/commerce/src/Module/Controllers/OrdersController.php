@@ -8,6 +8,8 @@ class OrdersController extends Controller implements \Commerce\Module\Interfaces
 
     private $lang;
 
+    protected $statuses = null;
+
     public function __construct($modx, $module)
     {
         parent::__construct($modx, $module);
@@ -131,11 +133,14 @@ class OrdersController extends Controller implements \Commerce\Module\Interfaces
         $query   = $this->modx->db->select('*', $this->modx->getFullTablename('commerce_order_history'), "`order_id` = '" . $order['id'] . "'", 'created_at DESC');
         $history = $this->modx->db->makeArray($query);
 
-        $query = $this->modx->db->select('*', $this->modx->getFullTablename('user_attributes'), "`internalKey` IN (" . implode(',', array_column($history, 'user_id')) . ")");
         $users = [];
 
-        while ($row = $this->modx->db->getRow($query)) {
-            $users[$row['internalKey']] = $row['fullname'];
+        if (!empty($history)) {
+            $query = $this->modx->db->select('*', $this->modx->getFullTablename('user_attributes'), "`internalKey` IN (" . implode(',', array_column($history, 'user_id')) . ")");
+
+            while ($row = $this->modx->db->getRow($query)) {
+                $users[$row['internalKey']] = $row['fullname'];
+            }
         }
 
         return $this->view->render('order.tpl', [
@@ -490,7 +495,16 @@ class OrdersController extends Controller implements \Commerce\Module\Interfaces
             $this->module->sendRedirectBack(['error' => $this->lang['module.error.order_not_found']]);
         }
 
-        $processor->changeStatus($order['id'], $data['status_id'], !empty($data['description']) ? $data['description'] : '', !empty($data['notify']));
+        $shouldNotify = false;
+
+        if (isset($data['notify'])) {
+            $shouldNotify = !empty($data['notify']);
+        } else {
+            $query = $this->modx->db->select('notify', $this->modx->getFullTablename('commerce_order_statuses'), "`id` = '" . $this->modx->db->escape($data['status_id']) . "'");
+            $shouldNotify = !empty($this->modx->db->getValue($query));
+        }
+
+        $processor->changeStatus($order['id'], $data['status_id'], !empty($data['description']) ? $data['description'] : '', $shouldNotify);
 
         $this->module->sendRedirectBack(['success' => $this->lang['module.status_changed']]);
     }

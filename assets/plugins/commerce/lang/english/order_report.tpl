@@ -1,11 +1,11 @@
-<p>New order online [(site_url)]</p>
+<p>New order #[+order.id+] on [(site_url)]</p>
 
 <h4>Buyer data:</h4>
 
 <p>
-    [+name.value+], [+email.value+], [+phone.value+]<br>
-    Delivery method: [+delivery_method_title+]<br>
-    Payment method: [+payment_method_title+]
+    [+order.name+], [+order.email+], [+order.phone+]<br>
+    Delivery method: [+order.fields.delivery_method_title+]<br>
+    Payment method: [+order.fields.payment_method_title+]
 </p>
 
 <h4>Order list:</h4>

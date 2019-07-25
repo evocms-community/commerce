@@ -5,9 +5,8 @@
  * Order form, FormLister based
  *
  * @category    snippet
- * @version     0.1.0
+ * @version     0.2.1
  * @author      mnoskov
- * @internal    @properties &default_payment=Default payment code;text; &default_delivery=Default delivery code;text;
  * @internal    @modx_category Commerce
  * @internal    @installset base
 */
@@ -28,7 +27,7 @@ if (!empty($modx->commerce)) {
         'paymentsTpl'           => '@FILE:order_form_payments',
         'paymentsRowTpl'        => '@FILE:order_form_payments_row',
         'reportTpl'             => $modx->commerce->getUserLanguageTemplate('order_report', true),
-        'to'                    => $modx->getConfig('emailsender'),
+        'to'                    => $modx->commerce->getSetting('email', $modx->getConfig('emailsender')),
         'ccSender'              => '1',
         'ccSenderField'         => 'email',
         'ccSenderTpl'           => $modx->commerce->getUserLanguageTemplate('order_reportback'),

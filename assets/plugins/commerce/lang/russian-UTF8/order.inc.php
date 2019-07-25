@@ -14,7 +14,8 @@ return [
     'order.success' => '@CODE:<div>Спасибо за ваш заказ</div>',
     'order.subject' => '@CODE:Новый заказ на сайте [(site_name)]',
     'order.subject_status_changed' => '@CODE:Статус заказа #[+order_id+] изменен',
-    'order.order_paid' => '@CODE:Заказ №[+order_id+] оплачен!',
+    'order.order_paid' => '@CODE:Заказ #[+order_id+] оплачен!',
+    'order.subject_order_paid' => '@CODE:Заказ #[+order_id+] оплачен!',
     'order.status.new' => 'Новый',
     'order.status.processing' => 'В обработке',
     'order.status.paid' => 'Оплачен',
@@ -33,7 +34,7 @@ return [
     'order.order_id' => 'Номер заказа',
     'order.created_at' => 'Дата и время создания',
     'order.redirecting_to_payment' => 'Перенаправление на оплату...',
-    'order.' => '',
+    'order.order_payment_link' => '@CODE:<p>Для оплаты заказа перейдите по ссылке <a href="[(site_url)]commerce/payorder?hash=[+order.hash+]">[(site_url)]/commerce/payorder?hash=[+order.hash+]</a></p>',
     'order.' => '',
     'order.' => '',
 ];

@@ -1,14 +1,16 @@
-<p>Nieuwe online bestelling #[+order.id+] via [(site_url)]</p>
+<p>Order #[+order.id+] paid!</p>
 
-<h4>Gegevens van de klant:</h4>
+<p>Payment amount: [[PriceFormat? &price=`[+amount+]`]]</p>
+
+<h4>Buyer data:</h4>
 
 <p>
     [+order.name+], [+order.email+], [+order.phone+]<br>
-    Bezorgmethode: [+order.fields.delivery_method_title+]<br>
-    Betaalmethode: [+order.fields.payment_method_title+]
+    Delivery method: [+order.fields.delivery_method_title+]<br>
+    Payment method: [+order.fields.payment_method_title+]
 </p>
 
-<h4>De opsomming van de bestelling:</h4>
+<h4>Order list:</h4>
 
 [!Cart?
     &instance=`order`

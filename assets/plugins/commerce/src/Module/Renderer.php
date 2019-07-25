@@ -52,6 +52,7 @@ class Renderer
         $flash = $this->getSetting('flash', []);
         $module = $this->module;
         extract($data);
+        setlocale(LC_NUMERIC, 'C');
 
         ob_start();
         include $fullTemplate;
