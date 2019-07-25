@@ -30,12 +30,12 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
         $this->tablePayments = $modx->getFullTablename($this->tablePayments);
     }
 
-    protected function prepareItem($order_id, $position, $item)
+    protected function prepareOrderProduct($order_id, $position, $item)
     {
         return [
             'order_id'   => $order_id,
             'product_id' => (int)$item['id'],
-            'title'      => $this->modx->db->escape($item['name']),
+            'title'      => $this->modx->db->escape(isset($item['title']) ? $item['title'] : $item['name']),
             'price'      => number_format((float)$item['price'], 6, '.', ''),
             'count'      => number_format((float)$item['count'], 6, '.', ''),
             'options'    => !empty($item['options']) ? $this->modx->db->escape(json_encode($item['options'], JSON_UNESCAPED_UNICODE)) : null,
@@ -44,17 +44,17 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
         ];
     }
 
-    protected function prepareSubtotal($order_id, $position, $item)
+    protected function prepareOrderSubtotal($order_id, $position, $item)
     {
         return [
             'order_id' => $order_id,
             'title'    => $this->modx->db->escape($item['title']),
-            'price'    => number_format((float)$item['price'], 6),
+            'price'    => number_format((float)$item['price'], 6, '.', ''),
             'position' => $position,
         ];
     }
 
-    protected function prepareValues($fields)
+    protected function prepareOrderValues($fields)
     {
         $values = [];
 
@@ -65,8 +65,7 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
             }
         }
 
-        $values['fields']     = $this->modx->db->escape(json_encode($fields, JSON_UNESCAPED_UNICODE));
-        $values['created_at'] = date('Y-m-d H:i:s');
+        $values['fields'] = $this->modx->db->escape(json_encode($fields, JSON_UNESCAPED_UNICODE));
         return $values;
     }
 
@@ -84,11 +83,13 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
             'total' => &$total,
         ]);
 
-        $values = $this->prepareValues($fields);
+        $values = $this->prepareOrderValues($fields);
         $values['amount']   = number_format((float)$total, 6, '.', '');
         $values['currency'] = ci()->currency->getCurrencyCode();
+        $values['created_at'] = date('Y-m-d H:i:s');
 
         $this->modx->invokeEvent('OnBeforeOrderSaving', [
+            'order_id'  => null,
             'values'    => &$values,
             'items'     => &$items,
             'fields'    => &$fields,
@@ -101,11 +102,11 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
         $position = 1;
 
         foreach ($items as $item) {
-            $this->modx->db->insert($this->prepareItem($order_id, $position++, $item), $this->tableProducts);
+            $this->modx->db->insert($this->prepareOrderProduct($order_id, $position++, $item), $this->tableProducts);
         }
 
         foreach ($subtotals as $item) {
-            $this->modx->db->insert($this->prepareSubtotal($order_id, $position++, $item), $this->tableProducts);
+            $this->modx->db->insert($this->prepareOrderSubtotal($order_id, $position++, $item), $this->tableProducts);
         }
 
         $defaultStatus = ci()->cache->getOrCreate('default_status', function() {
@@ -122,6 +123,7 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
         $this->changeStatus($order_id, $defaultStatus);
 
         $this->modx->invokeEvent('OnOrderSaved', [
+            'order_id'  => $order_id,
             'values'    => &$values,
             'items'     => &$items,
             'fields'    => &$fields,
@@ -180,6 +182,84 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
 
             $mailer->send($body);
         }
+
+        return true;
+    }
+
+    public function updateOrder($order_id, $data = [])
+    {
+        $params = [
+            'order_id' => $order_id,
+        ];
+
+        foreach (['values', 'items', 'subtotals'] as $field) {
+            if (isset($data[$field])) {
+                $params[$field] = &$data[$field];
+            }
+        }
+
+        $this->modx->invokeEvent('OnBeforeOrderSaving', $params);
+
+        $db = $this->modx->db;
+
+        $db->query('START TRANSACTION;');
+
+        try {
+            $position = 1;
+
+            if (isset($params['items'])) {
+                $exists = [];
+
+                foreach ($params['items'] as $item) {
+                    $row_id = !empty($item['order_row_id']) ? $item['order_row_id'] : 0;
+                    $item = $this->prepareOrderProduct($order_id, $position++, $item);
+
+                    if (!empty($row_id)) {
+                        $db->update($item, $this->tableProducts, "id = '$row_id'");
+                        $exists[] = $row_id;
+                    } else {
+                        $exists[] = $db->insert($item, $this->tableProducts);
+                    }
+                }
+
+                $db->delete($this->tableProducts, "`order_id` = '$order_id' AND `product_id` IS NOT NULL AND `id` NOT IN ('" . implode("', '", $exists) . "')");
+            }
+
+            if (isset($params['subtotals'])) {
+                $exists = [];
+
+                foreach ($params['subtotals'] as $item) {
+                    $row_id = !empty($item['id']) ? $item['id'] : 0;
+                    $item = $this->prepareOrderSubtotal($order_id, $position++, $item);
+
+                    if (!empty($row_id)) {
+                        $db->update($item, $this->tableProducts, "id = '$row_id'");
+                        $exists[] = $row_id;
+                    } else {
+                        $exists[] = $db->insert($item, $this->tableProducts);
+                    }
+                }
+
+                $db->delete($this->tableProducts, "`order_id` = '$order_id' AND `product_id` IS NULL AND `id` NOT IN ('" . implode("', '", $exists) . "')");
+            }
+
+            if (!empty($params['values'])) {
+                $order = $this->loadOrder($order_id);
+                $params['values'] = array_replace_recursive($order, $params['values']);
+                $params['values']['fields'] = json_encode($params['values']['fields'], JSON_UNESCAPED_UNICODE);
+                unset($params['values']['created_at']);
+                unset($params['values']['updated_at']);
+
+                $db->update($params['values'], $this->tableOrders, "id = '" . $order['id'] . "'");
+            }
+        } catch (\Exception $e) {
+            $db->query('ROLLBACK;');
+            return false;
+        }
+
+        $db->query('COMMIT;');
+
+        $this->modx->invokeEvent('OnOrderSaved', $params);
 
         return true;
     }

@@ -69,6 +69,16 @@ class Manager
         exit;
     }
 
+    public function sendRedirectWithQuery($route = '', $query = '', $messages = [])
+    {
+        if (!empty($messages)) {
+            $this->flash->setMultiple($messages);
+        }
+
+        $this->modx->sendRedirect($this->makeUrl($route, $query));
+        exit;
+    }
+
     public function sendRedirectBack($messages = [], $fallback = '')
     {
         $url = $fallback;

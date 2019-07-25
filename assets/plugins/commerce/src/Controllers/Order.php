@@ -11,6 +11,8 @@ class Order extends Form
         $payments  = [];
         $result    = [];
 
+        $fields = $this->prerenderForm($this->getFormStatus());
+
         foreach ($this->modx->commerce->getPayments() as $code => $payment) {
             $payments[$code] = [
                 'title'  => $payment['title'],
@@ -51,10 +53,10 @@ class Order extends Form
             }
 
             if (!empty($output)) {
-                $output = $this->DLTemplate->parseChunk($this->getCFGDef($type . 'Tpl'), [
+                $output = $this->DLTemplate->parseChunk($this->getCFGDef($type . 'Tpl'), array_merge($fields, [
                     'wrap'   => $output,
                     'markup' => $markup,
-                ]);
+                ]));
             }
 
             $result[$type] = $output;

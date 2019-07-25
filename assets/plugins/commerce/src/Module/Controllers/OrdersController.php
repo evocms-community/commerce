@@ -253,7 +253,144 @@ class OrdersController extends Controller implements \Commerce\Module\Interfaces
 
     public function save()
     {
-        echo '<pre>';print_r($_POST);die();
+        $order = $this->loadOrderFromRequest();
+
+        if (empty($order)) {
+            $this->module->sendRedirect('orders', ['error' => $this->lang['module.error.order_not_found']]);
+        }
+
+        $fields     = $this->getOrderEditableFields();
+        $columns    = $this->getOrderCartEditableColumns();
+        $subcolumns = $this->getOrderSubtotalsEditableColumns();
+
+        $orderData = $orderCart = $orderSubtotals = [];
+
+        if (!empty($_POST['order'])) {
+            $orderData = $_POST['order'];
+
+            if (!empty($orderData['cart'])) {
+                unset($orderData['cart']);
+            }
+
+            if (!empty($orderData['subtotals'])) {
+                unset($orderData['subtotals']);
+            }
+        }
+
+        if (!empty($_POST['order']['cart'])) {
+            $orderCart = $_POST['order']['cart'];
+        }
+
+        if (!empty($_POST['order']['subtotals'])) {
+            $orderSubtotals = $_POST['order']['subtotals'];
+        }
+
+        $data = [
+            'order' => [
+                'data'  => &$orderData,
+                'rules' => $this->collectRules($fields),
+            ],
+            'cart' => [
+                'data'  => &$orderCart,
+                'rules' => $this->collectRules($columns),
+                'iterable' => true,
+            ],
+            'subtotals' => [
+                'data'  => &$orderSubtotals,
+                'rules' => $this->collectRules($subcolumns),
+                'iterable' => true,
+            ],
+        ];
+
+        $this->modx->invokeEvent('OnManagerBeforeOrderValidating', [
+            'data' => &$data,
+        ]);
+
+        $errors = [];
+
+        foreach ($data as $key => $row) {
+            if (empty($row['iterable'])) {
+                $row['data'] = [$row['data']];
+            }
+
+            $rowErrors = [];
+
+            foreach ($row['data'] as $rowData) {
+                $result = $this->modx->commerce->validate($rowData, $row['rules']);
+
+                if (is_array($result)) {
+                    $rowErrors = array_merge($rowErrors, $result);
+                }
+            }
+
+            if (!empty($rowErrors)) {
+                $errors = array_merge($errors, $rowErrors);
+            }
+        }
+
+        $this->modx->invokeEvent('OnManagerOrderValidated', [
+            'data'   => &$data,
+            'errors' => &$errors,
+        ]);
+
+        if (!empty($errors)) {
+            $this->module->sendRedirectWithQuery('orders/edit', 'order_id=' . $order['id'], ['validation_errors' => $errors]);
+        }
+
+        $fields = &$orderData[0]['fields'];
+
+        $fields['delivery_method_title'] = '';
+
+        if (!empty($fields['delivery_method'])) {
+            $list = $this->modx->commerce->getDeliveries();
+
+            if (isset($list[$fields['delivery_method']])) {
+                $fields['delivery_method_title'] = $list[$fields['delivery_method']]['title'];
+            }
+        }
+
+        $fields['payment_method_title'] = '';
+
+        if (!empty($fields['payment_method'])) {
+            $list = $this->modx->commerce->getPayments();
+
+            if (isset($list[$fields['payment_method']])) {
+                $fields['payment_method_title'] = $list[$fields['payment_method']]['title'];
+            }
+        }
+
+        unset($fields);
+
+        $result = $this->modx->commerce->loadProcessor()->updateOrder($order['id'], [
+            'values'    => $data['order']['data'][0],
+            'items'     => $data['cart']['data'],
+            'subtotals' => $data['subtotals']['data'],
+        ]);
+
+        if (!$result) {
+            $this->module->sendRedirectWithQuery('orders/edit', 'order_id=' . $order['id'], ['error' => $this->lang['module.error.order_not_saved']]);
+        }
+
+        if (!empty($_POST['notify'])) {
+            // notify
+        }
+
+        $this->module->sendRedirectWithQuery('orders/edit', 'order_id=' . $order['id'], ['success' => $this->lang['module.order_saved']]);
+    }
+
+    private function collectRules($fields)
+    {
+        $rules = [];
+
+        foreach ($fields as $name => $field) {
+            if (isset($field['rules'])) {
+                $rules[$name] = $field['rules'];
+            } else if (isset($field['!rules'])) {
+                $rules['!' . $name] = $field['!rules'];
+            }
+        }
+
+        return $rules;
     }
 
     public function getTree()
@@ -693,6 +830,12 @@ class OrdersController extends Controller implements \Commerce\Module\Interfaces
                 'content' => function($data) {
                     return '<input type="text" class="form-control" name="order[name]" value="' . htmlentities($data['name']) . '">';
                 },
+                '!rules'   => [
+                    'lengthBetween' => [
+                        'params'  => [2, 255],
+                        'message' => $this->lang['module.error.name_length'],
+                    ],
+                ],
                 'sort'    => 10,
             ],
             'phone' => [
@@ -700,6 +843,12 @@ class OrdersController extends Controller implements \Commerce\Module\Interfaces
                 'content' => function($data) {
                     return '<input type="text" class="form-control" name="order[phone]" value="' . htmlentities($data['phone']) . '">';
                 },
+                '!rules'   => [
+                    'matches' => [
+                        'params'  => '/^\+?\d{1,3}\s?\(\d{3}\)\s?\d{3}-\d\d-\d\d$/',
+                        'message' => $this->lang['module.error.phone_incorrect'],
+                    ]
+                ],
                 'sort'    => 20,
             ],
             'email' => [
@@ -707,30 +856,33 @@ class OrdersController extends Controller implements \Commerce\Module\Interfaces
                 'content' => function($data) {
                     return '<input type="text" class="form-control" name="order[email]" value="' . htmlentities($data['email']) . '">';
                 },
+                '!rules'   => [
+                    'email'    => $this->lang['module.error.email_incorrect'],
+                ],
                 'sort' => 30,
             ],
-            'delivery' => [
+            'delivery_method' => [
                 'title' => $this->lang['order.delivery_title'],
                 'content' => function($data) {
                     $list = ci()->commerce->getDeliveries();
-                    $out = '';
+                    $out = '<option value="">' . $this->lang['module.not_selected'] . '</option>';
 
                     foreach ($list as $name => $row) {
-                        $out .= '<option value="' . $name . '"' . (isset($data['fields']['delivery_method']) && $name == $data['fields']['delivery_method']) . '>' . $row['title'] . '</option>';
+                        $out .= '<option value="' . $name . '"' . (isset($data['fields']['delivery_method']) && $name == $data['fields']['delivery_method'] ? ' selected' : '') . '>' . $row['title'] . '</option>';
                     }
 
                     return '<select class="form-control" name="order[fields][delivery_method]">' . $out . '</select>';
                 },
                 'sort' => 40,
             ],
-            'payment' => [
+            'payment_method' => [
                 'title' => $this->lang['order.payment_title'],
                 'content' => function($data) {
                     $list = ci()->commerce->getPayments();
-                    $out = '';
+                    $out = '<option value="">' . $this->lang['module.not_selected'] . '</option>';
 
                     foreach ($list as $name => $row) {
-                        $out .= '<option value="' . $name . '"' . (isset($data['fields']['payment_method']) && $name == $data['fields']['payment_method']) . '>' . $row['title'] . '</option>';
+                        $out .= '<option value="' . $name . '"' . (isset($data['fields']['payment_method']) && $name == $data['fields']['payment_method'] ? ' selected' : '') . '>' . $row['title'] . '</option>';
                     }
 
                     return '<select class="form-control" name="order[fields][payment_method]">' . $out . '</select>';
@@ -763,9 +915,17 @@ class OrdersController extends Controller implements \Commerce\Module\Interfaces
                 'content' => function($data, $DL, $eDL) {
                     return '
                         <input type="hidden" name="order[cart][' . $data['iteration'] . '][order_row_id]" value="' . htmlentities($data['order_row_id']) . '">
+                        <input type="hidden" name="order[cart][' . $data['iteration'] . '][id]" value="' . htmlentities($data['id']) . '">
                         <input type="text" class="form-control" name="order[cart][' . $data['iteration'] . '][title]" value="' . htmlentities($data['title']) . '">
                     ';
                 },
+                'rules'   => [
+                    'required' => $this->lang['module.error.producttitle_required'],
+                    'lengthBetween' => [
+                        'params'  => [2, 255],
+                        'message' => $this->lang['module.error.producttitle_length'],
+                    ],
+                ],
                 'sort'    => 20,
             ],
             'count' => [
@@ -775,6 +935,13 @@ class OrdersController extends Controller implements \Commerce\Module\Interfaces
                         <input type="text" class="form-control" name="order[cart][' . $data['iteration'] . '][count]" value="' . htmlentities($data['count']) . '">
                     ';
                 },
+                'rules'   => [
+                    'required' => $this->lang['module.error.productcount_required'],
+                    'greater' => [
+                        'params'  => 0,
+                        'message' => $this->lang['module.error.productcount_positive'],
+                    ],
+                ],
                 'style'   => 'width: 10%; text-align: right;',
                 'sort'    => 30,
             ],
@@ -788,6 +955,13 @@ class OrdersController extends Controller implements \Commerce\Module\Interfaces
                         </div>
                     ';
                 },
+                'rules'   => [
+                    'required' => $this->lang['module.error.productprice_required'],
+                    'greater' => [
+                        'params'  => 0,
+                        'message' => $this->lang['module.error.productprice_positive'],
+                    ],
+                ],
                 'sort'    => 30,
                 'style'   => 'white-space: nowrap; width: 10%; text-align: right;',
             ],
@@ -814,6 +988,13 @@ class OrdersController extends Controller implements \Commerce\Module\Interfaces
                         <input type="text" class="form-control" name="order[subtotals][' . $data['iteration'] . '][title]" value="' . htmlentities($data['title']) . '">
                     ';
                 },
+                'rules'   => [
+                    'required' => $this->lang['module.error.subtotaltitle_required'],
+                    'lengthBetween' => [
+                        'params'  => [2, 255],
+                        'message' => $this->lang['module.error.subtotaltitle_length'],
+                    ],
+                ],
                 'sort'    => 20,
             ],
             'price' => [

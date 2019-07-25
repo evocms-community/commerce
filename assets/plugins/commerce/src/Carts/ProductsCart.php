@@ -11,7 +11,7 @@ class ProductsCart extends StoreCart implements \Commerce\Interfaces\Cart
     protected $priceField = 'price';
 
     protected $instance;
-    
+
     protected $rules = [
         'id' => [
             'numeric' => 'Item identificator should be numeric',
@@ -51,6 +51,17 @@ class ProductsCart extends StoreCart implements \Commerce\Interfaces\Cart
         ]);
 
         return $item;
+    }
+
+    public function update($row, array $attributes = [])
+    {
+        $this->modx->invokeEvent('OnBeforeCartItemUpdating', [
+            'instance'   => $this->instance,
+            'row'        => $row,
+            'attributes' => &$attributes,
+        ]);
+
+        return parent::update($row, $attributes);
     }
 
     protected function validateItem(array $item)
