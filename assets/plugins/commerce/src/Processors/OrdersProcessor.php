@@ -79,8 +79,9 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
 
         $subtotals = [];
         $this->modx->invokeEvent('OnCollectSubtotals', [
-            'rows'  => &$subtotals,
-            'total' => &$total,
+            'rows'     => &$subtotals,
+            'total'    => &$total,
+            'realonly' => true,
         ]);
 
         $values = $this->prepareOrderValues($fields);
@@ -214,6 +215,7 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
 
         try {
             $position = 1;
+            $totalPrice = 0;
 
             if (isset($params['items'])) {
                 $exists = [];
@@ -228,6 +230,8 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
                     } else {
                         $exists[] = $db->insert($item, $this->tableProducts);
                     }
+
+                    $totalPrice += $item['price'] * $item['count'];
                 }
 
                 $db->delete($this->tableProducts, "`order_id` = '$order_id' AND `product_id` IS NOT NULL AND `id` NOT IN ('" . implode("', '", $exists) . "')");
@@ -246,6 +250,8 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
                     } else {
                         $exists[] = $db->insert($item, $this->tableProducts);
                     }
+
+                    $totalPrice += $item['price'];
                 }
 
                 $db->delete($this->tableProducts, "`order_id` = '$order_id' AND `product_id` IS NULL AND `id` NOT IN ('" . implode("', '", $exists) . "')");
@@ -257,6 +263,10 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
                 $params['values']['fields'] = json_encode($params['values']['fields'], JSON_UNESCAPED_UNICODE);
                 unset($params['values']['created_at']);
                 unset($params['values']['updated_at']);
+
+                if (isset($params['items']) || isset($params['subtotals'])) {
+                    $params['values']['amount'] = $totalPrice;
+                }
 
                 $db->update($params['values'], $this->tableOrders, "id = '" . $order['id'] . "'");
             }
