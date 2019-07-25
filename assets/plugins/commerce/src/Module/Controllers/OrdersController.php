@@ -366,7 +366,9 @@ class OrdersController extends Controller implements \Commerce\Module\Interfaces
 
         unset($fields);
 
-        $result = $this->modx->commerce->loadProcessor()->updateOrder($order['id'], [
+        $processor = $this->modx->commerce->loadProcessor();
+
+        $result = $processor->updateOrder($order['id'], [
             'values'    => $data['order']['data'][0],
             'items'     => $data['cart']['data'],
             'subtotals' => $data['subtotals']['data'],
@@ -377,10 +379,31 @@ class OrdersController extends Controller implements \Commerce\Module\Interfaces
         }
 
         if (!empty($_POST['notify'])) {
-            // notify
+            $tpl      = ci()->tpl;
+            $lang     = $this->modx->commerce->getUserLanguage('order');
+            $template = $this->modx->commerce->getSetting('order_changed', $this->modx->commerce->getUserLanguageTemplate('order_changed'));
+
+            $order = $processor->loadOrder($order['id']);
+            $processor->getCart();
+
+            $body = $tpl->parseChunk($template, [
+                'order_id' => $order['id'],
+                'order'    => $order,
+            ], true);
+
+            $subject = $tpl->parseChunk($lang['order.order_data_changed'], [
+                'order_id' => $order['id'],
+            ], true);
+
+            $mailer = new \Helpers\Mailer($this->modx, [
+                'to'      => $order['email'],
+                'subject' => $subject,
+            ]);
+
+            $mailer->send($body);
         }
 
-        $this->module->sendRedirectWithQuery('orders/edit', 'order_id=' . $order['id'], ['success' => $this->lang['module.order_saved']]);
+        $this->module->sendRedirect('orders', ['success' => $this->lang['module.order_saved']]);
     }
 
     private function collectRules($fields)
