@@ -374,18 +374,25 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
         if (!empty($order['fields']['payment_method'])) {
             $payment = $this->modx->commerce->getPayment($order['fields']['payment_method']);
 
+            $redirectText = '';
+
             $this->modx->invokeEvent('OnBeforePaymentProcess', [
                 'FL'      => $FL,
                 'order'   => &$order,
                 'payment' => $payment,
+                'redirect_text' => &$redirectText,
             ]);
 
             ci()->flash->set('last_order_id', $order['id']);
             $redirect = $payment['processor']->createPaymentRedirect();
 
             if ($redirect) {
-                $lang = $this->modx->commerce->getUserLanguage('order');
-                $successTpl = '@CODE:' . $lang['order.redirecting_to_payment'];
+                if (empty($redirectText)) {
+                    $lang = $this->modx->commerce->getUserLanguage('order');
+                    $redirectText = $lang['order.redirecting_to_payment'];
+                }
+
+                $successTpl = '@CODE:' . $redirectText;
     
                 if (!empty($redirect['link'])) {
                     $FL->config->setConfig(['redirectTo' => [
