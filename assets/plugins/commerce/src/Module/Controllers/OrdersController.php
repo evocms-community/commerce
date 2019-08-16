@@ -403,7 +403,7 @@ class OrdersController extends Controller implements \Commerce\Module\Interfaces
             $mailer->send($body);
         }
 
-        $this->module->sendRedirect('orders', ['success' => $this->lang['module.order_saved']]);
+        $this->module->sendRedirectWithQuery('orders/view', 'order_id=' . $order['id'], ['success' => $this->lang['module.order_saved']]);
     }
 
     private function collectRules($fields)
