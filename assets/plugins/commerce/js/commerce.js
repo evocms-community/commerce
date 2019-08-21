@@ -19,7 +19,12 @@ var Commerce = {
                 initiator = $(document);
             }
 
-            initiator.trigger(event + '.commerce', data);
+            var e = $.Event(event + '.commerce');
+            initiator.trigger(e, data);
+
+            if (e.isDefaultPrevented() || typeof e.result != 'undefined' && e.result === false) {
+                return;
+            }
 
             (function(event, data, initiator) {
                 $.post('commerce/action', {
