@@ -9,7 +9,7 @@
         <i class="fa fa-save"></i>
         <span><?= $_lang['save'] ?></span>
     </a>
-    <a href="<?= $this->module->makeUrl('orders') ?>" class="btn btn-secondary">
+    <a href="<?= $this->module->makeUrl('orders/view&order_id=' . $order['id']) ?>" class="btn btn-secondary">
         <i class="fa fa-times-circle"></i>
         <span><?= $_lang['cancel'] ?></span>
     </a>
