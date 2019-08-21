@@ -145,6 +145,18 @@ class CartDocLister extends CustomLangDocLister
         return parent::getDocList();
     }
 
+    protected function SortOrderSQL($sortName, $orderDef = 'DESC')
+    {
+        $cartItems = $this->getCFGDef('cart')->getItems();
+        $hashes = array_keys($cartItems);
+        $out = [
+            'orderBy' => "FIND_IN_SET(hashes.hash, '" . implode(',', $hashes) . "')",
+        ];
+        $this->config->setConfig($out);
+
+        return "ORDER BY " . $out['orderBy'];
+    }
+
     public function _render($tpl = '')
     {
         if (!empty($this->getCFGDef('defaultOptionsRender', 1))) {

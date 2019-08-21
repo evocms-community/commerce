@@ -110,10 +110,10 @@ class OrdersController extends Controller implements \Commerce\Module\Interfaces
         $config  = $this->injectPrepare($config, $columns);
 
         $cart = $this->modx->commerce->loadProcessor()->getCart();
+
         $cartData = $this->modx->runSnippet('DocLister', array_merge($config, [
             'controller' => 'Cart',
             'dir'        => 'assets/plugins/commerce/src/Controllers/',
-            'sortType'   => 'doclist',
             'idType'     => 'documents',
             'documents'  => array_column($cart->getItems(), 'id'),
             'instance'   => 'order',
