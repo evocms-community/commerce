@@ -18,4 +18,5 @@ return [
     'cart.decrease' => '-',
     'cart.increase' => '+',
     'cart.remove' => 'Verwijder',
+    'cart.clean' => 'Schoon',
 ];
