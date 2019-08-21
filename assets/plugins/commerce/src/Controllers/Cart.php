@@ -100,6 +100,8 @@ class CartDocLister extends CustomLangDocLister
         foreach ($this->_docs as $hash => $doc) {
             if (isset($cartItems[$hash])) {
                 $doc = array_merge($doc, $cartItems[$hash]);
+                $doc['original_title'] = $doc['pagetitle'];
+                $doc['pagetitle'] = $doc['name'];
             }
 
             $doc['hash'] = $doc['id'];
