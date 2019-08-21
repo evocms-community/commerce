@@ -1,17 +1,19 @@
 <?php
 /**
  * Order
- * 
+ *
  * Order form, FormLister based
  *
  * @category    snippet
- * @version     0.2.1
+ * @version     0.2.2
  * @author      mnoskov
  * @internal    @modx_category Commerce
  * @internal    @installset base
 */
 
 if (!empty($modx->commerce)) {
+    include_once MODX_BASE_PATH . 'assets/snippets/FormLister/__autoload.php';
+
     $lang = $modx->commerce->getUserLanguage('order');
 
     $params = array_merge([
