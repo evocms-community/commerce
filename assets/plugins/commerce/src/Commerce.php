@@ -475,6 +475,12 @@ class Commerce
 
                     break;
                 }
+
+                case 'cart/clean': {
+                    $cart->clean();
+                    $response['status'] = 'success';
+                    break;
+                }
             }
         }
 

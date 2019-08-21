@@ -18,4 +18,5 @@ return [
     'cart.decrease' => 'Уменьшить',
     'cart.increase' => 'Увеличить',
     'cart.remove' => 'Удалить',
+    'cart.clean' => 'Очистить',
 ];

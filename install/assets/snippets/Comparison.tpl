@@ -112,9 +112,4 @@ $params = array_merge([
 ]);
 
 $docs = $modx->runSnippet('DocLister', $params);
-
-$modx->regClientScript('assets/plugins/commerce/js/comparison.js', [
-    'version' => $modx->commerce->getVersion(),
-]);
-
 return $categories . $docs;

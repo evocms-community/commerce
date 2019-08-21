@@ -34,7 +34,10 @@
 
     [[if? &is=`[+count+]:>:0` &then=`
         <div class="text-xs-right">
-            <p><a href="[~3~]">[%cart.to_checkout%]</a></p>
+            <p>
+                <span class="btn btn-secondary" data-commerce-action="clean">[%cart.clean%]</span>
+                <a href="[~3~]" class="btn btn-primary">[%cart.to_checkout%]</a>
+            </p>
         </div>
     `]]
 </div>

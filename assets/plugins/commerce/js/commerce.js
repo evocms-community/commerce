@@ -192,6 +192,11 @@ $(document).on('submit click change', '[data-commerce-action]', function(e) {
                 Commerce.action('cart/remove', {row: row, cart: cart, data: data}, $self);
                 break;
             }
+
+            case 'clean': {
+                Commerce.action('cart/clean', {cart: cart, data: data}, $self);
+                break;
+            }
         }
     }
 
@@ -225,6 +230,15 @@ $(document).on('change', '[data-commerce-order]', function(e) {
         Commerce.updateOrderData($(this));
     }
 });
+
+$(document).on('cart-remove-complete.commerce', '.comparison-table', function(e, data) {
+    window.location.reload();
+});
+
+$(document).on('cart-clean-complete.commerce', function(e, data) {
+    window.location.reload();
+});
+
 
 $.fn.serializeDataAttributes = function() {
     var data = {};
