@@ -180,6 +180,10 @@ class CartDocLister extends CustomLangDocLister
             }
         }
 
+        if (!$this->getCFGDef('noneWrapOuter', '1') && !count($this->_docs)) {
+            $this->ownerTPL = '@CODE:[+dl.wrap+]';
+        }
+
         return parent::_render($tpl);
     }
 }

@@ -5,7 +5,7 @@
  * Cart contents, DocLister based
  *
  * @category    snippet
- * @version     0.2.0
+ * @version     0.2.1
  * @author      mnoskov
  * @internal    @modx_category Commerce
  * @internal    @installset base
@@ -25,11 +25,12 @@ if (!empty($modx->commerce)) {
             'ownerTPL'          => '@FILE:' . $theme . 'cart_wrap',
             'subtotalsRowTpl'   => '@FILE:' . $theme . 'cart_subtotals_row',
             'subtotalsTpl'      => '@FILE:' . $theme . 'cart_subtotals',
+            'noneTPL'           => '@FILE:' . $theme . 'cart_empty',
             'customLang'        => 'cart',
+            'noneWrapOuter'     => 0,
         ], $params, [
             'controller' => 'Cart',
             'dir'        => 'assets/plugins/commerce/src/Controllers/',
-            'sortType'   => 'doclist',
             'idType'     => 'documents',
             'documents'  => array_column($cart->getItems(), 'id'),
             'instance'   => $instance,

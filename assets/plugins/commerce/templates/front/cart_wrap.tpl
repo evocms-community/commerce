@@ -20,24 +20,15 @@
             </tfoot>
 
             <tbody>
-                [[if? &is=`[+count+]:>:0` &then=`
-                    [+dl.wrap+]
-                ` &else=`
-                    <tr>
-                        <td colspan="5" class="text-xs-center">
-                            [%cart.no_items%]
-                    </tr>
-                `]]
+                [+dl.wrap+]
             </tbody>
         </table>
     </div>
 
-    [[if? &is=`[+count+]:>:0` &then=`
-        <div class="text-xs-right">
-            <p>
-                <span class="btn btn-secondary" data-commerce-action="clean">[%cart.clean%]</span>
-                <a href="[~3~]" class="btn btn-primary">[%cart.to_checkout%]</a>
-            </p>
-        </div>
-    `]]
+    <div class="text-xs-right">
+        <p>
+            <span class="btn btn-secondary" data-commerce-action="clean">[%cart.clean%]</span>
+            <a href="[~3~]" class="btn btn-primary">[%cart.to_checkout%]</a>
+        </p>
+    </div>
 </div>
