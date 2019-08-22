@@ -5,6 +5,7 @@ class CartDocLister extends CustomLangDocLister
     protected $productsCount = 0;
     protected $rowsCount     = 0;
     protected $priceTotal    = 0;
+    protected $extPrepare;
 
     public function __construct($modx, $cfg = [], $startTime = null)
     {
@@ -19,6 +20,7 @@ class CartDocLister extends CustomLangDocLister
         }
 
         array_unshift($cfg['prepareWrap'], [$this, 'prepareCartOuter']);
+
         parent::__construct($modx, $cfg, $startTime);
     }
 
@@ -37,23 +39,60 @@ class CartDocLister extends CustomLangDocLister
         return $data;
     }
 
+    protected function prepareSubtotalsRow($data)
+    {
+        if ($this->extPrepare) {
+            $data = $this->extPrepare->init($this, [
+                'data'      => $data,
+                'nameParam' => 'prepareSubtotalsRow',
+            ]);
+        }
+
+        return $data;
+    }
+
+    protected function prepareSubtotalsWrap($data)
+    {
+        if ($this->extPrepare) {
+            $data = $this->extPrepare->init($this, [
+                'data'      => $data,
+                'nameParam' => 'prepareSubtotalsWrap',
+                'return'    => 'placeholders',
+            ]);
+        }
+
+        return $data;
+    }
+
     protected function renderSubtotals()
     {
         $DLTemplate = ci()->tpl;
+        $this->extPrepare = $this->getExtender('prepare');
         $tpl = $this->getCFGDef('subtotalsRowTpl');
         $result = '';
         $rows = [];
 
         $this->getCFGDef('cart')->getSubtotals($rows, $this->priceTotal);
 
-        foreach ($rows as $row) {
-            $result .= $DLTemplate->parseChunk($tpl, $row);
+        if (!empty($rows)) {
+            foreach ($rows as $row) {
+                $row = $this->prepareSubtotalsRow($row);
+
+                if ($row !== false) {
+                    $result .= $DLTemplate->parseChunk($tpl, $row);
+                }
+            }
         }
 
-        if (!empty($result)) {
-            $result = $DLTemplate->parseChunk($this->getCFGDef('subtotalsTpl'), [
+        $params = $this->prepareSubtotalsWrap([
+            'docs'         => $rows,
+            'placeholders' => [
                 'wrap' => $result,
-            ]);
+            ],
+        ]);
+
+        if ($params !== false && !empty($result)) {
+            $result = $DLTemplate->parseChunk($this->getCFGDef('subtotalsTpl'), $params);
         }
 
         return $result;
