@@ -15,6 +15,11 @@ trait SettingsTrait
         return $this->settings[$key];
     }
 
+    public function getSettings()
+    {
+        return $this->settings;
+    }
+
     protected function setSettings($settings)
     {
         $this->settings = array_merge($this->settings, $settings);

@@ -29,7 +29,7 @@
 
         <div class="dropdown-divider"></div>
 
-        <a class="dropdown-item" href="[~4~]">[%cart.to_cart%]</a>
-        <a class="dropdown-item" href="[~3~]">[%cart.to_checkout%]</a>
+        <a class="dropdown-item" href="[~[+settings.cart_page_id+]~]">[%cart.to_cart%]</a>
+        <a class="dropdown-item" href="[~[+settings.order_page_id+]~]">[%cart.to_checkout%]</a>
     </div>
 </div>

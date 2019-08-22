@@ -28,7 +28,7 @@
     <div class="text-xs-right">
         <p>
             <span class="btn btn-secondary" data-commerce-action="clean">[%cart.clean%]</span>
-            <a href="[~3~]" class="btn btn-primary">[%cart.to_checkout%]</a>
+            <a href="[~[+settings.order_page_id+]~]" class="btn btn-primary">[%cart.to_checkout%]</a>
         </p>
     </div>
 </div>
