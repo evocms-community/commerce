@@ -219,7 +219,8 @@ if (!tableExists($modx, $table)) {
     ], $table);
 }
 
-$modx->db->update(['disabled' => 0], $modx->getFullTablename('site_plugins'), "`name` = 'Commerce'");
+$id = $modx->getValue($modx->db->select('MAX(id)', $tablePlugins, "`name` = 'Commerce'"));
+$modx->db->update(['disabled' => 0], $tablePlugins, "`id` = '$id'");
 
 // remove installer
 $query = $modx->db->select('id', $tablePlugins, "`name` = 'CommerceInstall'");
