@@ -70,6 +70,11 @@ class SimpleCart implements \Commerce\Interfaces\Cart
         return true;
     }
 
+    protected function beforeItemAdding(array &$item)
+    {
+        return true;
+    }
+
     protected function makeHash(array $item)
     {
         $price = (float) ci()->currency->convertToDefault($item['price']);
@@ -80,7 +85,7 @@ class SimpleCart implements \Commerce\Interfaces\Cart
     {
         $new = $this->prepareItem($item);
 
-        if ($this->validateItem($new)) {
+        if ($this->validateItem($new) && $this->beforeItemAdding($new)) {
             $new['hash'] = $this->makeHash($new);
 
             foreach ($this->items as $row => $item) {

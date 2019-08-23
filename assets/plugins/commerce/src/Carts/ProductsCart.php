@@ -45,12 +45,20 @@ class ProductsCart extends StoreCart implements \Commerce\Interfaces\Cart
             $item['price'] = $this->getItemPrice($item['id']);
         }
 
+        return $item;
+    }
+
+    protected function beforeItemAdding(array &$item)
+    {
+        $isPrevented = false;
+
         $this->modx->invokeEvent('OnBeforeCartItemAdding', [
             'instance' => $this->instance,
             'item'     => &$item,
+            'prevent'  => &$isPrevented,
         ]);
 
-        return $item;
+        return $isPrevented !== true;
     }
 
     public function update($row, array $attributes = [])
