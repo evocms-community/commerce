@@ -208,7 +208,7 @@ class CartDocLister extends CustomLangDocLister
                     foreach ($item['options'] as $key => $option) {
                         $options .= ci()->tpl->parseChunk($optionsTpl, [
                             'key'    => htmlentities($key),
-                            'option' => htmlentities(is_scalar($option) ? $option : json_encode($option)),
+                            'option' => htmlentities(is_scalar($option) ? $option : json_encode($option, JSON_UNESCAPED_UNICODE)),
                         ]);
                     }
                 }
