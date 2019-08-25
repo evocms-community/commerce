@@ -111,5 +111,30 @@ $params = array_merge([
     'rows'       => array_flip($items),
 ]);
 
+$priceField = $modx->commerce->getSetting('price_field', 'price');
+$params['tvList'] = (isset($params['tvList']) ? $params['tvList'] . ',' : '') . $priceField;
+
+if (isset($params['prepare'])) {
+    if (!is_array($params['prepare'])) {
+        $params['prepare'] = explode(',', $params['prepare']);
+    } else if (is_callable($params['prepare'])) {
+        $params['prepare'] = [$params['prepare']];
+    }
+} else {
+    $params['prepare'] = [];
+}
+
+$tvPrefix = isset($params['tvPrefix']) ? $params['tvPrefix'] : 'tv.';
+$priceField = $tvPrefix . $priceField;
+
+$params['prepare'][] = function($data, $modx, $DL, $eDL) use ($priceField) {
+    if (isset($data[$priceField])) {
+        $data[$priceField] = $modx->runSnippet('PriceFormat', ['price' => $data[$priceField]]);
+    }
+
+    return $data;
+};
+
+
 $docs = $modx->runSnippet('DocLister', $params);
 return $categories . $docs;
