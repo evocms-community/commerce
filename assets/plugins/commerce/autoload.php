@@ -5,6 +5,7 @@ spl_autoload_register(function ($class) {
 
     if ($classes === null) {
         $classes = [
+            'CartDocLister'         => '/src/Controllers/Cart.php',
             'CustomLangDocLister'   => '/src/Controllers/CustomLang.php',
             'FormLister\\Order'     => '/src/Controllers/Order.php',
             'FormLister\\Form'      => '/../../snippets/FormLister/core/controller/Form.php',
