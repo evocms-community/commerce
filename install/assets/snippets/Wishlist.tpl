@@ -12,7 +12,7 @@
 */
 
 if (!empty($modx->commerce)) {
-    return $modx->runSnippet('Cart', [
+    return $modx->runSnippet('Cart', array_merge([
         'controller'        => 'Wishlist',
         'instance'          => 'wishlist',
         'templatePath'      => 'assets/plugins/commerce/templates/front/',
@@ -20,5 +20,5 @@ if (!empty($modx->commerce)) {
         'tpl'               => '@FILE:wishlist_row',
         'ownerTPL'          => '@FILE:wishlist_wrap',
         'customLang'        => 'common,cart',
-    ]);
+    ], $params));
 }
