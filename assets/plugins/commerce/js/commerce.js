@@ -231,7 +231,7 @@ $(document).on('change', '[data-commerce-order]', function(e) {
     }
 });
 
-$(document).on('cart-remove-complete.commerce', '.comparison-table', function(e, data) {
+$(document).on('cart-remove-complete.commerce', '.comparison-table, .wishlist-table', function(e, data) {
     window.location.reload();
 });
 
