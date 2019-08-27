@@ -82,10 +82,12 @@ switch ($e->name) {
     }
 
     case 'OnLoadWebDocument': {
-        $templates = array_map('trim', explode(',', $params['product_templates']));
+        if (!empty($params['product_templates'])) {
+            $templates = array_map('trim', explode(',', $params['product_templates']));
 
-        if (in_array($modx->documentObject['template'], $templates)) {
-            $modx->commerce->populateProductPlaceholders();
+            if (in_array($modx->documentObject['template'], $templates)) {
+                $modx->commerce->populateProductPagePlaceholders();
+            }
         }
 
         break;
