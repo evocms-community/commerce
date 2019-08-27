@@ -111,6 +111,10 @@ if (version_compare($installedVersion, '0.2.2', '<')) {
     $modx->db->query("ALTER TABLE " . $modx->getFullTablename('commerce_orders') . " ADD `hash` VARCHAR(32) NOT NULL AFTER `status_id`, ADD INDEX (`hash`);");
 }
 
+if (version_compare($installedVersion, '0.3.2', '<')) {
+    $modx->db->query("ALTER TABLE " . $modx->getFullTablename('commerce_orders') . " ADD `customer_id` INT UNSIGNED NULL DEFAULT NULL AFTER `id`, ADD INDEX (`customer_id`);");
+}
+
 $modx->db->query("
     CREATE TABLE IF NOT EXISTS " . $modx->getFullTablename('commerce_order_products') . " (
         `id` int(10) unsigned NOT NULL AUTO_INCREMENT,

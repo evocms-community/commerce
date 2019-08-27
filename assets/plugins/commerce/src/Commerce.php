@@ -14,7 +14,7 @@ class Commerce
 {
     use SettingsTrait;
 
-    const VERSION = 'v0.3.1';
+    const VERSION = 'v0.3.2';
 
     public $currency;
 
@@ -176,7 +176,7 @@ class Commerce
 
     /**
      * Returns template from language directory
-     * 
+     *
      * @param  string  $name Template name (without extension)
      * @param  boolean $forceDefaultLanguage Force to use admin language
      * @return string
@@ -546,5 +546,55 @@ class Commerce
         }
 
         return substr($result, 0, $length);
+    }
+
+    public function getProductPlaceholders($product_id, $lists = [])
+    {
+        $placeholders = [];
+
+        foreach ($lists as $instance => $items) {
+            foreach ($items as $item) {
+                if (!empty($item['id']) && $item['id'] == $product_id) {
+                    $placeholders = array_merge($placeholders, [
+                        $instance . '_contains' => 1,
+                        $instance . '_active'   => ' active',
+                        $instance . '_count'    => $item['count'],
+                    ]);
+
+                    break;
+                }
+            }
+        }
+
+        return $placeholders;
+    }
+
+    public function populateProductPagePlaceholders()
+    {
+        $lists = [];
+
+        foreach (['products', 'wishlist', 'comparison'] as $instance) {
+            $lists[$instance] = ci()->carts->getCart($instance)->getItems();
+        }
+
+        $this->modx->toPlaceholders($this->getProductPlaceholders($this->modx->documentIdentifier, $lists));
+    }
+
+    public function populateProductListPlaceholders($data, $modx, $DL, $eDL)
+    {
+        $lists = $eDL->getStore('__commerce_lists');
+
+        if ($lists == null) {
+            $lists = [];
+
+            foreach (['products', 'wishlist', 'comparison'] as $instance) {
+                $lists[$instance] = ci()->carts->getCart($instance)->getItems();
+            }
+
+            $eDL->setStore('__commerce_lists', $lists);
+        }
+
+        $data = array_merge($data, $this->getProductPlaceholders($data['id'], $lists));
+        return $data;
     }
 }

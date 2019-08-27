@@ -5,9 +5,9 @@
  * Commerce solution
  *
  * @category    plugin
- * @version     0.3.1
+ * @version     0.3.2
  * @author      mnoskov
- * @internal    @events OnWebPageInit,OnManagerPageInit,OnPageNotFound,OnManagerMenuPrerender,OnCacheUpdate
+ * @internal    @events OnWebPageInit,OnManagerPageInit,OnPageNotFound,OnManagerMenuPrerender,OnCacheUpdate,OnLoadWebDocument
  * @internal    @properties &payment_success_page_id=Page ID for redirect after successfull payment;text; &payment_failed_page_id=Page ID for redirect after payment error;text;  &cart_page_id=Cart page ID;text;  &order_page_id=Order page ID;text; &status_id_after_payment=Status ID after payment;text; &product_templates=Product templates IDs;text; &title_field=Product title field name;text;pagetitle &price_field=Product price field name;text;price &status_notification=Chunk name for status change notification;text; &order_paid=Chunk name for order paid notification;text; &order_changed=Chunk name for order changed notification;text; &email=Email notifications recipient;text; &default_payment=Default payment code;text; &default_delivery=Default delivery code;text;
  * @internal    @modx_category Commerce
  * @internal    @disabled 1
@@ -76,6 +76,16 @@ switch ($e->name) {
 
         if (!empty($payment_id) && is_numeric($payment_id)) {
             $modx->commerce->loadProcessor()->populatePaymentPlaceholders($payment_id);
+        }
+
+        break;
+    }
+
+    case 'OnLoadWebDocument': {
+        $templates = array_map('trim', explode(',', $params['product_templates']));
+
+        if (in_array($modx->documentObject['template'], $templates)) {
+            $modx->commerce->populateProductPlaceholders();
         }
 
         break;

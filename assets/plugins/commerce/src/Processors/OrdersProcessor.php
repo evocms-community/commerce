@@ -85,10 +85,11 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
         ]);
 
         $values = $this->prepareOrderValues($fields);
-        $values['amount']     = number_format((float)$total, 6, '.', '');
-        $values['currency']   = ci()->currency->getCurrencyCode();
-        $values['created_at'] = date('Y-m-d H:i:s');
-        $values['hash']       = $this->modx->commerce->generateRandomString();
+        $values['amount']      = number_format((float)$total, 6, '.', '');
+        $values['currency']    = ci()->currency->getCurrencyCode();
+        $values['created_at']  = date('Y-m-d H:i:s');
+        $values['customer_id'] = $this->modx->getLoginUserID('web');
+        $values['hash']        = $this->modx->commerce->generateRandomString();
 
         $this->modx->invokeEvent('OnBeforeOrderSaving', [
             'order_id'  => null,
