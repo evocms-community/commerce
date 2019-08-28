@@ -12,8 +12,6 @@
 */
 
 if (!empty($modx->commerce)) {
-    include_once MODX_BASE_PATH . 'assets/snippets/FormLister/__autoload.php';
-
     $lang = $modx->commerce->getUserLanguage('order');
 
     $params = array_merge([

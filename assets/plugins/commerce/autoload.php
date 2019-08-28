@@ -38,6 +38,10 @@ spl_autoload_register(function ($class) {
     }
 }, true);
 
+if (file_exists(__DIR__ . '/../../snippets/FormLister/__autoload.php')) {
+    require_once __DIR__ . '/../../snippets/FormLister/__autoload.php';
+}
+
 function ci() {
     return Commerce\Container::getInstance();
 }
