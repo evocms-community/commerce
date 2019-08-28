@@ -11,9 +11,15 @@
  * @internal    @installset base
 */
 
-$installedVersion = '0.0.0';
-if (!empty($modx->commerce)) {
-    $installedVersion = str_replace('v', '', Commerce\Commerce::VERSION);
+$tableEventnames = $modx->getFullTablename('system_eventnames');
+$tablePlugins    = $modx->getFullTablename('site_plugins');
+$tableEvents     = $modx->getFullTablename('site_plugin_events');
+
+$previousVersion = '0.0.0';
+
+$description = $modx->db->getValue($modx->db->select('description', $tablePlugins, "`name` = 'Commerce'", '`id` DESC', '1, 1'));
+if (!empty($description) && preg_match('/strong>(.+?)<\/strong/', $description, $matches)) {
+    $previousVersion = $matches[1];
 }
 
 function tableExists($modx, $table)
@@ -28,10 +34,6 @@ function tableExists($modx, $table)
 }
 
 $modx->clearCache('full');
-
-$tableEventnames = $modx->getFullTablename('system_eventnames');
-$tablePlugins    = $modx->getFullTablename('site_plugins');
-$tableEvents     = $modx->getFullTablename('site_plugin_events');
 
 $events = [
     'OnInitializeCommerce',
@@ -107,13 +109,9 @@ $modx->db->query("
     ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 ");
 
-if (version_compare($installedVersion, '0.2.2', '<')) {
-    $modx->db->query("ALTER TABLE " . $modx->getFullTablename('commerce_orders') . " ADD `hash` VARCHAR(32) NOT NULL AFTER `status_id`, ADD INDEX (`hash`);");
-}
+$modx->db->query("ALTER TABLE " . $modx->getFullTablename('commerce_orders') . " ADD `hash` VARCHAR(32) NOT NULL AFTER `status_id`, ADD INDEX (`hash`);");
 
-if (version_compare($installedVersion, '0.3.2', '<')) {
-    $modx->db->query("ALTER TABLE " . $modx->getFullTablename('commerce_orders') . " ADD `customer_id` INT UNSIGNED NULL DEFAULT NULL AFTER `id`, ADD INDEX (`customer_id`);");
-}
+$modx->db->query("ALTER TABLE " . $modx->getFullTablename('commerce_orders') . " ADD `customer_id` INT UNSIGNED NULL DEFAULT NULL AFTER `id`, ADD INDEX (`customer_id`);");
 
 $modx->db->query("
     CREATE TABLE IF NOT EXISTS " . $modx->getFullTablename('commerce_order_products') . " (
@@ -223,7 +221,7 @@ if (!tableExists($modx, $table)) {
     ], $table);
 }
 
-$id = $modx->getValue($modx->db->select('MAX(id)', $tablePlugins, "`name` = 'Commerce'"));
+$id = $modx->db->getValue($modx->db->select('MAX(id)', $tablePlugins, "`name` = 'Commerce'"));
 $modx->db->update(['disabled' => 0], $tablePlugins, "`id` = '$id'");
 
 // remove installer
