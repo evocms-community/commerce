@@ -5,7 +5,7 @@
  * Dummy payment (offline payment)
  *
  * @category    plugin
- * @version     0.1.0
+ * @version     0.1.1
  * @author      mnoskov
  * @internal    @events OnRegisterPayments
  * @internal    @properties &title=Payment title;text; 
@@ -17,7 +17,7 @@
 if (!empty($modx->commerce)) {
     $processor = $modx->commerce->loadProcessor();
 
-    if ($processor->getCurrentDelivery() != 'pickup') {
+    if ($modx->isBackend() || $processor->getCurrentDelivery() != 'pickup') {
         $class = new \Commerce\Payments\Payment($modx, $params);
 
         if (empty($params['title'])) {
