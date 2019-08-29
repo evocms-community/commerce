@@ -58,13 +58,17 @@ var Commerce = {
         return hashes;
     },
 
-    updateCarts: function() {
+    updateCarts: function(options) {
         var $carts = $('[data-commerce-cart]'),
             hashes = this.getCartsHashes();
 
+        if (typeof options == 'undefined') {
+            options = {};
+        }
+
         if ($carts.length) {
             (function($carts) {
-                $.post('commerce/cart/contents', {hashes: hashes}, function(response) {
+                $.post('commerce/cart/contents', $.extend(options, {hashes: hashes}), function(response) {
                     if (response.status == 'success' && response.markup) {
                         $carts.each(function() {
                             var $cart = $(this),
@@ -239,6 +243,11 @@ $(document).on('cart-clean-complete.commerce', function(e, data) {
     window.location.reload();
 });
 
+$(function() {
+    if (Commerce.params.isCartPage) {
+        Commerce.updateCarts({order_completed: true});
+    }
+});
 
 $.fn.serializeDataAttributes = function() {
     var data = {};

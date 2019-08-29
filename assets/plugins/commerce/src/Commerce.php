@@ -14,7 +14,7 @@ class Commerce
 {
     use SettingsTrait;
 
-    const VERSION = 'v0.3.2';
+    const VERSION = 'v0.3.3';
 
     public $currency;
 
@@ -258,7 +258,13 @@ class Commerce
                     'status' => 'failed',
                 ];
 
-                if (isset($_POST['hashes'])) {
+                $shouldResponse = true;
+
+                if (!empty($_POST['order_completed'])) {
+                    $shouldResponse = ci()->flash->has('order_completed');
+                }
+
+                if ($shouldResponse && isset($_POST['hashes'])) {
                     $markup = $this->getCartsMarkup($_POST['hashes']);
 
                     if (!empty($markup)) {
@@ -596,5 +602,20 @@ class Commerce
 
         $data = array_merge($data, $this->getProductPlaceholders($data['id'], $lists));
         return $data;
+    }
+
+    public function populateClientScripts()
+    {
+        $this->modx->regClientScript('assets/plugins/commerce/js/commerce.js?' . self::VERSION);
+
+        $params = [];
+
+        if ($this->getSetting('cart_page_id') == $this->modx->documentIdentifier) {
+            $params['isCartPage'] = true;
+        }
+
+        if (!empty($params)) {
+            $this->modx->regClientScript('<script>Commerce.params = ' . json_encode($params) . ';</script>');
+        }
     }
 }

@@ -6,6 +6,9 @@ use Commerce\Lexicon;
 
 class Order extends Form
 {
+    private $order;
+    private $cart;
+
     public function __construct (\DocumentParser $modx, $cfg = array())
     {
         parent::__construct($modx, $cfg);
@@ -142,40 +145,34 @@ class Order extends Form
             $cart->setItems($items);
         }
 
-        $order = $processor->createOrder($items, $this->getFormData('fields'));
+        $this->order = $processor->createOrder($items, $this->getFormData('fields'));
+        $this->cart  = $processor->getCart();
 
         $this->modx->invokeEvent('OnBeforeOrderSending', [
             'FL'    => $this,
-            'order' => $order,
-            'cart'  => $processor->getCart(),
+            'order' => &$this->order,
+            'cart'  => &$this->cart,
         ]);
 
         $this->setPlaceholder('order', $order);
         parent::process();
-
-        $processor->postProcessForm($this);
-
-        $this->modx->invokeEvent('OnOrderProcessed', [
-            'FL'    => $this,
-            'order' => $order,
-            'cart'  => $processor->getCart(),
-        ]);
-
-        $this->renderTpl = $this->getCFGDef('successTpl', $this->lexicon->getMsg('form.default_successTpl'));
-        $this->redirect();
     }
 
     public function postProcess()
     {
-        $this->setFormStatus(true);
+        $this->modx->commerce->loadProcessor()->postProcessForm($this);
 
-        if ($this->getCFGDef('deleteAttachments', 0)) {
-            $this->deleteAttachments();
-        }
-
-        $this->runPrepare('prepareAfterProcess');
+        $this->modx->invokeEvent('OnOrderProcessed', [
+            'FL'    => $this,
+            'order' => $this->order,
+            'cart'  => $this->cart,
+        ]);
 
         $cartName = $this->getCFGDef('cartName', 'products');
         ci()->carts->getCart($cartName)->clean();
+
+        ci()->flash->set('order_completed', true);
+
+        parent::postProcess();
     }
 }
