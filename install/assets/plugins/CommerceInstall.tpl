@@ -159,6 +159,8 @@ $modx->db->query("
     ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 ");
 
+$modx->db->query("ALTER TABLE " . $modx->getFullTablename('commerce_order_payments') . " CHANGE `hash` `hash` VARCHAR(128) NOT NULL;");
+
 $table = $modx->getFullTablename('commerce_order_statuses');
 
 if (!tableExists($modx, $table)) {
