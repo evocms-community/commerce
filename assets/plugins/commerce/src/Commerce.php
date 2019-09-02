@@ -261,7 +261,11 @@ class Commerce
                 $shouldResponse = true;
 
                 if (!empty($_POST['order_completed'])) {
-                    $shouldResponse = ci()->flash->has('order_completed');
+                    $shouldResponse = !empty($_SESSION['commerce_order_completed']);
+
+                    if ($shouldResponse) {
+                        unset($_SESSION['commerce_order_completed']);
+                    }
                 }
 
                 if ($shouldResponse && isset($_POST['hashes'])) {

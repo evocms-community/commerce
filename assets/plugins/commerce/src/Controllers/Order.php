@@ -171,7 +171,7 @@ class Order extends Form
         $cartName = $this->getCFGDef('cartName', 'products');
         ci()->carts->getCart($cartName)->clean();
 
-        ci()->flash->set('order_completed', true);
+        $_SESSION['commerce_order_completed'] = true;
 
         parent::postProcess();
     }
