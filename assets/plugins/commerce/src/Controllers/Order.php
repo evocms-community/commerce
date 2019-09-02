@@ -175,4 +175,11 @@ class Order extends Form
 
         parent::postProcess();
     }
+
+    public function initCaptcha()
+    {
+        if (!$this->getCFGDef('commerceCaptchaFix', 0)) {
+            parent::initCaptcha();
+        }
+    }
 }

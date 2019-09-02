@@ -288,7 +288,7 @@ class Commerce
 
                     if (!empty($_POST['hashes']['form'])) {
                         if (($params = $this->restoreParams($_POST['hashes']['form'])) !== false) {
-                            $controller = new \FormLister\Order($this->modx, $params);
+                            $controller = new \FormLister\Order($this->modx, array_merge($params, ['commerceCaptchaFix' => true]));
                             $controller->initForm();
                             $output = $controller->getPaymentsAndDelivery();
 
