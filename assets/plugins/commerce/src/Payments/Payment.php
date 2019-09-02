@@ -13,6 +13,7 @@ class Payment implements \Commerce\Interfaces\Payment
     public function __construct($modx, array $params = [])
     {
         $this->modx = $modx;
+        $this->lang = $modx->commerce->getUserLanguage('common');
         $this->lang = $modx->commerce->getUserLanguage('payments');
         $this->setSettings($params);
     }
