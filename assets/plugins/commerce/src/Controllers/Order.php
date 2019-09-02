@@ -154,7 +154,7 @@ class Order extends Form
             'cart'  => &$this->cart,
         ]);
 
-        $this->setPlaceholder('order', $order);
+        $this->setPlaceholder('order', $this->order);
         parent::process();
     }
 
