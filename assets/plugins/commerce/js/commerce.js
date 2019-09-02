@@ -1,6 +1,8 @@
 ;
 
 var Commerce = {
+    params: {},
+
     action: function(action, data, initiator) {
         if (typeof initiator == 'undefined') {
             initiator = $(document);
