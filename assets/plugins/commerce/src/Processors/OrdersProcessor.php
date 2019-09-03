@@ -601,14 +601,19 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
         }
     }
 
-    public function populateOrderPaymentLink()
+    public function populateOrderPaymentLink($tpl = null)
     {
         $order = $this->getOrder();
 
         if ($order) {
-            $lang = $this->modx->commerce->getUserLanguage('order');
-            return ci()->tpl->parseChunk($lang['order.order_payment_link'], [
+            if ($tpl == null) {
+                $lang = $this->modx->commerce->getUserLanguage('order');
+                $tpl = $lang['order.order_payment_link'];
+            }
+
+            return ci()->tpl->parseChunk($tpl, [
                 'order' => $order,
+                'link'  => $this->modx->getConfig('site_url') . 'commerce/payorder?hash=' . $order['hash'],
             ], true);
         }
 

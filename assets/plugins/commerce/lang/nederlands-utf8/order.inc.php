@@ -34,7 +34,7 @@ return [
     'order.order_id' => 'Bestelnummer',
     'order.created_at' => 'Aanmaakdatum',
     'order.redirecting_to_payment' => 'Doorsturen betaling...',
-    'order.order_payment_link' => '@CODE:<p>Om te betalen voor de bestelling, klikt u op de link <a href="[(site_url)]commerce/payorder?hash=[+order.hash+]">[(site_url)]/commerce/payorder?hash=[+order.hash+]</a></p>',
+    'order.order_payment_link' => '@CODE:<p>Om te betalen voor de bestelling, klikt u op de link <a href="[+link+]">[+link+]</a></p>',
     'order.order_data_changed' => '@CODE:Volgorde #[+order_id+] is gewijzigd!',
     'order.' => '',
 ];
