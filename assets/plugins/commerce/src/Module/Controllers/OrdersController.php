@@ -88,6 +88,7 @@ class OrdersController extends Controller implements \Commerce\Module\Interfaces
         $subcolumns = $this->getOrderSubtotalsColumns();
 
         $this->modx->invokeEvent('OnManagerBeforeOrderRender', [
+            'order'      => &$order,
             'groups'     => &$groups,
             'config'     => &$config,
             'columns'    => &$columns,
@@ -174,6 +175,7 @@ class OrdersController extends Controller implements \Commerce\Module\Interfaces
         $subcolumns = $this->getOrderSubtotalsEditableColumns();
 
         $this->modx->invokeEvent('OnManagerBeforeOrderEditRender', [
+            'order'      => &$order,
             'fields'     => &$fields,
             'config'     => &$config,
             'columns'    => &$columns,
@@ -308,7 +310,8 @@ class OrdersController extends Controller implements \Commerce\Module\Interfaces
         ];
 
         $this->modx->invokeEvent('OnManagerBeforeOrderValidating', [
-            'data' => &$data,
+            'order' => $order,
+            'data'  => &$data,
         ]);
 
         $errors = [];
@@ -334,6 +337,7 @@ class OrdersController extends Controller implements \Commerce\Module\Interfaces
         }
 
         $this->modx->invokeEvent('OnManagerOrderValidated', [
+            'order'  => $order,
             'data'   => &$data,
             'errors' => &$errors,
         ]);
