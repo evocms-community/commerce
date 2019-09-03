@@ -482,10 +482,20 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
     public function processPayment($payment_id, $amount)
     {
         $db = ci()->db;
-        $payment = $this->loadPayment($payment_id);
 
-        if (empty($payment) || !empty($payment['paid'])) {
-            return false;
+        if (is_array($payment_id) && !empty($payment_id['id']) && !empty($payment_id['order_id'])) {
+            $payment    = $payment_id;
+            $payment_id = $payment['id'];
+        } else {
+            $payment = $this->loadPayment($payment_id);
+        }
+
+        if (empty($payment)) {
+            throw new \Exception('Payment ' . print_r($payment_id, true) . ' not found!');
+        }
+
+        if (!empty($payment['paid'])) {
+            throw new \Exception('Payment ' . print_r($payment_id, true) . ' already paid!');
         }
 
         $order_id = $payment['order_id'];
@@ -493,7 +503,7 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
         $order = $this->loadOrder($order_id);
 
         if (is_null($order)) {
-            return false;
+            throw new \Exception('Order ' . print_r($order_id, true) . ' not found!');
         }
 
         $db->update(['paid' => 1], $this->tablePayments, "`id` = '" . intval($payment_id) . "'");
