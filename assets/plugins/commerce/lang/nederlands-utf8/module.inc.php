@@ -77,4 +77,5 @@ return [
     'module.error.order_not_saved' => 'Saving error!',
     'module.order_saved' => 'Order saved',
     'module.not_selected' => '--- select ---',
+    'module.order_changed' => 'Order changed',
 ];

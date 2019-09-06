@@ -77,4 +77,5 @@ return [
     'module.error.order_not_saved' => 'Ошибка при сохранении заказа!',
     'module.order_saved' => 'Заказ сохранен',
     'module.not_selected' => '--- не выбрано ---',
+    'module.order_changed' => 'Данные заказа изменены',
 ];

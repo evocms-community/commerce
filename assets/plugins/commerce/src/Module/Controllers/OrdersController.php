@@ -382,7 +382,7 @@ class OrdersController extends Controller implements \Commerce\Module\Interfaces
             $this->module->sendRedirectWithQuery('orders/edit', 'order_id=' . $order['id'], ['error' => $this->lang['module.error.order_not_saved']]);
         }
 
-        if (!empty($_POST['notify'])) {
+        if (!empty($_POST['notify']) && !empty($order['email'])) {
             $tpl      = ci()->tpl;
             $lang     = $this->modx->commerce->getUserLanguage('order');
             $template = $this->modx->commerce->getSetting('order_changed', $this->modx->commerce->getUserLanguageTemplate('order_changed'));
@@ -390,21 +390,36 @@ class OrdersController extends Controller implements \Commerce\Module\Interfaces
             $order = $processor->loadOrder($order['id']);
             $processor->getCart();
 
-            $body = $tpl->parseChunk($template, [
-                'order_id' => $order['id'],
-                'order'    => $order,
-            ], true);
+            $subjectTpl = $lang['order.order_data_changed'];
+            $preventSending = false;
 
-            $subject = $tpl->parseChunk($lang['order.order_data_changed'], [
-                'order_id' => $order['id'],
-            ], true);
-
-            $mailer = new \Helpers\Mailer($this->modx, [
-                'to'      => $order['email'],
-                'subject' => $subject,
+            $this->modx->invokeEvent('OnBeforeCustomerNotifySending', [
+                'reason'  => 'order_changed',
+                'order'   => &$order,
+                'subject' => &$subjectTpl,
+                'body'    => &$template,
+                'prevent' => &$preventSending,
             ]);
 
-            $mailer->send($body);
+            if (!$preventSending) {
+                $body = $tpl->parseChunk($template, [
+                    'order_id' => $order['id'],
+                    'order'    => $order,
+                ], true);
+
+                $subject = $tpl->parseChunk($subjectTpl, [
+                    'order' => $order,
+                ], true);
+
+                $mailer = new \Helpers\Mailer($this->modx, [
+                    'to'      => $order['email'],
+                    'subject' => $subject,
+                ]);
+
+                $mailer->send($body);
+
+                $this->addOrderHistory($order['id'], $order['status_id'], $this->lang['module.order_changed'], true);
+            }
         }
 
         $this->module->sendRedirectWithQuery('orders/view', 'order_id=' . $order['id'], ['success' => $this->lang['module.order_saved']]);

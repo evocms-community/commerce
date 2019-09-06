@@ -13,9 +13,9 @@ return [
     'order.error.phone_required' => 'Введите телефон',
     'order.success' => '@CODE:<div>Спасибо за ваш заказ</div>',
     'order.subject' => '@CODE:Новый заказ на сайте [(site_name)]',
-    'order.subject_status_changed' => '@CODE:Статус заказа #[+order_id+] изменен',
+    'order.subject_status_changed' => '@CODE:Статус заказа #[+order.id+] изменен',
     'order.order_paid' => '@CODE:Заказ #[+order_id+] оплачен!',
-    'order.subject_order_paid' => '@CODE:Заказ #[+order_id+] оплачен!',
+    'order.subject_order_paid' => '@CODE:Заказ #[+order.id+] оплачен!',
     'order.status.new' => 'Новый',
     'order.status.processing' => 'В обработке',
     'order.status.paid' => 'Оплачен',
@@ -35,5 +35,5 @@ return [
     'order.created_at' => 'Дата и время создания',
     'order.redirecting_to_payment' => 'Перенаправление на оплату...',
     'order.order_payment_link' => '@CODE:<p>Для оплаты заказа перейдите по ссылке <a href="[+link+]">[+link+]</a></p>',
-    'order.order_data_changed' => '@CODE:Данные заказа #[+order_id+] изменены!',
+    'order.order_data_changed' => '@CODE:Данные заказа #[+order.id+] изменены!',
 ];

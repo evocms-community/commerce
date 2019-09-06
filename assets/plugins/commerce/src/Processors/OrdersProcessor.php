@@ -139,6 +139,52 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
         return $order;
     }
 
+    public function addOrderHistory($order_id, &$status_id, &$comment = '', &$notify = false)
+    {
+        $order = $this->loadOrder($order_id);
+
+        if (empty($order)) {
+            return false;
+        }
+
+        $preventChange = false;
+
+        $this->modx->invokeEvent('OnBeforeOrderHistoryUpdate', [
+            'order_id'  => $order_id,
+            'status_id' => &$status_id,
+            'comment'   => &$comment,
+            'notify'    => &$notify,
+            'prevent'   => &$preventChange,
+        ]);
+
+        if (!$preventChange) {
+            $db = $this->modx->db;
+            $db->query("START TRANSACTION;");
+
+            try {
+                if ($order['status_id'] != $status_id) {
+                    $this->modx->db->update(['status_id' => $status_id], $this->tableOrders, "`id` = '$order_id'");
+                }
+
+                $this->modx->db->insert([
+                    'order_id'  => (int)$order_id,
+                    'status_id' => (int)$status_id,
+                    'comment'   => $this->modx->db->escape($comment),
+                    'notify'    => !empty($notify) ? 1 : 0,
+                    'user_id'   => $this->modx->getLoginUserID('mgr'),
+                ], $this->tableHistory);
+            } catch (\Exception $e) {
+                $db->query('ROLLBACK;');
+                $this->modx->logEvent(0, 3, 'Cannot update order history: ' . $e->getMessage() . '<br><pre>' . htmlentities(print_r($order, true)) . '</pre>', 'Commerce');
+                return false;
+            }
+
+            $db->query('COMMIT;');
+        }
+
+        return true;
+    }
+
     public function changeStatus($order_id, $status_id, $comment = '', $notify = false, $template = null)
     {
         $order = $this->loadOrder($order_id);
@@ -147,50 +193,47 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
             return false;
         }
 
-        if (is_null($template)) {
-            $template = $this->modx->commerce->getSetting('status_notification', $this->modx->commerce->getUserLanguageTemplate('status_notification'));
-        }
-
-        $this->modx->invokeEvent('OnBeforeOrderHistoryUpdate', [
-            'order_id'  => $order_id,
-            'status_id' => &$status_id,
-            'comment'   => &$comment,
-            'notify'    => &$notify,
-            'template'  => &$template,
-        ]);
-
-        $this->modx->db->update(['status_id' => $status_id], $this->tableOrders, "`id` = '$order_id'");
-
-        $this->modx->db->insert([
-            'order_id'  => (int)$order_id,
-            'status_id' => (int)$status_id,
-            'comment'   => $this->modx->db->escape($comment),
-            'notify'    => 1 * !!$notify,
-            'user_id'   => $this->modx->getLoginUserID('mgr'),
-        ], $this->tableHistory);
+        $this->addOrderHistory($order_id, $status_id, $comment, $notify);
 
         if ($notify && !empty($order['email'])) {
             $tpl    = ci()->tpl;
             $lang   = $this->modx->commerce->getUserLanguage('order');
             $status = $this->modx->db->getValue($this->modx->db->select('title', $this->modx->getFullTablename('commerce_order_statuses'), "`id` = '" . intval($status_id) . "'"));
 
-            $body = $tpl->parseChunk($template, [
-                'order_id' => $order_id,
-                'order'    => $order,
-                'status'   => $status,
-                'comment'  => $comment,
-            ], true);
+            if (is_null($template)) {
+                $template = $this->modx->commerce->getSetting('status_notification', $this->modx->commerce->getUserLanguageTemplate('status_notification'));
+            }
 
-            $subject = $tpl->parseChunk($lang['order.subject_status_changed'], [
-                'order_id' => $order_id,
-            ], true);
+            $subjectTpl = $lang['order.subject_status_changed'];
+            $preventSending = false;
 
-            $mailer = new \Helpers\Mailer($this->modx, [
-                'to'      => $order['email'],
-                'subject' => $subject,
+            $this->modx->invokeEvent('OnBeforeCustomerNotifySending', [
+                'reason'  => 'status_changed',
+                'order'   => &$order,
+                'subject' => &$subjectTpl,
+                'body'    => &$template,
+                'prevent' => &$preventSending,
             ]);
 
-            return $mailer->send($body);
+            if (!$preventSending) {
+                $body = $tpl->parseChunk($template, [
+                    'order_id' => $order_id,
+                    'order'    => $order,
+                    'status'   => $status,
+                    'comment'  => $comment,
+                ], true);
+
+                $subject = $tpl->parseChunk($subjectTpl, [
+                    'order' => $order,
+                ], true);
+
+                $mailer = new \Helpers\Mailer($this->modx, [
+                    'to'      => $order['email'],
+                    'subject' => $subject,
+                ]);
+
+                return $mailer->send($body);
+            }
         }
 
         return true;
@@ -298,6 +341,10 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
 
     public function loadOrder($order_id)
     {
+        if (!empty($this->order) && $this->order['id'] == $order_id) {
+            return $this->order;
+        }
+
         $query = $this->modx->db->select('*', $this->tableOrders, "`id` = '" . (int)$order_id . "'");
 
         if ($this->modx->db->getRecordCount($query)) {
@@ -394,7 +441,7 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
                 }
 
                 $successTpl = '@CODE:' . $redirectText;
-    
+
                 if (!empty($redirect['link'])) {
                     $FL->config->setConfig(['redirectTo' => [
                         'page'   => $redirect['link'],
@@ -534,7 +581,7 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
             ], true);
 
             $subject = $tpl->parseChunk($lang['order.subject_order_paid'], [
-                'order_id' => $order_id,
+                'order' => $order,
             ], true);
 
             $mailer = new \Helpers\Mailer($this->modx, [

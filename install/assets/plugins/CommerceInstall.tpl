@@ -51,6 +51,7 @@ $events = [
     'OnOrderSaved',
     'OnOrderProcessed',
     'OnBeforeOrderHistoryUpdate',
+    'OnBeforeCustomerNotifySending',
     'OnManagerBeforeOrdersListRender',
     'OnManagerOrdersListRender',
     'OnManagerBeforeOrderRender',
