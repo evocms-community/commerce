@@ -16,7 +16,7 @@ return [
     'module.status_title' => 'Статус',
     'module.status_change_notify' => 'Уведомить покупателя о смене статуса заказа',
     'module.is_customer_notified' => 'Покупатель уведомлен',
-    'module.status_change_description' => 'Дополнительная информация',
+    'module.status_change_description' => 'Дополнительная информация для истории заказа',
     'module.status_change_date' => 'Дата смены статуса',
     'module.status_changed' => 'Статус заказа изменен!',
     'module.unknown_route' => 'Неизвестный запрос',

@@ -418,7 +418,13 @@ class OrdersController extends Controller implements \Commerce\Module\Interfaces
 
                 $mailer->send($body);
 
-                $processor->addOrderHistory($order['id'], $order['status_id'], $this->lang['module.order_changed'], $notify = true);
+                if (!empty($_POST['history_description'])) {
+                    $description = trim($_POST['history_description']);
+                } else {
+                    $description = $this->lang['module.order_changed'];
+                }
+
+                $processor->addOrderHistory($order['id'], $order['status_id'], $description, $notify = true);
             }
         }
 

@@ -42,12 +42,19 @@
                             <?php endforeach; ?>
 
                             <tr>
-                                <td style="width: 20%;"></td>
+                                <td style="width: 20%;"><?= $lang['module.order_change_notify'] ?></td>
                                 <td>
                                     <label>
                                         <input type="checkbox" name="notify" value="1" checked>
-                                        <?= $lang['module.order_change_notify'] ?>
+                                        <?= $_lang['yes'] ?>
                                     </label>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td style="width: 20%; vertical-align: top;"><?= $lang['module.status_change_description'] ?></td>
+                                <td>
+                                    <textarea name="history_description"></textarea>
                                 </td>
                             </tr>
                         </table>
