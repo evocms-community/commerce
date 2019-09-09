@@ -339,9 +339,9 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
         return null;
     }
 
-    public function loadOrder($order_id)
+    public function loadOrder($order_id, $force = false)
     {
-        if (!empty($this->order) && $this->order['id'] == $order_id) {
+        if (!empty($this->order) && $this->order['id'] == $order_id && !$force) {
             return $this->order;
         }
 

@@ -387,7 +387,7 @@ class OrdersController extends Controller implements \Commerce\Module\Interfaces
             $lang     = $this->modx->commerce->getUserLanguage('order');
             $template = $this->modx->commerce->getSetting('order_changed', $this->modx->commerce->getUserLanguageTemplate('order_changed'));
 
-            $order = $processor->loadOrder($order['id']);
+            $order = $processor->loadOrder($order['id'], true);
             $processor->getCart();
 
             $subjectTpl = $lang['order.order_data_changed'];
@@ -418,7 +418,7 @@ class OrdersController extends Controller implements \Commerce\Module\Interfaces
 
                 $mailer->send($body);
 
-                $this->addOrderHistory($order['id'], $order['status_id'], $this->lang['module.order_changed'], true);
+                $processor->addOrderHistory($order['id'], $order['status_id'], $this->lang['module.order_changed'], $notify = true);
             }
         }
 
