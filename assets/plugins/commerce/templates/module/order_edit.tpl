@@ -45,7 +45,7 @@
                                 <td style="width: 20%;"></td>
                                 <td>
                                     <label>
-                                        <input type="checkbox" name="notify" value="1">
+                                        <input type="checkbox" name="notify" value="1" checked>
                                         <?= $lang['module.order_change_notify'] ?>
                                     </label>
                                 </td>
