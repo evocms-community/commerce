@@ -167,11 +167,12 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
                 }
 
                 $this->modx->db->insert([
-                    'order_id'  => (int)$order_id,
-                    'status_id' => (int)$status_id,
-                    'comment'   => $this->modx->db->escape($comment),
-                    'notify'    => !empty($notify) ? 1 : 0,
-                    'user_id'   => $this->modx->getLoginUserID('mgr'),
+                    'order_id'   => (int)$order_id,
+                    'status_id'  => (int)$status_id,
+                    'comment'    => $this->modx->db->escape($comment),
+                    'notify'     => !empty($notify) ? 1 : 0,
+                    'user_id'    => $this->modx->getLoginUserID('mgr'),
+                    'created_at' => date('Y-m-d H:i:s'),
                 ], $this->tableHistory);
             } catch (\Exception $e) {
                 $db->query('ROLLBACK;');
