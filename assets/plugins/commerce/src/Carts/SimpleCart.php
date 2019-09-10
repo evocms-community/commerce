@@ -90,7 +90,8 @@ class SimpleCart implements \Commerce\Interfaces\Cart
 
             foreach ($this->items as $row => $item) {
                 if ($item['hash'] == $new['hash']) {
-                    $this->update($row, ['count' => $item['count'] + (!empty($new['count']) ? $new['count'] : 1)]);
+                    //$this->update($row, ['count' => $item['count'] + (!empty($new['count']) ? $new['count'] : 1)]);
+                    $this->update($row, ['count' => $item['count'] + (!empty($new['count']) && is_numeric($new['count']) ? $new['count'] : 1)]);
                     return $row;
                 }
             }
