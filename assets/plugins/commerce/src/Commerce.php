@@ -19,7 +19,6 @@ class Commerce
     public $currency;
 
     private $modx;
-    private $cart;
     private $processor;
 
     private $payments;
@@ -49,13 +48,13 @@ class Commerce
         $carts->registerStore('session', new SessionCartStore());
 
         if (!$carts->has('products')) {
-            $this->cart = new ProductsCart($this->modx);
-            $this->cart->setCurrency($this->currency->getCurrencyCode());
-            $carts->addCart('products', $this->cart);
+            $cart = new ProductsCart($this->modx);
+            $cart->setCurrency($this->currency->getCurrencyCode());
+            $carts->addCart('products', $cart);
         }
 
-        $this->cart->setTitleField($this->getSetting('title_field', 'pagetitle'));
-        $this->cart->setPriceField($this->getSetting('price_field', 'price'));
+        $cart->setTitleField($this->getSetting('title_field', 'pagetitle'));
+        $cart->setPriceField($this->getSetting('price_field', 'price'));
 
         foreach (['wishlist', 'comparison'] as $listname) {
             if (!$carts->has($listname)) {
@@ -68,7 +67,17 @@ class Commerce
 
     public function getCart()
     {
-        return $this->cart;
+        return ci()->carts->getCart('products');
+    }
+
+    public function getWishlist()
+    {
+        return ci()->carts->getCart('wishlist');
+    }
+
+    public function getComparison()
+    {
+        return ci()->carts->getCart('comparison');
     }
 
     public function getVersion()
