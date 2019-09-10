@@ -208,25 +208,25 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
             $subjectTpl = $lang['order.subject_status_changed'];
             $preventSending = false;
 
+            $templateData = [
+                'order_id' => $order_id,
+                'order'    => $order,
+                'status'   => $status,
+                'comment'  => $comment,
+            ];
+
             $this->modx->invokeEvent('OnBeforeCustomerNotifySending', [
                 'reason'  => 'status_changed',
                 'order'   => &$order,
                 'subject' => &$subjectTpl,
                 'body'    => &$template,
+                'data'    => &$templateData,
                 'prevent' => &$preventSending,
             ]);
 
             if (!$preventSending) {
-                $body = $tpl->parseChunk($template, [
-                    'order_id' => $order_id,
-                    'order'    => $order,
-                    'status'   => $status,
-                    'comment'  => $comment,
-                ], true);
-
-                $subject = $tpl->parseChunk($subjectTpl, [
-                    'order' => $order,
-                ], true);
+                $body    = $tpl->parseChunk($template, $templateData, true);
+                $subject = $tpl->parseChunk($subjectTpl, $templateData, true);
 
                 $mailer = new \Helpers\Mailer($this->modx, [
                     'to'      => $order['email'],
