@@ -905,12 +905,6 @@ class OrdersController extends Controller implements \Commerce\Module\Interfaces
                 'content' => function($data) {
                     return '<input type="text" class="form-control" name="order[phone]" value="' . htmlentities($data['phone']) . '">';
                 },
-                '!rules'   => [
-                    'matches' => [
-                        'params'  => '/^\+?\d{1,3}\s?\(\d{3}\)\s?\d{3}-\d\d-\d\d$/',
-                        'message' => $this->lang['module.error.phone_incorrect'],
-                    ]
-                ],
                 'sort'    => 20,
             ],
             'email' => [
