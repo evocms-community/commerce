@@ -1003,7 +1003,7 @@ class OrdersController extends Controller implements \Commerce\Module\Interfaces
             ],
             'price' => [
                 'title'   => $lang['cart.item_price'],
-                'content' => function($data) use ($order) {
+                'content' => function($data, $DL, $eDL) use ($order) {
                     return '
                         <div style="white-space: nowrap;">
                             <input type="text" class="form-control" name="order[cart][' . $data['iteration'] . '][price]" value="' . htmlentities($data['price']) . '" style="width: 80px; text-align: right;">

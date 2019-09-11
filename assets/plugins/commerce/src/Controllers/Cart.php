@@ -22,6 +22,7 @@ class CartDocLister extends CustomLangDocLister
         array_unshift($cfg['prepareWrap'], [$this, 'prepareCartOuter']);
 
         parent::__construct($modx, $cfg, $startTime);
+        setlocale(LC_NUMERIC, 'C');
     }
 
     public function prepareCartOuter($data, $modx, $DL, $e)
