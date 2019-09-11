@@ -11,6 +11,10 @@
  * @internal    @installset base
 */
 
+if (file_exists(MODX_BASE_PATH . 'assets/snippets/FormLister/__autoload.php')) {
+    require_once MODX_BASE_PATH . 'assets/snippets/FormLister/__autoload.php';
+}
+
 $tableEventnames = $modx->getFullTablename('system_eventnames');
 $tablePlugins    = $modx->getFullTablename('site_plugins');
 $tableEvents     = $modx->getFullTablename('site_plugin_events');
@@ -85,9 +89,6 @@ foreach ($events as $event) {
         ], $tableEventnames);
     }
 }
-
-require_once MODX_BASE_PATH . 'assets/lib/APIHelpers.class.php';
-require_once MODX_BASE_PATH . 'assets/snippets/FormLister/lib/Lexicon.php';
 
 $lexicon = new \Helpers\Lexicon($modx, [
     'langDir' => 'assets/plugins/commerce/lang/',

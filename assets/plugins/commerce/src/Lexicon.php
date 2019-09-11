@@ -8,6 +8,11 @@ class Lexicon extends \Helpers\Lexicon
     {
         parent::loadLang($name, $lang, $langDir);
         setlocale(LC_NUMERIC, 'C');
+
+        if (is_callable([$this, 'getLexicon'])) {
+            return $this->getLexicon();
+        }
+
         return $this->_lang;
     }
 }
