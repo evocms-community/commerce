@@ -172,7 +172,7 @@ class Order extends Form
         ci()->carts->getCart($cartName)->clean();
 
         $_SESSION['commerce_order_completed'] = true;
-        ci()->flash->set('order', $this->order);
+        ci()->flash->set('last_order_id', $this->order['id']);
 
         parent::postProcess();
     }
