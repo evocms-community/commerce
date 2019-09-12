@@ -5,7 +5,7 @@
  * Order form, FormLister based
  *
  * @category    snippet
- * @version     0.2.2
+ * @version     0.2.3
  * @author      mnoskov
  * @internal    @modx_category Commerce
  * @internal    @installset base
@@ -15,6 +15,8 @@ if (!empty($modx->commerce)) {
     $lang = $modx->commerce->getUserLanguage('order');
 
     $params = array_merge([
+        'controller'            => 'Order',
+        'dir'                   => 'assets/plugins/commerce/src/Controllers/',
         'formid'                => 'order',
         'parseDocumentSource'   => 1,
         'langDir'               => 'assets/plugins/commerce/lang/',
@@ -45,10 +47,7 @@ if (!empty($modx->commerce)) {
                 'required' => $lang['order.error.phone_required'],
             ],
         ],
-    ], $params, [
-        'controller' => 'Order',
-        'dir'        => 'assets/plugins/commerce/src/Controllers/',
-    ]);
+    ], $params);
 
     $params['form_hash'] = $modx->commerce->storeParams($params);
 
