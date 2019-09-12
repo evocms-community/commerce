@@ -638,6 +638,10 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
                 $this->modx->setPlaceholder('commerce_order.' . $key, $value);
             }
         }
+
+        $this->modx->invokeEvent('OnOrderPlaceholdersPopulated', [
+            'order' => &$order,
+        ]);
     }
 
     public function populatePaymentPlaceholders($payment_id)

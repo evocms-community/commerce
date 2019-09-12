@@ -71,6 +71,7 @@ $events = [
     'OnManagerRegisterCommerceController',
     'OnBeforeCurrencyChange',
     'OnCommerceAjaxResponse',
+    'OnOrderPlaceholdersPopulated',
 ];
 
 $query  = $modx->db->select('*', $tableEventnames, "`groupname` = 'Commerce'");
