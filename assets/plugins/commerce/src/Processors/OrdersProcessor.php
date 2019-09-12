@@ -36,8 +36,8 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
             'order_id'   => $order_id,
             'product_id' => (int)$item['id'],
             'title'      => $this->modx->db->escape(isset($item['title']) ? $item['title'] : $item['name']),
-            'price'      => number_format((float)$item['price'], 6, '.', ''),
-            'count'      => number_format((float)$item['count'], 6, '.', ''),
+            'price'      => $this->normalizePrice($item['price']),
+            'count'      => $this->normalizePrice($item['count']),
             'options'    => !empty($item['options']) ? $this->modx->db->escape(json_encode($item['options'], JSON_UNESCAPED_UNICODE)) : null,
             'meta'       => !empty($item['meta']) ? $this->modx->db->escape(json_encode($item['meta'], JSON_UNESCAPED_UNICODE)) : null,
             'position'   => $position,
@@ -49,7 +49,7 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
         return [
             'order_id' => $order_id,
             'title'    => $this->modx->db->escape($item['title']),
-            'price'    => number_format((float)$item['price'], 6, '.', ''),
+            'price'    => $this->normalizePrice($item['price']),
             'position' => $position,
         ];
     }
@@ -85,7 +85,7 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
         ]);
 
         $values = $this->prepareOrderValues($fields);
-        $values['amount']      = number_format((float)$total, 6, '.', '');
+        $values['amount']      = $this->normalizePrice($total);
         $values['currency']    = ci()->currency->getCurrencyCode();
         $values['created_at']  = date('Y-m-d H:i:s');
         $values['customer_id'] = $this->modx->getLoginUserID('web');
@@ -728,5 +728,11 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
         }
 
         return null;
+    }
+
+    private function normalizePrice($price)
+    {
+        $price = str_replace(',', '.', $price);
+        return number_format((float)$price, 6, '.', '');
     }
 }
