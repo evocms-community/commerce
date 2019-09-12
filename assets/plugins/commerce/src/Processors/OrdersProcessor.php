@@ -527,7 +527,7 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
         return null;
     }
 
-    public function processPayment($payment_id, $amount)
+    public function processPayment($payment_id, $amount, $status = null)
     {
         $db = ci()->db;
 
@@ -565,11 +565,15 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
 
         if ($order['amount'] >= $amount) {
             $tpl = ci()->tpl;
-            $status = $this->modx->commerce->getSetting('status_id_after_payment', 3);
             $lang = $this->modx->commerce->getUserLanguage('order');
             $comment = $tpl->parseChunk($lang['order.order_paid'], [
                 'order_id' => $order_id,
             ]);
+
+            if (is_null($status)) {
+                $status = $this->modx->commerce->getSetting('status_id_after_payment', 3);
+            }
+
             $this->changeStatus($order_id, $status, $comment, true);
 
             $this->getCart();
