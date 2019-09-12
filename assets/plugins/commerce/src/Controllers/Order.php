@@ -112,21 +112,15 @@ class Order extends Form
 
     public function process()
     {
-        if ($this->checkSubmitProtection()) {
-            return;
-        }
-
         $processor = $this->modx->commerce->loadProcessor();
         $processor->startOrder();
 
         $cartName = $this->getCFGDef('cartName', 'products');
-        $cart = ci()->carts->getCart($cartName);
-        $items = $cart->getItems();
+        $this->cart = ci()->carts->getCart($cartName);
 
-        $params = [
-            'FL'   => $this,
-            'items' => &$items,
-        ];
+        if ($this->checkSubmitProtection()) {
+            return;
+        }
 
         $fields = $this->getFormData('fields');
 
@@ -140,10 +134,15 @@ class Order extends Form
             $this->setField('delivery_method_title', $delivery['title']);
         }
 
-        $this->modx->invokeEvent('OnBeforeOrderProcessing', $params);
+        $items = $this->cart->getItems();
 
-        if (is_array($params['items'])) {
-            $cart->setItems($items);
+        $this->modx->invokeEvent('OnBeforeOrderProcessing', [
+            'FL'    => $this,
+            'items' => &$items,
+        ]);
+
+        if (is_array($items)) {
+            $this->cart->setItems($items);
         }
 
         $this->order = $processor->createOrder($items, $this->getFormData('fields'));
@@ -173,6 +172,7 @@ class Order extends Form
         ci()->carts->getCart($cartName)->clean();
 
         $_SESSION['commerce_order_completed'] = true;
+        ci()->flash->set('order', $this->order);
 
         parent::postProcess();
     }
@@ -182,5 +182,27 @@ class Order extends Form
         if (!$this->getCFGDef('commerceCaptchaFix', 0)) {
             parent::initCaptcha();
         }
+    }
+
+    public function getFormHash()
+    {
+        $hash = parent::getFormHash();
+
+        if (isset($this->cart)) {
+            $items = $this->cart->getItems();
+
+            $total = 0;
+            $subtotals = [];
+            $this->modx->invokeEvent('OnCollectSubtotals', [
+                'rows'     => &$subtotals,
+                'total'    => &$total,
+                'realonly' => true,
+            ]);
+
+            $items = array_merge($items, $subtotals);
+            $hash = md5($hash . json_encode($items));
+        }
+
+        return $hash;
     }
 }
