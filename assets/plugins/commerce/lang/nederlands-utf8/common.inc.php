@@ -4,7 +4,7 @@ setlocale(LC_ALL, 'nl_NL.UTF-8');
 
 return [
     'measures.units' => 'items',
-    
+
     'currency.title' => 'Euro',
     'currency.code' => 'EUR',
     'currency.left_symbol' => '€ ',
@@ -13,5 +13,5 @@ return [
     'currency.decimals_separator' => ',',
     'currency.thousands_separator' => '.',
 
-    'common.add_to_cart' => 'Toevoegen aan Carter',
+    'common.add_to_cart' => 'Toevoegen aan winkelmand',
 ];
