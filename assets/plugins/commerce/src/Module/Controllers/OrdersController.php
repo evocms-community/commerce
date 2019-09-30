@@ -70,7 +70,9 @@ class OrdersController extends Controller implements \Commerce\Module\Interfaces
         return $this->view->render('orders_list.tpl', [
             'columns' => $columns,
             'orders'  => $list,
-            'custom'  => $this->module->invokeTemplateEvent('OnManagerOrdersListRender'),
+            'custom'  => $this->module->invokeTemplateEvent('OnManagerOrdersListRender', [
+                'orders' => $list,
+            ]),
         ]);
     }
 
@@ -112,7 +114,7 @@ class OrdersController extends Controller implements \Commerce\Module\Interfaces
 
         $cart = $this->modx->commerce->loadProcessor()->getCart();
 
-        $cartData = $this->modx->runSnippet('DocLister', array_merge($config, [
+        $products = $this->modx->runSnippet('DocLister', array_merge($config, [
             'controller' => 'Cart',
             'dir'        => 'assets/plugins/commerce/src/Controllers/',
             'idType'     => 'documents',
@@ -122,6 +124,8 @@ class OrdersController extends Controller implements \Commerce\Module\Interfaces
             'tree'       => 0,
             'api'        => 1,
         ]));
+
+        $products = json_decode($products, true);
 
         $subcolumns = $this->sortFields($subcolumns);
         $subtotals  = [];
@@ -147,14 +151,18 @@ class OrdersController extends Controller implements \Commerce\Module\Interfaces
         return $this->view->render('order.tpl', [
             'order'      => $order,
             'groups'     => $groups,
-            'cartData'   => json_decode($cartData, true),
+            'cartData'   => $products,
             'columns'    => $columns,
             'statuses'   => $this->getStatuses(),
             'subcolumns' => $subcolumns,
             'subtotals'  => $subtotals,
             'history'    => $history,
             'users'      => $users,
-            'custom'     => $this->module->invokeTemplateEvent('OnManagerOrderRender'),
+            'custom'     => $this->module->invokeTemplateEvent('OnManagerOrderRender', [
+                'order'     => $order,
+                'products'  => $products,
+                'subtotals' => $subtotals,
+            ]),
         ]);
     }
 
