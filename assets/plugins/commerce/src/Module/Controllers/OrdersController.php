@@ -213,6 +213,8 @@ class OrdersController extends Controller implements \Commerce\Module\Interfaces
             'api'        => 1,
         ]));
 
+        $products = json_decode($products, true);
+
         $documents = $this->getDocuments($order);
 
         $subcolumns = $this->sortFields($subcolumns);
@@ -255,14 +257,18 @@ class OrdersController extends Controller implements \Commerce\Module\Interfaces
         return $this->view->render('order_edit.tpl', [
             'order'         => $order,
             'fields'        => $fields,
-            'products'      => json_decode($products, true),
+            'products'      => $products,
             'columns'       => $columns,
             'subcolumns'    => $subcolumns,
             'subtotals'     => $subtotals,
             'productBlank'  => $productBlank,
             'subtotalBlank' => $subtotalBlank,
             'documents'     => $documents,
-            'custom'        => $this->module->invokeTemplateEvent('OnManagerOrderEditRender'),
+            'custom'        => $this->module->invokeTemplateEvent('OnManagerOrderEditRender', [
+                'order'     => $order,
+                'products'  => $products,
+                'subtotals' => $subtotals,
+            ]),
         ]);
     }
 
