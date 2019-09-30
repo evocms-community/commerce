@@ -61,6 +61,7 @@ $events = [
     'OnManagerBeforeOrderRender',
     'OnManagerOrderRender',
     'OnManagerBeforeOrderEditRender',
+    'OnManagerOrderEditRender',
     'OnManagerBeforeOrderValidating',
     'OnManagerOrderValidated',
     'OnManagerStatusesListRender',
