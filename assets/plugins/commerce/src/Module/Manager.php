@@ -8,6 +8,7 @@ class Manager
 
     private $modx;
     private $controllers = [];
+    private $route = '';
 
     public $flash;
 
@@ -36,6 +37,8 @@ class Manager
         if (empty($route)) {
             $route = 'index';
         }
+
+        $this->route = $controller . '/' . $route;
 
         $this->modx->invokeEvent('OnManagerRegisterCommerceController', [
             'module' => $this,
@@ -132,5 +135,15 @@ class Manager
         }
 
         return null;
+    }
+
+    public function getCurrentRoute()
+    {
+        return $this->route;
+    }
+
+    public function getCurrentRouteName()
+    {
+        return trim(preg_replace('/[^\da-zA-Z]+/', '_', $this->route), '_ ');
     }
 }

@@ -44,9 +44,9 @@
 </div>
 
 <div class="sectionBody">
-    <div class="tab-pane" id="commercePane">
+    <div class="tab-pane" id="commercePane_<?= $module->getCurrentRouteName() ?>">
         <script type="text/javascript">
-            var tpCommerce = new WebFXTabPane(document.getElementById('commercePane'), <?= ($modx->getConfig('remember_last_tab') == 1 ? 'true' : 'false') ?> );
+            var tpCommerce = new WebFXTabPane(document.getElementById('commercePane_<?= $module->getCurrentRouteName() ?>'), <?= ($modx->getConfig('remember_last_tab') == 1 ? 'true' : 'false') ?> );
         </script> 
 
         <?= $this->block('content') ?>
