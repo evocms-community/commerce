@@ -305,7 +305,7 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
             if (!empty($params['values'])) {
                 $order = $this->loadOrder($order_id);
                 $params['values'] = array_replace_recursive($order, $params['values']);
-                $params['values']['fields'] = json_encode($params['values']['fields'], JSON_UNESCAPED_UNICODE);
+                $params['values']['fields'] = $db->escape(json_encode($params['values']['fields'], JSON_UNESCAPED_UNICODE));
                 unset($params['values']['created_at']);
                 unset($params['values']['updated_at']);
 

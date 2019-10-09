@@ -92,7 +92,7 @@ class StatusesController extends Controller implements \Commerce\Module\Interfac
         }
 
         $fields = [
-            'title'   => $data['title'],
+            'title'   => $db->escape($data['title']),
             'notify'  => !empty($data['notify']) ? 1 : 0,
             'default' => !empty($data['default']) ? 1 : 0,
         ];
