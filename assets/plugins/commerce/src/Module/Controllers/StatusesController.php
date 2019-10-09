@@ -27,10 +27,13 @@ class StatusesController extends Controller implements \Commerce\Module\Interfac
     public function index()
     {
         $query = $this->modx->db->select('*', $this->table, '', 'id ASC');
+        $list  = $this->modx->db->makeArray($query);
 
         return $this->view->render('statuses_list.tpl', [
-            'list'   => $this->modx->db->makeArray($query),
-            'custom' => $this->module->invokeTemplateEvent('OnManagerStatusesListRender'),
+            'list'   => $list,
+            'custom' => $this->module->invokeTemplateEvent('OnManagerStatusesListRender', [
+                'list' => $list,
+            ]),
         ]);
     }
 
@@ -51,7 +54,9 @@ class StatusesController extends Controller implements \Commerce\Module\Interfac
 
         return $this->view->render('status.tpl', [
             'status' => $status,
-            'custom' => $this->module->invokeTemplateEvent('OnManagerStatusRender'),
+            'custom' => $this->module->invokeTemplateEvent('OnManagerStatusRender', [
+                'status' => $status,
+            ]),
         ]);
     }
 

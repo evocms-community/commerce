@@ -27,10 +27,13 @@ class CurrencyController extends Controller implements \Commerce\Module\Interfac
     public function index()
     {
         $query = $this->modx->db->select('*', $this->table, '', 'id ASC');
+        $list  = $this->modx->db->makeArray($query);
 
         return $this->view->render('currency_list.tpl', [
-            'list'   => $this->modx->db->makeArray($query),
-            'custom' => $this->module->invokeTemplateEvent('OnManagerCurrencyListRender'),
+            'list'   => $list,
+            'custom' => $this->module->invokeTemplateEvent('OnManagerCurrencyListRender', [
+                'list' => $list,
+            ]),
         ]);
     }
 
@@ -52,7 +55,9 @@ class CurrencyController extends Controller implements \Commerce\Module\Interfac
 
         return $this->view->render('currency.tpl', [
             'currency' => $currency,
-            'custom' => $this->module->invokeTemplateEvent('OnManagerCurrencyRender'),
+            'custom' => $this->module->invokeTemplateEvent('OnManagerCurrencyRender', [
+                'currency' => $currency,
+            ]),
         ]);
     }
 
