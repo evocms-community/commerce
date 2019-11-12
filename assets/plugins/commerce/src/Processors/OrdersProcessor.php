@@ -54,21 +54,6 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
         ];
     }
 
-    protected function prepareOrderValues($fields)
-    {
-        $values = [];
-
-        foreach (['name', 'email', 'phone'] as $field) {
-            if (isset($fields[$field])) {
-                $values[$field] = $fields[$field];
-                unset($fields[$field]);
-            }
-        }
-
-        $values['fields'] = $this->modx->db->escape(json_encode($fields, JSON_UNESCAPED_UNICODE));
-        return $values;
-    }
-
     public function createOrder(array $items, array $fields)
     {
         $total = 0;
@@ -84,7 +69,15 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
             'realonly' => true,
         ]);
 
-        $values = $this->prepareOrderValues($fields);
+        $values = [];
+
+        foreach (['name', 'email', 'phone'] as $field) {
+            if (isset($fields[$field])) {
+                $values[$field] = $fields[$field];
+                unset($fields[$field]);
+            }
+        }
+
         $values['amount']      = $this->normalizePrice($total);
         $values['currency']    = ci()->currency->getCurrencyCode();
         $values['created_at']  = date('Y-m-d H:i:s');
@@ -98,6 +91,8 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
             'fields'    => &$fields,
             'subtotals' => &$subtotals,
         ]);
+
+        $values['fields'] = $this->modx->db->escape(json_encode($fields, JSON_UNESCAPED_UNICODE));
 
         $order_id = $this->modx->db->insert($values, $this->tableOrders);
         $this->order_id = $order_id;
