@@ -83,12 +83,13 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
         $values['created_at']  = date('Y-m-d H:i:s');
         $values['customer_id'] = $this->modx->getLoginUserID('web');
         $values['hash']        = $this->modx->commerce->generateRandomString();
+        $values['fields']      = &$fields;
 
         $this->modx->invokeEvent('OnBeforeOrderSaving', [
             'order_id'  => null,
             'values'    => &$values,
-            'items'     => &$items,
             'fields'    => &$fields,
+            'items'     => &$items,
             'subtotals' => &$subtotals,
         ]);
 
