@@ -35,15 +35,13 @@ var Commerce = {
                 }, function(response) {
                     initiator.trigger(event + '-complete.commerce', {
                         response: response,
-                        data: data,
-                        initiator: initiator
+                        data: data
                     });
 
                     initiator.trigger('action-complete.commerce', {
                         response: response,
                         action: action,
-                        data: data,
-                        initiator: initiator
+                        data: data
                     });
                 }, 'json');
             })(event, data, initiator);
