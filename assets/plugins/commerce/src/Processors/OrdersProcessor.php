@@ -155,28 +155,38 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
 
         if (!$preventChange) {
             $db = $this->modx->db;
-            $db->query("START TRANSACTION;");
+
+            /**
+             * DB TRANSACTIONS NOT SUPPORTED IN EVO
+             */
+            //if ($db instanceof \EvolutionCMS\Interfaces\DatabaseInterface) {
+            //    $connection = $db->getDriver()->getConnect();
+            //    $connection->beginTransaction();
+            //} else {
+            //    $connection = $db->conn;
+            //    $connection->begin_transaction();
+            //}
 
             try {
                 if ($order['status_id'] != $status_id) {
-                    $this->modx->db->update(['status_id' => $status_id], $this->tableOrders, "`id` = '$order_id'");
+                    $db->update(['status_id' => $status_id], $this->tableOrders, "`id` = '$order_id'");
                 }
 
-                $this->modx->db->insert([
+                $db->insert([
                     'order_id'   => (int)$order_id,
                     'status_id'  => (int)$status_id,
-                    'comment'    => $this->modx->db->escape($comment),
+                    'comment'    => $db->escape($comment),
                     'notify'     => !empty($notify) ? 1 : 0,
                     'user_id'    => $this->modx->getLoginUserID('mgr'),
                     'created_at' => date('Y-m-d H:i:s'),
                 ], $this->tableHistory);
             } catch (\Exception $e) {
-                $db->query('ROLLBACK;');
+                //$connection->rollback();
                 $this->modx->logEvent(0, 3, 'Cannot update order history: ' . $e->getMessage() . '<br><pre>' . htmlentities(print_r($order, true)) . '</pre>', 'Commerce');
                 return false;
             }
 
-            $db->query('COMMIT;');
+            //$connection->commit();
         }
 
         return true;
@@ -252,8 +262,6 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
 
         $db = $this->modx->db;
 
-        $db->query('START TRANSACTION;');
-
         try {
             $position = 1;
             $totalPrice = 0;
@@ -312,11 +320,8 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
                 $db->update($params['values'], $this->tableOrders, "id = '" . $order['id'] . "'");
             }
         } catch (\Exception $e) {
-            $db->query('ROLLBACK;');
             return false;
         }
-
-        $db->query('COMMIT;');
 
         $this->modx->invokeEvent('OnOrderSaved', $params);
 

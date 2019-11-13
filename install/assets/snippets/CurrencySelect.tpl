@@ -5,13 +5,13 @@
  * Shows currency select
  *
  * @category    snippet
- * @version     0.1.0
+ * @version     0.4.0
  * @author      mnoskov
  * @internal    @modx_category Commerce
  * @internal    @installset base
 */
 
-if (!empty($modx->commerce)) {
+if (defined('COMMERCE_INITIALIZED')) {
     $tpl = ci()->tpl;
 
     $params = array_merge([

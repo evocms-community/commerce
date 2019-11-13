@@ -5,7 +5,7 @@
  * Commerce solution
  *
  * @category    plugin
- * @version     0.3.8
+ * @version     0.4.0
  * @author      mnoskov
  * @internal    @events OnWebPageInit,OnManagerPageInit,OnPageNotFound,OnManagerMenuPrerender,OnCacheUpdate,OnLoadWebDocument
  * @internal    @properties &payment_success_page_id=Page ID for redirect after successfull payment;text; &payment_failed_page_id=Page ID for redirect after payment error;text;  &cart_page_id=Cart page ID;text;  &order_page_id=Order page ID;text; &status_id_after_payment=Status ID after payment;text; &product_templates=Product templates IDs;text; &title_field=Product title field name;text;pagetitle &price_field=Product price field name;text;price &status_notification=Chunk name for status change notification;text; &order_paid=Chunk name for order paid notification;text; &order_changed=Chunk name for order changed notification;text; &email=Email notifications recipient;text; &default_payment=Default payment code;text; &default_delivery=Default delivery code;text;
@@ -53,22 +53,25 @@ if (!class_exists('Commerce\\Commerce')) {
     });
 }
 
-if (empty($modx->commerce) || isset($modx->commerce) && !($modx->commerce instanceof Commerce\Commerce)) {
-    $modx->commerce = $ci->commerce;
+if ($modx instanceof \Illuminate\Container\Container) {
+    if (!$modx->offsetExists('commerce')) {
+        $modx->instance('commerce', ci()->commerce);
+        $modx->commerce->initializeCommerce();
+    }
+} else if (!isset($modx->commerce) || isset($modx->commerce) && !($modx->commerce instanceof \Commerce\Commerce)) {
+    $modx->commerce = ci()->commerce;
     $modx->commerce->initializeCommerce();
 }
 
-$e = &$modx->Event;
-
-switch ($e->name) {
+switch ($modx->event->name) {
     case 'OnWebPageInit': {
-        $order_id = $ci->flash->get('last_order_id');
+        $order_id = ci()->flash->get('last_order_id');
 
         if (!empty($order_id) && is_numeric($order_id)) {
             $modx->commerce->loadProcessor()->populateOrderPlaceholders($order_id);
         }
 
-        $payment_id = $ci->flash->get('last_payment_id');
+        $payment_id = ci()->flash->get('last_payment_id');
 
         if (!empty($payment_id) && is_numeric($payment_id)) {
             $modx->commerce->loadProcessor()->populatePaymentPlaceholders($payment_id);
@@ -102,7 +105,7 @@ switch ($e->name) {
             'currency' => ['currency', 'commerce', '<i class="fa fa-usd"></i>' . $lang['menu.currency'], $url . '&route=currency', $lang['menu.currency'], '', 'exec_module', 'main', 0, 30, ''],
         ]);
 
-        $e->output(serialize($params['menu']));
+        $modx->event->output(serialize($params['menu']));
         break;
     }
 

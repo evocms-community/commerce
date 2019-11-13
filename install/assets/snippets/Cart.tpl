@@ -1,17 +1,17 @@
 <?php
 /**
  * Cart
- * 
+ *
  * Cart contents, DocLister based
  *
  * @category    snippet
- * @version     0.2.2
+ * @version     0.4.0
  * @author      mnoskov
  * @internal    @modx_category Commerce
  * @internal    @installset base
 */
 
-if (!empty($modx->commerce)) {
+if (defined('COMMERCE_INITIALIZED')) {
     $instance = isset($instance) ? $instance : 'products';
     $theme    = !empty($theme) ? $theme : '';
     $cart     = ci()->carts->getCart($instance);

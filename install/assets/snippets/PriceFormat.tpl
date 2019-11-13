@@ -5,13 +5,13 @@
  * Format price using predefined settings
  *
  * @category    snippet
- * @version     0.1.0
+ * @version     0.4.0
  * @author      mnoskov
  * @internal    @modx_category Commerce
  * @internal    @installset base
 */
 
-if (!empty($modx->commerce)) {
+if (defined('COMMERCE_INITIALIZED')) {
     $currency = ci()->currency;
 
     $params = array_merge([

@@ -105,8 +105,6 @@ class StatusesController extends Controller implements \Commerce\Module\Interfac
             }
         }
 
-        $db->query('START TRANSACTION;');
-
         try {
             if (!empty($status['id'])) {
                 $db->update($fields, $this->table, "`id` = '" . $status['id'] . "'");
@@ -119,11 +117,9 @@ class StatusesController extends Controller implements \Commerce\Module\Interfac
                 $this->modx->clearCache('full');
             }
         } catch (\Exception $e) {
-            $db->query('ROLLBACK;');
             $this->module->sendRedirectBack(['error' => $e->getMessage()]);
         }
 
-        $db->query('COMMIT;');
         $this->module->sendRedirect('statuses', ['success' => $this->lang['module.status_saved']]);
     }
 

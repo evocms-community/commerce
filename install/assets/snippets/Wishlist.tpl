@@ -1,17 +1,17 @@
 <?php
 /**
  * Wishlist
- * 
+ *
  * Wishlist contents, DocLister based
  *
  * @category    snippet
- * @version     0.1.1
+ * @version     0.4.0
  * @author      mnoskov
  * @internal    @modx_category Commerce
  * @internal    @installset base
 */
 
-if (!empty($modx->commerce)) {
+if (defined('COMMERCE_INITIALIZED')) {
     return $modx->runSnippet('Cart', array_merge([
         'controller'        => 'Wishlist',
         'instance'          => 'wishlist',

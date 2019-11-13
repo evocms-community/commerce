@@ -174,8 +174,6 @@ class CurrencyController extends Controller implements \Commerce\Module\Interfac
             }
         }
 
-        $db->query('START TRANSACTION;');
-
         try {
             if (!empty($currency['id'])) {
                 $db->update($fields, $this->table, "`id` = '" . $currency['id'] . "'");
@@ -189,11 +187,9 @@ class CurrencyController extends Controller implements \Commerce\Module\Interfac
                 $db->update(['default' => 0], $this->table, "`id` != '" . $currency['id'] . "'");
             }
         } catch (\Exception $e) {
-            $db->query('ROLLBACK;');
             $this->module->sendRedirectBack(['error' => $e->getMessage()]);
         }
 
-        $db->query('COMMIT;');
         $this->modx->clearCache('full');
         $this->module->sendRedirect('currency', ['success' => $this->lang['module.currency_saved']]);
     }

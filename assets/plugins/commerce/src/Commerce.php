@@ -14,7 +14,7 @@ class Commerce
 {
     use SettingsTrait;
 
-    const VERSION = 'v0.3.8';
+    const VERSION = 'v0.4.0';
 
     public $currency;
 
@@ -42,6 +42,8 @@ class Commerce
 
     public function initializeCommerce()
     {
+        define('COMMERCE_INITIALIZED', true);
+
         $this->modx->invokeEvent('OnInitializeCommerce');
 
         $carts = ci()->carts;

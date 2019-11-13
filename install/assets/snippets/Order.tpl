@@ -5,14 +5,15 @@
  * Order form, FormLister based
  *
  * @category    snippet
- * @version     0.2.3
+ * @version     0.4.0
  * @author      mnoskov
  * @internal    @modx_category Commerce
  * @internal    @installset base
 */
 
-if (!empty($modx->commerce)) {
-    $lang = $modx->commerce->getUserLanguage('order');
+if (defined('COMMERCE_INITIALIZED')) {
+    $commerce = ci()->commerce;
+    $lang = $commerce->getUserLanguage('order');
 
     $params = array_merge([
         'controller'            => 'Order',
@@ -28,11 +29,11 @@ if (!empty($modx->commerce)) {
         'deliveryRowTpl'        => '@FILE:order_form_delivery_row',
         'paymentsTpl'           => '@FILE:order_form_payments',
         'paymentsRowTpl'        => '@FILE:order_form_payments_row',
-        'reportTpl'             => $modx->commerce->getUserLanguageTemplate('order_report', true),
-        'to'                    => $modx->commerce->getSetting('email', $modx->getConfig('emailsender')),
+        'reportTpl'             => $commerce->getUserLanguageTemplate('order_report', true),
+        'to'                    => $commerce->getSetting('email', $modx->getConfig('emailsender')),
         'ccSender'              => '1',
         'ccSenderField'         => 'email',
-        'ccSenderTpl'           => $modx->commerce->getUserLanguageTemplate('order_reportback'),
+        'ccSenderTpl'           => $commerce->getUserLanguageTemplate('order_reportback'),
         'subjectTpl'            => $lang['order.subject'],
         'successTpl'            => $lang['order.success'],
         'rules'                 => [
@@ -49,7 +50,7 @@ if (!empty($modx->commerce)) {
         ],
     ], $params);
 
-    $params['form_hash'] = $modx->commerce->storeParams($params);
+    $params['form_hash'] = $commerce->storeParams($params);
 
     return $modx->runSnippet('FormLister', $params);
 }

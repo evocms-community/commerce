@@ -113,9 +113,9 @@ $modx->db->query("
     ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 ");
 
-$modx->db->query("ALTER TABLE " . $modx->getFullTablename('commerce_orders') . " ADD `hash` VARCHAR(32) NOT NULL AFTER `status_id`, ADD INDEX (`hash`);");
+$modx->db->query("ALTER TABLE " . $modx->getFullTablename('commerce_orders') . " ADD `hash` VARCHAR(32) NOT NULL AFTER `status_id`, ADD INDEX (`hash`);", false);
 
-$modx->db->query("ALTER TABLE " . $modx->getFullTablename('commerce_orders') . " ADD `customer_id` INT UNSIGNED NULL DEFAULT NULL AFTER `id`, ADD INDEX (`customer_id`);");
+$modx->db->query("ALTER TABLE " . $modx->getFullTablename('commerce_orders') . " ADD `customer_id` INT UNSIGNED NULL DEFAULT NULL AFTER `id`, ADD INDEX (`customer_id`);", false);
 
 $modx->db->query("
     CREATE TABLE IF NOT EXISTS " . $modx->getFullTablename('commerce_order_products') . " (
@@ -163,7 +163,7 @@ $modx->db->query("
     ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 ");
 
-$modx->db->query("ALTER TABLE " . $modx->getFullTablename('commerce_order_payments') . " CHANGE `hash` `hash` VARCHAR(128) NOT NULL;");
+$modx->db->query("ALTER TABLE " . $modx->getFullTablename('commerce_order_payments') . " CHANGE `hash` `hash` VARCHAR(128) NOT NULL;", false);
 
 $table = $modx->getFullTablename('commerce_order_statuses');
 
