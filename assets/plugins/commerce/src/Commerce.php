@@ -623,14 +623,14 @@ class Commerce
     {
         $this->modx->regClientScript('assets/plugins/commerce/js/commerce.js?' . self::VERSION);
 
-        $params = [];
+        $params = [
+            'currency' => array_intersect_key($this->currency->getCurrency(), array_flip(['left', 'right', 'decimals', 'decsep', 'thsep'])),
+        ];
 
         if ($this->getSetting('cart_page_id') == $this->modx->documentIdentifier) {
             $params['isCartPage'] = true;
         }
 
-        if (!empty($params)) {
-            $this->modx->regClientScript('<script>Commerce.params = ' . json_encode($params) . ';</script>');
-        }
+        $this->modx->regClientScript('<script>Commerce.params = ' . json_encode($params, JSON_UNESCAPED_UNICODE | JSON_NUMERIC_CHECK) . ';</script>');
     }
 }

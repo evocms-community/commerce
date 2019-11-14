@@ -7,7 +7,7 @@ var Commerce = {
         if (typeof initiator == 'undefined') {
             initiator = $(document);
         }
-        
+
         initiator.trigger('action-start.commerce', {
             action: action,
             data: data
@@ -132,6 +132,29 @@ var Commerce = {
                 location.reload();
             }
         }, 'json');
+    },
+
+    formatPrice: function(price) {
+        var input   = price,
+            cleaned = price.toString().replace(',', '.').replace(' ', ''),
+            number  = parseFloat(cleaned),
+            minus   = '',
+            o       = this.params.currency;
+
+        if (number != cleaned) {
+            return input;
+        }
+
+        if (number < 0) {
+            minus  = '-';
+            number = -number;
+        }
+
+        var integer = parseInt(number.toFixed(o.decimals)) + '',
+            left    = integer.split(/(?=(?:\d{3})+$)/).join(o.thsep),
+            right   = (o.decimals ? o.decsep + Math.abs(number - integer).toFixed(o.decimals).replace(/-/, 0).slice(2) : '');
+
+        return minus + o.left + left + right + o.right;
     }
 };
 
@@ -165,7 +188,7 @@ $(document).on('submit click change', '[data-commerce-action]', function(e) {
 
     if (e.type == 'click') {
         e.preventDefault();
-        
+
         switch (action) {
             case 'increase':
             case 'decrease': {
