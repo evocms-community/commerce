@@ -16,11 +16,4 @@ if (empty($modx->commerce) && !defined('COMMERCE_INITIALIZED')) {
 }
 
 $currency = ci()->currency;
-
-if (!empty($params['currency'])) {
-    $params['price'] = $currency->convertFromDefault($params['price'], $params['current']);
-} else {
-    $params['price'] = $currency->convertToActive($params['price']);
-}
-
-return $params['price'];
+return $currency->convertFromDefault($params['price'], !empty($params['currency']) ? $params['currency'] : null);
