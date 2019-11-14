@@ -14,7 +14,7 @@ class Commerce
 {
     use SettingsTrait;
 
-    const VERSION = 'v0.4.0';
+    const VERSION = 'v0.4.1';
 
     public $currency;
 
@@ -621,8 +621,6 @@ class Commerce
 
     public function populateClientScripts()
     {
-        $this->modx->regClientScript('assets/plugins/commerce/js/commerce.js?' . self::VERSION);
-
         $params = [
             'currency' => array_intersect_key($this->currency->getCurrency(), array_flip(['left', 'right', 'decimals', 'decsep', 'thsep'])),
         ];
@@ -631,6 +629,6 @@ class Commerce
             $params['isCartPage'] = true;
         }
 
-        $this->modx->regClientScript('<script>Commerce.params = ' . json_encode($params, JSON_UNESCAPED_UNICODE | JSON_NUMERIC_CHECK) . ';</script>');
+        return '<script src="' . MODX_BASE_URL . 'assets/plugins/commerce/js/commerce.js?' . self::VERSION . '"></script><script>Commerce.params = ' . json_encode($params, JSON_UNESCAPED_UNICODE | JSON_NUMERIC_CHECK) . ';</script>';
     }
 }
