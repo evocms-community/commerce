@@ -221,7 +221,8 @@ class CartDocLister extends CustomLangDocLister
         }
 
         if (!$this->getCFGDef('noneWrapOuter', '1') && !count($this->_docs)) {
-            $this->ownerTPL = '@CODE:[+dl.wrap+]';
+            $this->ownerTPL = $this->getCFGDef('noneTPL');
+            $this->config->setConfig(['noneTPL' => '']);
         }
 
         return parent::_render($tpl);
