@@ -14,7 +14,7 @@ class Commerce
 {
     use SettingsTrait;
 
-    const VERSION = 'v0.4.1';
+    const VERSION = 'v0.4.2';
 
     public $currency;
 
@@ -279,13 +279,8 @@ class Commerce
                     }
                 }
 
-                if ($shouldResponse && isset($_POST['hashes'])) {
-                    $markup = $this->getCartsMarkup($_POST['hashes']);
-
-                    if (!empty($markup)) {
-                        $response['markup'] = $markup;
-                        $response['status'] = 'success';
-                    }
+                if ($shouldResponse) {
+                    $response['status'] = 'success';
                 }
 
                 echo $this->prepareResponse($response);
@@ -547,6 +542,16 @@ class Commerce
 
     protected function prepareResponse($response)
     {
+        if (!empty($_POST['hashes']) && !isset($_POST['hashes']['carts'])) {
+            $markup = $this->getCartsMarkup($_POST['hashes']);
+
+            if (!isset($response['markup'])) {
+                $response['markup'] = [];
+            }
+
+            $response['markup']['carts'] = $markup;
+        }
+
         $this->modx->invokeEvent('OnCommerceAjaxResponse', [
             'response' => &$response,
         ]);

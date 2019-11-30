@@ -28,11 +28,18 @@ var Commerce = {
                 return;
             }
 
+            var hashes = this.getCartsHashes();
+
             (function(event, data, initiator) {
                 $.post('commerce/action', {
                     action: action,
-                    data: data
+                    data:   data,
+                    hashes: hashes
                 }, function(response) {
+                    if (response.markup.carts) {
+                        Commerce.reloadCartsFromResponse(response.markup.carts);
+                    }
+
                     initiator.trigger(event + '-complete.commerce', {
                         response: response,
                         data: data
@@ -55,32 +62,57 @@ var Commerce = {
             hashes.push($(this).attr('data-commerce-cart'));
         });
 
+        var event = $.Event('collect-hashes.commerce');
+        $(document).trigger(event, {hashes: hashes});
+
+        if (event.isDefaultPrevented() || typeof event.result != 'undefined' && event.result === false) {
+            return [];
+        }
+
         return hashes;
     },
 
     updateCarts: function(options) {
-        var $carts = $('[data-commerce-cart]'),
-            hashes = this.getCartsHashes();
+        console.info('Commerce.updateCarts() is deprecated and will be removed in v1.0.0. Use Commerce.reloadCarts() instead.');
+        this.reloadCarts(options);
+    },
+
+    reloadCarts: function(options) {
+        var hashes = this.getCartsHashes();
 
         if (typeof options == 'undefined') {
             options = {};
         }
 
-        if ($carts.length) {
-            (function($carts) {
-                $.post('commerce/cart/contents', $.extend(options, {hashes: hashes}), function(response) {
-                    if (response.status == 'success' && response.markup) {
-                        $carts.each(function() {
-                            var $cart = $(this),
-                                hash  = $cart.attr('data-commerce-cart');
+        if (hashes.length) {
+            $.post('commerce/cart/contents', $.extend(options, {hashes: hashes}), function(response) {
+                if (response.status == 'success' && response.markup) {
+                    Commerce.reloadCartsFromResponse(response.markup);
+                }
+            }, 'json');
+        }
 
-                            if (response.markup[hash]) {
-                                $cart.replaceWith(response.markup[hash]);
-                            }
-                        });
+        $(document).trigger('carts-reloaded.commerce');
+    },
+
+    reloadCartsFromResponse: function(hashes) {
+        if (typeof hashes == 'object') {
+            for (var hash in hashes) {
+                var $cart = $('[data-commerce-cart="' + hash + '"]');
+
+                if ($cart.length) {
+                    var event = $.Event('cart-reload.commerce');
+                    $cart.trigger(event);
+
+                    if (event.isDefaultPrevented() || typeof event.result != 'undefined' && event.result === false) {
+                        return;
                     }
-                }, 'json');
-            })($carts);
+
+                    var $newCart = $(hashes[hash]);
+                    $cart.replaceWith($newCart);
+                    $newCart.trigger('cart-reloaded.commerce');
+                }
+            }
         }
     },
 
@@ -114,13 +146,7 @@ var Commerce = {
                 }
 
                 if (response.markup.carts) {
-                    for (var hash in response.markup.carts) {
-                        var $cart = $('[data-commerce-cart="' + hash + '"]');
-
-                        if ($cart.length) {
-                            $cart.replaceWith(response.markup.carts[hash]);
-                        }
-                    }
+                    Commerce.reloadCartsFromResponse(response.markup.carts);
                 }
             }
         }, 'json');
@@ -246,12 +272,6 @@ $(document).on('submit click change', '[data-commerce-action]', function(e) {
     }
 });
 
-$(document).on('action-complete.commerce', function(e, data) {
-    if (data.response.status == 'success') {
-        Commerce.updateCarts();
-    }
-});
-
 $(document).on('change', '[data-commerce-order]', function(e) {
     if (['delivery_method', 'payment_method'].indexOf(e.target.name) !== -1) {
         Commerce.updateOrderData($(this));
@@ -268,7 +288,7 @@ $(document).on('cart-clean-complete.commerce', function(e, data) {
 
 $(function() {
     if (Commerce.params.isCartPage) {
-        Commerce.updateCarts({order_completed: true});
+        Commerce.reloadCarts({order_completed: true});
     }
 });
 
