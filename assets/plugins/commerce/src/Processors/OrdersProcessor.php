@@ -417,10 +417,6 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
     {
         $order = $this->getOrder();
 
-        if (isset($_SESSION[$this->sessionKey])) {
-            unset($_SESSION[$this->sessionKey]);
-        }
-
         if (!empty($order['fields']['payment_method'])) {
             $payment = $this->modx->commerce->getPayment($order['fields']['payment_method']);
 
@@ -456,6 +452,10 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
                 $FL->config->setConfig(['successTpl' => $successTpl]);
             }
         }
+
+        if (isset($_SESSION[$this->sessionKey])) {
+            unset($_SESSION[$this->sessionKey]);
+        }
     }
 
     public function payOrderByHash($hash)
@@ -464,12 +464,7 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
         $order = $db->getRow($db->select('*', $this->tableOrders, "`hash` = '" . $db->escape($hash) . "'"));
 
         if (!empty($order)) {
-            $payments = $db->select('*', $this->tablePayments, "`order_id` = '" . $order['id'] . "' AND `paid` = 1");
-            $amount = 0;
-
-            while ($payment = $db->getRow($payments)) {
-                $amount += $payment['amount'];
-            }
+           $amount = $this->getOrderPaymentsAmount($order['id']);
 
             if ($amount >= $order['amount']) {
                 return false;
@@ -528,6 +523,19 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
         return null;
     }
 
+    public function getOrderPaymentsAmount($order_id)
+    {
+        $db = ci()->db;
+        $payments = $db->select('*', $this->tablePayments, "`order_id` = '" . intval($order_id) . "' AND `paid` = 1");
+        $amount = 0;
+
+        while ($payment = $db->getRow($payments)) {
+            $amount += (float)$payment['amount'];
+        }
+
+        return $amount;
+    }
+
     public function processPayment($payment_id, $amount, $status = null)
     {
         $db = ci()->db;
@@ -557,12 +565,7 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
 
         $db->update(['paid' => 1], $this->tablePayments, "`id` = '" . intval($payment_id) . "'");
 
-        $total = 0;
-        $query = $db->select('*', $this->tablePayments, "`order_id` = '$order_id' AND `paid` > '0'");
-
-        while ($row = $db->getRow($query)) {
-            $total += (float)$row['amount'];
-        }
+        //$total = $this->getOrderPaymentsAmount($order_id);
 
         if ($order['amount'] >= $amount) {
             $tpl = ci()->tpl;
@@ -615,6 +618,12 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
 
     public function updateRawData($data)
     {
+        foreach (['formid', 'hashes'] as $field) {
+            if (isset($data[$field])) {
+                unset($data[$field]);
+            }
+        }
+
         $this->modx->invokeEvent('OnOrderRawDataChanged', ['data' => $data]);
         $_SESSION[$this->sessionKey] = $data;
     }
