@@ -50,6 +50,7 @@ $events = [
     'OnOrderRawDataChanged',
     'OnBeforeOrderProcessing',
     'OnBeforePaymentProcess',
+    'OnBeforePaymentCreate',
     'OnBeforeOrderSaving',
     'OnBeforeOrderSending',
     'OnOrderSaved',

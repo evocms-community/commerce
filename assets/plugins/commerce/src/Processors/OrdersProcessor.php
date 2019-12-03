@@ -556,7 +556,6 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
         }
 
         $order_id = $payment['order_id'];
-
         $order = $this->loadOrder($order_id);
 
         if (is_null($order)) {
@@ -564,42 +563,47 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
         }
 
         $db->update(['paid' => 1], $this->tablePayments, "`id` = '" . intval($payment_id) . "'");
+        $total = $this->getOrderPaymentsAmount($order_id);
 
-        //$total = $this->getOrderPaymentsAmount($order_id);
+        $tpl = ci()->tpl;
+        $lang = $this->modx->commerce->getUserLanguage('order');
 
-        if ($order['amount'] >= $amount) {
-            $tpl = ci()->tpl;
-            $lang = $this->modx->commerce->getUserLanguage('order');
-            $comment = $tpl->parseChunk($lang['order.order_paid'], [
-                'order_id' => $order_id,
-            ]);
-
-            if (is_null($status)) {
-                $status = $this->modx->commerce->getSetting('status_id_after_payment', 3);
-            }
-
-            $this->changeStatus($order_id, $status, $comment, true);
-
-            $this->getCart();
-            $template = $this->modx->commerce->getSetting('order_paid', $this->modx->commerce->getUserLanguageTemplate('order_paid'));
-
-            $body = $tpl->parseChunk($template, [
-                'payment' => $payment,
-                'amount'  => $amount,
-                'order'   => $order,
-            ], true);
-
-            $subject = $tpl->parseChunk($lang['order.subject_order_paid'], [
-                'order' => $order,
-            ], true);
-
-            $mailer = new \Helpers\Mailer($this->modx, [
-                'to'      => $this->modx->commerce->getSetting('email', $this->modx->getConfig('emailsender')),
-                'subject' => $subject,
-            ]);
-
-            $mailer->send($body);
+        if ($total >= $order['amount']) {
+            $history = $lang['order.order_full_paid'];
+        } else {
+            $history = $lang['order.order_paid'];
         }
+
+        $comment = $tpl->parseChunk($history, [
+            'order'  => $order,
+            'amount' => ci()->currency->format($amount),
+        ]);
+
+        if (is_null($status)) {
+            $status = $this->modx->commerce->getSetting('status_id_after_payment', 3);
+        }
+
+        $this->changeStatus($order_id, $status, $comment, true);
+
+        $this->getCart();
+        $template = $this->modx->commerce->getSetting('order_paid', $this->modx->commerce->getUserLanguageTemplate('order_paid'));
+
+        $body = $tpl->parseChunk($template, [
+            'payment' => $payment,
+            'amount'  => $amount,
+            'order'   => $order,
+        ], true);
+
+        $subject = $tpl->parseChunk($lang['order.subject_order_paid'], [
+            'order' => $order,
+        ], true);
+
+        $mailer = new \Helpers\Mailer($this->modx, [
+            'to'      => $this->modx->commerce->getSetting('email', $this->modx->getConfig('emailsender')),
+            'subject' => $subject,
+        ]);
+
+        $mailer->send($body);
 
         return true;
     }
