@@ -29,7 +29,7 @@ class ProductsCart extends StoreCart implements \Commerce\Interfaces\Cart
         ],
     ];
 
-    public function __construct($modx, $instance = 'cart')
+    public function __construct($modx, $instance = 'products')
     {
         $this->modx = $modx;
         $this->instance = $instance;
