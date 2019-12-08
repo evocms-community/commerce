@@ -61,15 +61,45 @@ class ProductsCart extends StoreCart implements \Commerce\Interfaces\Cart
         return $isPrevented !== true;
     }
 
-    public function update($row, array $attributes = [])
+    protected function beforeItemUpdating(array &$item, &$row, $isAdded = false)
     {
+        $isPrevented = false;
+
         $this->modx->invokeEvent('OnBeforeCartItemUpdating', [
-            'instance'   => $this->instance,
-            'row'        => $row,
-            'attributes' => &$attributes,
+            'instance' => $this->instance,
+            'row'      => &$row,
+            'item'     => &$item,
+            'wasadded' => $isAdded,
+            'prevent'  => &$isPrevented,
         ]);
 
-        return parent::update($row, $attributes);
+        return $isPrevented !== true;
+    }
+
+    public function add(array $item)
+    {
+        $result = parent::add($item);
+
+        if ($result) {
+            $this->modx->invokeEvent('OnCartChanged', [
+                'instance' => $this->instance,
+            ]);
+        }
+
+        return $result;
+    }
+
+    public function update($row, array $attributes = [], $isAdded = false)
+    {
+        $result = parent::update($row, $attributes, $isAdded);
+
+        if ($result && !$isAdded) {
+            $this->modx->invokeEvent('OnCartChanged', [
+                'instance' => $this->instance,
+            ]);
+        }
+
+        return $result;
     }
 
     protected function validateItem(array $item)

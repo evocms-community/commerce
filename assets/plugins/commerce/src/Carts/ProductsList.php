@@ -35,12 +35,12 @@ class ProductsList extends ProductsCart implements \Commerce\Interfaces\Cart
         return 0;
     }
 
-    public function update($row, array $attributes = [])
+    public function update($row, array $attributes = [], $isAdded = false)
     {
         if (isset($attributes['count'])) {
             $attributes['count'] = 1;
         }
 
-        return parent::update($row, $attributes);
+        return parent::update($row, $attributes, $isAdded);
     }
 }

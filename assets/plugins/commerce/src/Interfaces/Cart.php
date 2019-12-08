@@ -16,7 +16,7 @@ interface Cart
 
     public function addMultiple(array $items = []);
 
-    public function update($row, array $attributes = []);
+    public function update($row, array $attributes = [], $isAdded = false);
 
     public function remove($row);
 

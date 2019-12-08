@@ -30,9 +30,9 @@ class StoreCart extends SimpleCart implements Cart
         return $row;
     }
 
-    public function update($row, array $attributes = [])
+    public function update($row, array $attributes = [], $isAdded = false)
     {
-        if ($result = parent::update($row, $attributes)) {
+        if ($result = parent::update($row, $attributes, $isAdded)) {
             $this->store->save($this->items);
         }
 

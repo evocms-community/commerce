@@ -75,6 +75,11 @@ class SimpleCart implements \Commerce\Interfaces\Cart
         return true;
     }
 
+    protected function beforeItemUpdating(array &$item, &$row, $isAdded = false)
+    {
+        return true;
+    }
+
     protected function makeHash(array $item)
     {
         $price = (float) ci()->currency->convertToDefault($item['price']);
@@ -90,7 +95,7 @@ class SimpleCart implements \Commerce\Interfaces\Cart
 
             foreach ($this->items as $row => $item) {
                 if ($item['hash'] == $new['hash']) {
-                    $this->update($row, ['count' => $item['count'] + (!empty($new['count']) ? $new['count'] : 1)]);
+                    $this->update($row, ['count' => $item['count'] + (!empty($new['count']) ? $new['count'] : 1)], true);
                     return $row;
                 }
             }
@@ -116,14 +121,14 @@ class SimpleCart implements \Commerce\Interfaces\Cart
         return $result;
     }
 
-    public function update($row, array $attributes = [])
+    public function update($row, array $attributes = [], $isAdded = false)
     {
         if (isset($this->items[$row])) {
             $new = array_merge($this->items[$row], array_filter($attributes, function($key) {
                 return isset($this->defaults[$key]);
             }, ARRAY_FILTER_USE_KEY));
 
-            if ($this->validateItem($new)) {
+            if ($this->validateItem($new) && $this->beforeItemUpdating($new, $row, $isAdded)) {
                 $this->items[$row] = $new;
                 return true;
             }

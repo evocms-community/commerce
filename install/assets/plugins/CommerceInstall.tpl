@@ -48,6 +48,7 @@ $events = [
     'OnBeforeOrderAddonsRender',
     'OnBeforeCartItemAdding',
     'OnBeforeCartItemUpdating',
+    'OnCartChanged',
     'OnOrderRawDataChanged',
     'OnBeforeOrderProcessing',
     'OnBeforePaymentProcess',
