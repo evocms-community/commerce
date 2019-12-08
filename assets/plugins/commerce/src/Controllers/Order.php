@@ -45,7 +45,17 @@ class Order extends Form
             ];
         }
 
-        foreach (['delivery' => $processor->getCurrentDelivery(), 'payments' => $processor->getCurrentPayment()] as $type => $default) {
+        $currentDelivery = $processor->getCurrentDelivery();
+        $currentPayment  = $processor->getCurrentPayment();
+
+        $this->modx->invokeEvent('OnBeforeOrderAddonsRender', [
+            'payments'         => &$payments,
+            'delivery'         => &$delivery,
+            'current_payment'  => &$currentPayment,
+            'current_delivery' => &$currentDelivery,
+        ]);
+
+        foreach (['delivery' => $currentDelivery, 'payments' => $currentPayment] as $type => $default) {
             $output = '';
             $rows   = $$type;
             $index  = 0;
