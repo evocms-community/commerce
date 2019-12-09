@@ -10,7 +10,7 @@ class StoreCart extends SimpleCart implements Cart
     protected $store;
     protected $instance;
 
-    public function __construct(CartStore $store, $instance = 'cart')
+    public function __construct(CartStore $store, $instance = 'products')
     {
         $this->instance = $instance;
         $this->setStore($store);
@@ -22,7 +22,7 @@ class StoreCart extends SimpleCart implements Cart
         $this->store->save($items);
     }
 
-    public function add(array $item)
+    public function add(array $item, $isMultiple = false)
     {
         $row = parent::add($item);
         $this->store->save($this->items);

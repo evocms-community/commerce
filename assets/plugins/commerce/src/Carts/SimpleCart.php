@@ -86,7 +86,7 @@ class SimpleCart implements \Commerce\Interfaces\Cart
         return md5(serialize([$item['id'], $item['name'], $price, $item['options'], $item['meta']]));
     }
 
-    public function add(array $item)
+    public function add(array $item, $isMultiple = false)
     {
         $new = $this->prepareItem($item);
 
@@ -115,7 +115,7 @@ class SimpleCart implements \Commerce\Interfaces\Cart
         $result = [];
 
         foreach ($items as $item) {
-            $result[] = call_user_method('add', $this, $item);
+            $result[] = $this->add($item, true);
         }
 
         return $result;

@@ -76,14 +76,31 @@ class ProductsCart extends StoreCart implements \Commerce\Interfaces\Cart
         return $isPrevented !== true;
     }
 
-    public function add(array $item)
+    public function add(array $item, $isMultiple = false)
     {
         $result = parent::add($item);
 
-        if ($result) {
+        if ($result && !$isMultiple) {
             $this->modx->invokeEvent('OnCartChanged', [
                 'instance' => $this->instance,
             ]);
+        }
+
+        return $result;
+    }
+
+    public function addMultiple(array $items = [])
+    {
+        $result = parent::addMultiple($items);
+
+        foreach ($result as $isAdded) {
+            if ($isAdded) {
+                $this->modx->invokeEvent('OnCartChanged', [
+                    'instance' => $this->instance,
+                ]);
+
+                break;
+            }
         }
 
         return $result;
@@ -100,6 +117,41 @@ class ProductsCart extends StoreCart implements \Commerce\Interfaces\Cart
         }
 
         return $result;
+    }
+
+    public function remove($row)
+    {
+        $result = parent::remove($row);
+
+        if ($result) {
+            $this->modx->invokeEvent('OnCartChanged', [
+                'instance' => $this->instance,
+            ]);
+        }
+
+        return $result;
+    }
+
+    public function removeById($id)
+    {
+        $result = parent::removeById($id);
+
+        if ($result) {
+            $this->modx->invokeEvent('OnCartChanged', [
+                'instance' => $this->instance,
+            ]);
+        }
+
+        return $result;
+    }
+
+    public function clean()
+    {
+        parent::clean();
+
+        $this->modx->invokeEvent('OnCartChanged', [
+            'instance' => $this->instance,
+        ]);
     }
 
     protected function validateItem(array $item)
