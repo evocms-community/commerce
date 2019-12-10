@@ -87,7 +87,7 @@ var Commerce = {
         if (hashes.length) {
             $.post('commerce/cart/contents', $.extend(options, {hashes: hashes}), function(response) {
                 if (response.status == 'success' && response.markup) {
-                    Commerce.reloadCartsFromResponse(response.markup);
+                    Commerce.reloadCartsFromResponse(response.markup.carts);
                 }
             }, 'json');
         }
