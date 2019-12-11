@@ -40,6 +40,18 @@ var Commerce = {
                         Commerce.reloadCartsFromResponse(response.markup.carts);
                     }
 
+                    if (!initiator.closest('body').length) {
+                        var $container = initiator.parents().last();
+
+                        if ($container.is('[data-commerce-cart]')) {
+                            initiator = $('[data-commerce-cart="' + $container.attr('data-commerce-cart') + '"]').first();
+                        }
+
+                        if (!initiator.length) {
+                            initiator = $(document);
+                        }
+                    }
+
                     initiator.trigger(event + '-complete.commerce', {
                         response: response,
                         data: data
