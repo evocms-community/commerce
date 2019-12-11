@@ -499,28 +499,82 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
         return false;
     }
 
-    public function loadPayment($payment_id)
+    protected function preparePayment($payment)
     {
-        $db = ci()->db;
-        $payment = $db->getRow($db->select('*', $this->tablePayments, "`id` = '" . intval($payment_id) . "'"));
-
         if (!empty($payment)) {
+            $payment['meta'] = json_decode($payment['meta'], true);
+
+            if (empty($payment['meta'])) {
+                $payment['meta'] = [];
+            }
+
             return $payment;
         }
 
         return null;
     }
 
+    public function loadPayment($payment_id)
+    {
+        $db = ci()->db;
+        return $this->preparePayment($db->getRow($db->select('*', $this->tablePayments, "`id` = '" . intval($payment_id) . "'")));
+    }
+
     public function loadPaymentByHash($hash)
     {
         $db = ci()->db;
-        $payment = $db->getRow($db->select('*', $this->tablePayments, "`hash` = '" . $db->escape($hash) . "'"));
+        return $this->preparePayment($db->getRow($db->select('*', $this->tablePayments, "`hash` = '" . $db->escape($hash) . "'")));
+    }
 
-        if (!empty($payment)) {
-            return $payment;
+    public function createPayment($order_id, $amount)
+    {
+        $db = ci()->db;
+        $hash = ci()->commerce->generateRandomString(16);
+
+        $paid = $this->getOrderPaymentsAmount($order_id);
+        $diff = $amount - $paid;
+        $meta = [];
+
+        $this->modx->invokeEvent('OnBeforePaymentCreate', [
+            'order_id'     => $order_id,
+            'order_amount' => $amount,
+            'amount'       => &$diff,
+            'hash'         => &$hash,
+            'meta'         => &$meta,
+        ]);
+
+        $payment = [
+            'order_id'   => $order_id,
+            'amount'     => $diff,
+            'hash'       => $hash,
+            'meta'       => $meta,
+            'created_at' => date('Y-m-d H:i:s'),
+        ];
+
+        $payment['id'] = $this->savePayment($payment);
+        return $payment;
+    }
+
+    public function savePayment($payment)
+    {
+        $db = ci()->db;
+        $values = [
+            'order_id'   => $payment['order_id'],
+            'amount'     => (float) $payment['amount'],
+            'hash'       => $db->escape($payment['hash']),
+            'meta'       => !empty($payment['meta']) ? $db->escape(json_encode($payment['meta'], JSON_UNESCAPED_UNICODE)) : '',
+            'created_at' => $payment['created_at'],
+        ];
+
+        $table = $this->modx->getFullTablename('commerce_order_payments');
+
+        if (isset($payment['id'])) {
+            $db->update($values, $table, "`id` = '" . intval($payment['id']) . "'");
+        } else {
+            $payment['id'] = $db->insert($values, $table);
         }
 
-        return null;
+        return $payment['id'];
     }
 
     public function getOrderPaymentsAmount($order_id)

@@ -55,30 +55,7 @@ class Payment implements \Commerce\Interfaces\Payment
 
     public function createPayment($order_id, $amount)
     {
-        $db = ci()->db;
-        $hash = ci()->commerce->generateRandomString(16);
-
-        $paid = ci()->commerce->loadProcessor()->getOrderPaymentsAmount($order_id);
-        $diff = $amount - $paid;
-
-        $this->modx->invokeEvent('OnBeforePaymentCreate', [
-            'order_id'     => $order_id,
-            'order_amount' => $amount,
-            'amount'       => &$diff,
-            'hash'         => &$hash,
-        ]);
-
-        $payment = [
-            'order_id'   => $order_id,
-            'amount'     => $diff,
-            'hash'       => $hash,
-            'created_at' => date('Y-m-d H:i:s'),
-        ];
-
-        $db->insert($payment, $this->modx->getFullTablename('commerce_order_payments'));
-        $payment['id'] = $db->getInsertId();
-
-        return $payment;
+        return ci()->commerce->loadProcessor()->createPayment($order_id, $amount);
     }
 
     public function createPaymentRedirect()

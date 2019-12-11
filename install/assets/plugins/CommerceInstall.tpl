@@ -151,8 +151,10 @@ $modx->db->query("
     ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 ");
 
+$table = $modx->getFullTablename('commerce_order_payments');
+
 $modx->db->query("
-    CREATE TABLE IF NOT EXISTS " . $modx->getFullTablename('commerce_order_payments') . " (
+    CREATE TABLE IF NOT EXISTS $table (
         `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
         `order_id` int(10) unsigned NOT NULL,
         `amount` float NOT NULL DEFAULT '0',
@@ -166,7 +168,9 @@ $modx->db->query("
     ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 ");
 
-$modx->db->query("ALTER TABLE " . $modx->getFullTablename('commerce_order_payments') . " CHANGE `hash` `hash` VARCHAR(128) NOT NULL;", false);
+$modx->db->query("ALTER TABLE $table CHANGE `hash` `hash` VARCHAR(128) NOT NULL;", false);
+
+$modx->db->query("ALTER TABLE $table ADD `meta` TEXT NOT NULL AFTER `hash`;", false);
 
 $table = $modx->getFullTablename('commerce_order_statuses');
 
