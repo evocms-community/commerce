@@ -438,18 +438,37 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
                     $redirectText = $lang['order.redirecting_to_payment'];
                 }
 
-                $successTpl = '@CODE:' . $redirectText;
+                if ($this->modx->commerce->getSetting('instant_redirect_to_payment') == 0) {
+                    $params = [
+                        'order'           => $order,
+                        'payment'         => $payment,
+                        'redirect_text'   => $redirectText,
+                        'redirect_link'   => '',
+                        'redirect_markup' => '',
+                    ];
 
-                if (!empty($redirect['link'])) {
-                    $FL->config->setConfig(['redirectTo' => [
-                        'page'   => $redirect['link'],
-                        'header' => 'HTTP/1.1 301 Moved Permanently',
-                    ]]);
+                    if (!empty($redirect['link'])) {
+                        $params['redirect_link'] = $redirect['link'];
+                    } else {
+                        $params['redirect_markup'] = $redirect['markup'];
+                    }
+
+                    $template = $this->modx->commerce->getSetting('redirect_to_payment_tpl', $this->modx->commerce->getUserLanguageTemplate('redirect_to_payment'));
+                    $successTpl = ci()->tpl->parseChunk($template, $params, true);
                 } else {
-                    $successTpl .= $redirect['markup'];
+                    $successTpl = $redirectText;
+
+                    if (!empty($redirect['link'])) {
+                        $FL->config->setConfig(['redirectTo' => [
+                            'page'   => $redirect['link'],
+                            'header' => 'HTTP/1.1 301 Moved Permanently',
+                        ]]);
+                    } else {
+                        $successTpl .= $redirect['markup'];
+                    }
                 }
 
-                $FL->config->setConfig(['successTpl' => $successTpl]);
+                $FL->config->setConfig(['successTpl' => '@CODE:' . $successTpl]);
             }
         }
 

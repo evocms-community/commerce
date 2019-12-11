@@ -198,6 +198,19 @@ $(document).on('submit click change', '[data-commerce-action]', function(e) {
             hash:     $self.closest('[data-commerce-cart]').attr('data-commerce-cart')
         };
 
+    if (action == 'redirect-to-payment') {
+        e.preventDefault();
+        var link = $self.attr('data-redirect-link');
+
+        if (link && link != '') {
+            location.href = link;
+        } else {
+            $('form#payment_request').submit();
+        }
+
+        return;
+    }
+
     if (action == 'add') {
         e.preventDefault();
 

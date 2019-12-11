@@ -5,5 +5,7 @@
 </form>
 
 <script type="text/javascript">
-    document.getElementById('payment_request').submit();
+    <?php if (ci()->commerce->getSetting('instant_redirect_to_payment') == 1): ?>
+        document.getElementById('payment_request').submit();
+    <?php endif; ?>
 </script>
