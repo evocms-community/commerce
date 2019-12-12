@@ -420,13 +420,17 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
         if (!empty($order['fields']['payment_method'])) {
             $payment = $this->modx->commerce->getPayment($order['fields']['payment_method']);
 
-            $redirectText = '';
+            $redirectText     = '';
+            $instantRedirect  = $this->modx->commerce->getSetting('instant_redirect_to_payment');
+            $redirectTemplate = $this->modx->commerce->getSetting('redirect_to_payment_tpl', $this->modx->commerce->getUserLanguageTemplate('redirect_to_payment'));
 
             $this->modx->invokeEvent('OnBeforePaymentProcess', [
-                'FL'      => $FL,
-                'order'   => &$order,
-                'payment' => $payment,
-                'redirect_text' => &$redirectText,
+                'FL'                => $FL,
+                'order'             => &$order,
+                'payment'           => $payment,
+                'instant_redirect'  => &$instantRedirect,
+                'redirect_text'     => &$redirectText,
+                'redirect_template' => &$redirectTemplate,
             ]);
 
             ci()->flash->set('last_order_id', $order['id']);
@@ -438,7 +442,18 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
                     $redirectText = $lang['order.redirecting_to_payment'];
                 }
 
-                if ($this->modx->commerce->getSetting('instant_redirect_to_payment') == 0) {
+                if ($instantRedirect) {
+                    $successTpl = $redirectText;
+
+                    if (!empty($redirect['link'])) {
+                        $FL->config->setConfig(['redirectTo' => [
+                            'page'   => $redirect['link'],
+                            'header' => 'HTTP/1.1 301 Moved Permanently',
+                        ]]);
+                    } else {
+                        $successTpl .= $redirect['markup'];
+                    }
+                } else {
                     $params = [
                         'order'           => $order,
                         'payment'         => $payment,
@@ -453,19 +468,8 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
                         $params['redirect_markup'] = $redirect['markup'];
                     }
 
-                    $template = $this->modx->commerce->getSetting('redirect_to_payment_tpl', $this->modx->commerce->getUserLanguageTemplate('redirect_to_payment'));
+                    $template = $redirectTemplate;
                     $successTpl = ci()->tpl->parseChunk($template, $params, true);
-                } else {
-                    $successTpl = $redirectText;
-
-                    if (!empty($redirect['link'])) {
-                        $FL->config->setConfig(['redirectTo' => [
-                            'page'   => $redirect['link'],
-                            'header' => 'HTTP/1.1 301 Moved Permanently',
-                        ]]);
-                    } else {
-                        $successTpl .= $redirect['markup'];
-                    }
                 }
 
                 $FL->config->setConfig(['successTpl' => '@CODE:' . $successTpl]);
