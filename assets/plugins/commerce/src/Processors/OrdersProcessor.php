@@ -32,16 +32,24 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
 
     protected function prepareOrderProduct($order_id, $position, $item)
     {
-        return [
+        $fields = [
             'order_id'   => $order_id,
             'product_id' => (int)$item['id'],
             'title'      => $this->modx->db->escape(isset($item['title']) ? $item['title'] : $item['name']),
             'price'      => $this->normalizePrice($item['price']),
             'count'      => $this->normalizePrice($item['count']),
-            'options'    => !empty($item['options']) ? $this->modx->db->escape(json_encode($item['options'], JSON_UNESCAPED_UNICODE)) : null,
-            'meta'       => !empty($item['meta']) ? $this->modx->db->escape(json_encode($item['meta'], JSON_UNESCAPED_UNICODE)) : null,
             'position'   => $position,
         ];
+
+        if (isset($item['options'])) {
+            $fields['options'] = $this->modx->db->escape(json_encode($item['options'], JSON_UNESCAPED_UNICODE));
+        }
+
+        if (isseT($item['meta'])) {
+            $fields['meta'] = $this->modx->db->escape(json_encode($item['meta'], JSON_UNESCAPED_UNICODE));
+        }
+
+        return $fields;
     }
 
     protected function prepareOrderSubtotal($order_id, $position, $item)
