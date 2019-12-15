@@ -7,6 +7,8 @@ class StatusesController extends Controller implements \Commerce\Module\Interfac
     private $lang;
     private $table = 'commerce_order_statuses';
 
+    protected $icon = 'fa fa-play-circle';
+
     public function __construct($modx, $module)
     {
         parent::__construct($modx, $module);

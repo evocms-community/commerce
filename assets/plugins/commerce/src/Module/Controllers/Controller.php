@@ -9,6 +9,7 @@ class Controller implements \Commerce\Module\Interfaces\Controller
     protected $modx;
     protected $module;
     protected $view;
+    protected $icon = 'fa fa-cog';
 
     public function __construct($modx, $module)
     {
@@ -27,5 +28,10 @@ class Controller implements \Commerce\Module\Interfaces\Controller
     public function index()
     {
         return '';
+    }
+
+    public function getIcon()
+    {
+        return $this->icon;
     }
 }

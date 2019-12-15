@@ -7,6 +7,8 @@ class CurrencyController extends Controller implements \Commerce\Module\Interfac
     private $lang;
     private $table = 'commerce_currency';
 
+    protected $icon = 'fa fa-usd';
+
     public function __construct($modx, $module)
     {
         parent::__construct($modx, $module);

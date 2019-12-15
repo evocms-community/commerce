@@ -8,6 +8,7 @@ class OrdersController extends Controller implements \Commerce\Module\Interfaces
 
     private $lang;
 
+    protected $icon = 'fa fa-list';
     protected $statuses = null;
 
     public function __construct($modx, $module)

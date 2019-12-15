@@ -8,6 +8,7 @@ class Manager
 
     private $modx;
     private $controllers = [];
+    private $controller;
     private $route = '';
 
     public $flash;
@@ -52,11 +53,11 @@ class Manager
             $this->modx->sendRedirect('index.php?a=106');
         }
 
-        $controller = $this->controllers[$controller];
-        $routes = $controller->registerRoutes();
+        $this->controller = $this->controllers[$controller];
+        $routes = $this->controller->registerRoutes();
 
         if (isset($routes[$route])) {
-            return call_user_func([$controller, $routes[$route]]);
+            return call_user_func([$this->controller, $routes[$route]]);
         }
 
         $this->sendRedirect('orders', ['error' => $this->lang['module.unknown_route']]);
@@ -145,5 +146,10 @@ class Manager
     public function getCurrentRouteName()
     {
         return trim(preg_replace('/[^\da-zA-Z]+/', '_', $this->route), '_ ');
+    }
+
+    public function getControllerIcon()
+    {
+        return $this->controller->getIcon();
     }
 }

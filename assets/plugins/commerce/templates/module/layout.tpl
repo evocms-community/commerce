@@ -3,7 +3,7 @@
 <?= $this->block('head') ?>
 
 <h1>
-    <i class="fa fa-cog"></i><?= $this->block('title', $lang['module.orders_caption']) ?> 
+    <i class="<?= $module->getControllerIcon() ?>"></i><?= $this->block('title', $lang['module.orders_caption']) ?> 
 </h1>
 
 <?php if ($module->flash->has('error')): ?>
