@@ -5,7 +5,7 @@
  * Commerce solution
  *
  * @category    plugin
- * @version     0.4.6
+ * @version     0.4.7
  * @author      mnoskov
  * @internal    @events OnWebPageInit,OnManagerPageInit,OnPageNotFound,OnWebPagePrerender,OnManagerMenuPrerender,OnCacheUpdate,OnLoadWebDocument
  * @internal    @properties &payment_success_page_id=Page ID for redirect after successfull payment;text; &payment_failed_page_id=Page ID for redirect after payment error;text;  &cart_page_id=Cart page ID;text;  &order_page_id=Order page ID;text; &status_id_after_payment=Status ID after payment;text; &product_templates=Product templates IDs;text; &title_field=Product title field name;text;pagetitle &price_field=Product price field name;text;price &status_notification=Chunk name for status change notification;text; &order_paid=Chunk name for order paid notification;text; &order_changed=Chunk name for order changed notification;text; &email=Email notifications recipient;text; &default_payment=Default payment code;text; &default_delivery=Default delivery code;text; &instant_redirect_to_payment=Redirect to payment after order process;list;Instant==1||Show prepare text==0;1  &redirect_to_payment_tpl=Chunk name for redirect prepare text;text;
