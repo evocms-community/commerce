@@ -43,7 +43,7 @@ $manager = new Commerce\Module\Manager($modx, array_merge($modx->event->params, 
     'stay' => $stay,
 ]));
 
-$route = filter_input(INPUT_GET, 'route', FILTER_VALIDATE_REGEXP, ['options' => [
+$route = filter_input(INPUT_GET, 'type', FILTER_VALIDATE_REGEXP, ['options' => [
     'regexp'  => '/^[a-z]+(:?\/[a-z-]+)*$/',
     'default' => '',
 ]]);

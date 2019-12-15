@@ -103,7 +103,7 @@ class Manager
         $url = $this->getSetting('module_url');
 
         if (!empty($route)) {
-            $url .= '&route=' . $route;
+            $url .= '&type=' . $route;
         }
 
         if (!empty($query)) {

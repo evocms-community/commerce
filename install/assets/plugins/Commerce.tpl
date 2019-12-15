@@ -104,9 +104,9 @@ switch ($modx->event->name) {
 
         $params['menu'] = array_merge($params['menu'], [
             'commerce' => ['commerce', 'main', '<i class="fa fa-shopping-cart"></i>' . $lang['menu.commerce'], 'javascript:;', $lang['menu.commerce'], 'return false;', 'exec_module', 'main', 0, 90, ''],
-            'orders'   => ['orders', 'commerce', '<i class="fa fa-list"></i>' . $lang['menu.orders'], $url . '&route=orders', $lang['menu.orders'], '', 'exec_module', 'main', 0, 10, ''],
-            'statuses' => ['statuses', 'commerce', '<i class="fa fa-play-circle"></i>' . $lang['menu.statuses'], $url . '&route=statuses', $lang['menu.statuses'], '', 'exec_module', 'main', 0, 20, ''],
-            'currency' => ['currency', 'commerce', '<i class="fa fa-usd"></i>' . $lang['menu.currency'], $url . '&route=currency', $lang['menu.currency'], '', 'exec_module', 'main', 0, 30, ''],
+            'orders'   => ['orders', 'commerce', '<i class="fa fa-list"></i>' . $lang['menu.orders'], $url . '&type=orders', $lang['menu.orders'], '', 'exec_module', 'main', 0, 10, ''],
+            'statuses' => ['statuses', 'commerce', '<i class="fa fa-play-circle"></i>' . $lang['menu.statuses'], $url . '&type=statuses', $lang['menu.statuses'], '', 'exec_module', 'main', 0, 20, ''],
+            'currency' => ['currency', 'commerce', '<i class="fa fa-usd"></i>' . $lang['menu.currency'], $url . '&type=currency', $lang['menu.currency'], '', 'exec_module', 'main', 0, 30, ''],
         ]);
 
         $modx->event->output(serialize($params['menu']));

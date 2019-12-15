@@ -33,7 +33,7 @@ var popup;
             } else {
                 if (!$list.children().length) {
                     var params = {
-                        route:     'orders/get-tree',
+                        type:      'orders/get-tree',
                         order_id:  $('[name="order_id"]').val(),
                         parent_id: $item.attr('data-id')
                     };
