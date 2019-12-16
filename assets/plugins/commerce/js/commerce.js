@@ -114,8 +114,8 @@ var Commerce = {
 
                 if ($cart.length) {
                     var $newCart = $(hashes[hash]);
-                    var event = $.Event('cart-reload.commerce', {newCart: $newCart});
-                    $cart.trigger(event);
+                    var event = $.Event('cart-reload.commerce');
+                    $cart.trigger(event, {newCart: $newCart});
 
                     if (event.isDefaultPrevented() || typeof event.result != 'undefined' && event.result === false) {
                         return;
