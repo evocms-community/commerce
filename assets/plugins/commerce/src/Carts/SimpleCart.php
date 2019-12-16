@@ -80,7 +80,7 @@ class SimpleCart implements \Commerce\Interfaces\Cart
         return true;
     }
 
-    protected function makeHash(array $item)
+    public function makeHash(array $item)
     {
         $price = (float) ci()->currency->convertToDefault($item['price']);
         return md5(serialize([$item['id'], $item['name'], $price, $item['options'], $item['meta']]));
