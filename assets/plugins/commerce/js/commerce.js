@@ -113,14 +113,14 @@ var Commerce = {
                 var $cart = $('[data-commerce-cart="' + hash + '"]');
 
                 if ($cart.length) {
-                    var event = $.Event('cart-reload.commerce');
+                    var $newCart = $(hashes[hash]);
+                    var event = $.Event('cart-reload.commerce', {newCart: $newCart});
                     $cart.trigger(event);
 
                     if (event.isDefaultPrevented() || typeof event.result != 'undefined' && event.result === false) {
                         return;
                     }
 
-                    var $newCart = $(hashes[hash]);
                     $cart.replaceWith($newCart);
                     $newCart.trigger('cart-reloaded.commerce');
                 }
