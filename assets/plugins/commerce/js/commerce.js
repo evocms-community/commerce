@@ -251,8 +251,10 @@ $(document).on('submit click change', '[data-commerce-action]', function(e) {
                 }
 
                 if ($count.length == 1) {
-                    var count = parseFloat($count.val()) || 0;
-                    count += action == 'increase' ? 1 : -1;
+                    var count = parseFloat($count.val()) || 0,
+                        diff  = data.count ? parseFloat(data.count) || 1 : 1;
+
+                    count += action == 'increase' ? diff : -diff;
                     count = Math.max(0, count);
 
                     if (!count) {
