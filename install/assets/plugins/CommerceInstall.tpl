@@ -169,8 +169,9 @@ $modx->db->query("
 ");
 
 $modx->db->query("ALTER TABLE $table CHANGE `hash` `hash` VARCHAR(128) NOT NULL;", false);
-
 $modx->db->query("ALTER TABLE $table ADD `meta` TEXT NOT NULL AFTER `hash`;", false);
+$modx->db->query("ALTER TABLE $table ADD `payment_method` VARCHAR(255) NOT NULL DEFAULT '' AFTER `hash`;", false);
+$modx->db->query("ALTER TABLE $table ADD `original_order_id` VARCHAR(255) NOT NULL DEFAULT '' AFTER `payment_method`;", false);
 
 $table = $modx->getFullTablename('commerce_order_statuses');
 

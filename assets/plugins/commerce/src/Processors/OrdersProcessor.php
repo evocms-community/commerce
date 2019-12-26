@@ -574,12 +574,15 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
             'meta'         => &$meta,
         ]);
 
+        $order = $this->loadOrder($order_id);
+
         $payment = [
-            'order_id'   => $order_id,
-            'amount'     => $diff,
-            'hash'       => $hash,
-            'meta'       => $meta,
-            'created_at' => date('Y-m-d H:i:s'),
+            'order_id'       => $order_id,
+            'amount'         => $diff,
+            'hash'           => $hash,
+            'payment_method' => $order['fields']['payment_method'],
+            'meta'           => $meta,
+            'created_at'     => date('Y-m-d H:i:s'),
         ];
 
         $payment['id'] = $this->savePayment($payment);
@@ -590,11 +593,12 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
     {
         $db = ci()->db;
         $values = [
-            'order_id'   => $payment['order_id'],
-            'amount'     => (float) $payment['amount'],
-            'hash'       => $db->escape($payment['hash']),
-            'meta'       => !empty($payment['meta']) ? $db->escape(json_encode($payment['meta'], JSON_UNESCAPED_UNICODE)) : '',
-            'created_at' => $payment['created_at'],
+            'order_id'       => $payment['order_id'],
+            'amount'         => (float) $payment['amount'],
+            'hash'           => $db->escape($payment['hash']),
+            'payment_method' => $db->escape($payment['payment_method']),
+            'meta'           => !empty($payment['meta']) ? $db->escape(json_encode($payment['meta'], JSON_UNESCAPED_UNICODE)) : '',
+            'created_at'     => $payment['created_at'],
         ];
 
         $table = $this->modx->getFullTablename('commerce_order_payments');
