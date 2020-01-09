@@ -78,4 +78,9 @@ return [
     'module.order_saved' => 'Order saved',
     'module.not_selected' => '--- select ---',
     'module.order_changed' => 'Order changed',
+    'module.filter_btn' => 'Apply',
+    'module.reset_filters_btn' => 'Reset filters',
+    'module.show_filters' => 'Show filters',
+    'module.hide_filters' => 'Hide filters',
+    'module.dates_interval' => 'Dates interval',
 ];

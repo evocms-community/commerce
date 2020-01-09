@@ -13,20 +13,20 @@ trait CustomizableFieldsTrait
         return $fields;
     }
 
-    protected function processFields($fields, $args)
+    protected function processFields($fields, $args, $key = 'content')
     {
         $data = reset($args);
         $result = [];
 
         foreach ($fields as $name => $field) {
-            if (isset($field['content'])) {
-                if (is_string($field['content']) && isset($data[$field['content']])) {
-                    $result[$name] = $data[$field['content']];
+            if (isset($field[$key])) {
+                if (is_string($field[$key]) && isset($data[$field[$key]])) {
+                    $result[$name] = $data[$field[$key]];
                     continue;
                 }
 
-                if (is_callable($field['content'])) {
-                    $result[$name] = call_user_func_array($field['content'], $args);
+                if (is_callable($field[$key])) {
+                    $result[$name] = call_user_func_array($field[$key], $args);
                     continue;
                 }
             }

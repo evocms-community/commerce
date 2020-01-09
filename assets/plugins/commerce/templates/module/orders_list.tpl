@@ -1,5 +1,14 @@
 <?php $this->extend('layout.tpl'); ?>
 
+<?php if (!$modx->getConfig('commerce_ordersfilters_active')): ?>
+    <?php $this->block('buttons'); ?>
+        <a href="<?= $this->module->makeUrl('orders/toggle-filters') ?>" class="btn btn-secondary">
+            <i class="fa fa-filter"></i>
+            <span><?= $lang['module.show_filters'] ?></span>
+        </a>
+    <?php $this->endBlock(); ?>
+<?php endif; ?>
+
 <?php $this->block('content'); ?>
     <div class="tab-page" id="tab_main">
         <h2 class="tab">
@@ -11,6 +20,29 @@
         </script>
 
         <div class="row">
+            <?php if ($modx->getConfig('commerce_ordersfilters_active')): ?>
+                <div class="list-filters">
+                    <a href="<?= $this->module->makeUrl('orders/toggle-filters') ?>" class="fa fa-times" title="<?= $lang['module.hide_filters'] ?>"></a>
+
+                    <form action="<?= $module->makeUrl('orders') ?>" method="get">
+                        <?php foreach ($filters as $filter): ?>
+                            <div class="filters-item">
+                                <label><?= $filter['title'] ?></label>
+                                <?= $filter['content'] ?>
+                            </div>
+                        <?php endforeach; ?>
+
+                        <div class="submit-btn">
+                            <input type="hidden" name="a" value="<?= htmlentities($_GET['a']) ?>">
+                            <input type="hidden" name="id" value="<?= htmlentities($_GET['id']) ?>">
+                            <input type="hidden" name="type" value="orders">
+                            <button type="submit" class="btn btn-primary"><?= $lang['module.filter_btn'] ?></button>
+                            <a href="<?= $module->makeUrl('orders') ?>" class="btn btn-secondary"><?= $lang['module.reset_filters_btn'] ?></a>
+                        </div>
+                    </form>
+                </div>
+            <?php endif; ?>
+
             <div class="table-responsive">
                 <table class="table data">
                     <thead>
@@ -21,14 +53,14 @@
                             <td style="width: 1%;"></td>
                         </tr>
                     </thead>
-                
+
                     <tbody>
                         <?php foreach ($orders as $order): ?>
                             <tr>
                                 <?php foreach ($order['cells'] as $name => $cell): ?>
                                     <td<?= !empty($columns[$name]['style']) ? ' style="' . $columns[$name]['style'] . '"' : '' ?>><?= $cell ?></td>
                                 <?php endforeach; ?>
-                
+
                                 <td>
                                     <a href="<?= $this->module->makeUrl('orders/view', 'order_id=' . $order['id']) ?>" class="btn btn-primary">
                                         <?= $lang['module.show_order_btn'] ?>
@@ -43,4 +75,9 @@
             <?= $modx->getPlaceholder('list.pages') ?>
         </div>
     </div>
+
+    <script src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+    <script src="../assets/plugins/commerce/js/orders_list.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css">
 <?php $this->endBlock(); ?>

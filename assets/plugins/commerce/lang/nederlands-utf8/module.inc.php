@@ -78,4 +78,9 @@ return [
     'module.order_saved' => 'Bestelling opgeslagen',
     'module.not_selected' => '--- selecteer ---',
     'module.order_changed' => 'Bestelling gewijzigd',
+    'module.filter_btn' => 'Toepassing',
+    'module.reset_filters_btn' => 'Filters resetten',
+    'module.show_filters' => 'Laat filters zien',
+    'module.hide_filters' => 'Verstop filters',
+    'module.dates_interval' => 'Tijdsinterval',
 ];

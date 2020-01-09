@@ -23,3 +23,12 @@ ul.order-groups > li > .sectionBody { margin: 0; }
 #product-select ul li .expand.expanded:before { content: '-'; }
 #product-select ul li .title { display: inline-block; padding: 1px 3px; border: 1px solid #fff; cursor: pointer; transition: all 0.2s ease; }
 #product-select ul li .title:hover { border-color: #ddd; background: #f8f8f8; }
+
+.list-filters { width: 100%; margin: 0 1.25rem 1.25rem; padding: 1rem 1rem 0.5rem; border: 1px solid #ddd; }
+.list-filters .filters-item, .list-filters .submit-btn { display: inline-block; vertical-align: bottom; margin: 0 0.5rem 0.5rem 0; }
+.list-filters .filters-item { max-width: 200px; }
+.list-filters .filters-item label { margin: 0 0 0.125rem; }
+.list-filters .submit-btn { margin-top: 0.25rem; }
+.list-filters .fa-times { float: right; text-decoration: none; margin: -0.5rem -0.5rem 0.5rem 0.5rem; padding: 0.5rem; color: #666; }
+
+ul.pagination { margin-top: 1rem; }

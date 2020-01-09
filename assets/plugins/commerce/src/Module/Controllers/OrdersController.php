@@ -20,18 +20,20 @@ class OrdersController extends Controller implements \Commerce\Module\Interfaces
     public function registerRoutes()
     {
         return [
-            'index'         => 'index',
-            'edit'          => 'edit',
-            'save'          => 'save',
-            'get-tree'      => 'getTree',
-            'view'          => 'view',
-            'change-status' => 'changeStatus',
+            'index'          => 'index',
+            'edit'           => 'edit',
+            'save'           => 'save',
+            'get-tree'       => 'getTree',
+            'view'           => 'view',
+            'change-status'  => 'changeStatus',
+            'toggle-filters' => 'toggleFilters',
         ];
     }
 
     public function index()
     {
         $columns = $this->getOrdersListColumns();
+        $filters = $this->getOrdersListFilters();
 
         $config = [
             'orderBy'         => 'created_at DESC',
@@ -47,11 +49,34 @@ class OrdersController extends Controller implements \Commerce\Module\Interfaces
         $this->modx->invokeEvent('OnManagerBeforeOrdersListRender', [
             'config'  => &$config,
             'columns' => &$columns,
+            'filters' => &$filters,
         ]);
+
+        $filters = $this->sortFields($filters);
+
+        $filtersData   = !empty($_GET['filters']) ? $_GET['filters'] : [];
+        $filtersOutput = $this->processFields($filters, ['data' => $filtersData]);
+
+        array_walk($filters, function(&$item, $key) use ($filtersOutput) {
+            $item['content'] = $filtersOutput[$key];
+        });
+
+        $buildRows = $this->processfields($filters, ['data' => $filtersData], 'build');
+        $buildRows = array_filter($buildRows, function($entry) {
+            return !empty($entry);
+        });
 
         $columns   = $this->sortFields($columns);
         $config    = $this->injectPrepare($config, $columns);
-        $ordersUrl = $this->module->makeUrl('orders');
+        $ordersUrl = $this->module->makeUrl('orders') . '&' . http_build_query(['filters' => $filtersData]);
+
+        $where = !empty($config['addWhereList']) ? ['(' . $config['addWhereList'] . ')'] : [];
+
+        foreach ($buildRows as $row) {
+            if (!empty($row['where'])) {
+                $where[] = $row['where'];
+            }
+        }
 
         $list = $this->modx->runSnippet('DocLister', array_merge($config, [
             'controller'      => 'onetable',
@@ -61,6 +86,7 @@ class OrdersController extends Controller implements \Commerce\Module\Interfaces
             'showParent'      => '-1',
             'api'             => 1,
             'ignoreEmpty'     => 1,
+            'addWhereList'    => implode(' AND ', $where),
             'makePaginateUrl' => function($link, $modx, $DL, $pager) use ($ordersUrl) {
                 return $ordersUrl;
             },
@@ -71,6 +97,7 @@ class OrdersController extends Controller implements \Commerce\Module\Interfaces
         return $this->view->render('orders_list.tpl', [
             'columns' => $columns,
             'orders'  => $list,
+            'filters' => $filters,
             'custom'  => $this->module->invokeTemplateEvent('OnManagerOrdersListRender', [
                 'orders' => $list,
             ]),
@@ -572,6 +599,24 @@ class OrdersController extends Controller implements \Commerce\Module\Interfaces
         $this->module->sendRedirectBack(['success' => $this->lang['module.status_changed']]);
     }
 
+    public function toggleFilters()
+    {
+        $table  = $this->modx->getFullTablename('system_settings');
+        $active = $this->modx->getConfig('commerce_ordersfilters_active') == 1;
+
+        if ($active) {
+            $this->modx->db->delete($table, "`setting_name` = 'commerce_ordersfilters_active'");
+        } else {
+            $this->modx->db->insert([
+                'setting_name'  => 'commerce_ordersfilters_active',
+                'setting_value' => 1,
+            ], $table);
+        }
+
+        $this->modx->clearCache('full');
+        $this->module->sendRedirectBack();
+    }
+
     private function getStatuses()
     {
         if (is_null($this->statuses)) {
@@ -678,6 +723,84 @@ class OrdersController extends Controller implements \Commerce\Module\Interfaces
                     return '<select name="status_id" onchange="location = \'' . $this->module->makeUrl('orders/change-status', 'order_id=' . $data['id'] . '&status_id=') . '\' + jQuery(this).val();">' . $out . '</select>';
                 },
                 'sort' => 80,
+            ],
+        ];
+    }
+
+    private function getOrdersListFilters()
+    {
+        return [
+            'interval' => [
+                'title' => $this->lang['module.dates_interval'],
+                'content' => function($data) {
+                    return '<input type="text" name="filters[interval]" value="' . (!empty($data['interval']) && is_scalar($data['interval']) ? htmlentities($data['interval']) : '') . '" class="date-range" autocomplete="none">';
+                },
+                'build' => function($data) {
+                    if (!empty($data['interval']) && is_scalar($data['interval'])) {
+                        if (!preg_match('/^(\d\d)\.(\d\d)\.(\d{4}) - (\d\d)\.(\d\d)\.(\d{4})$/', $data['interval'], $m)) {
+                            return [];
+                        }
+
+                        $from = implode('-', [$m[3], $m[2], $m[1]]);
+                        $to   = implode('-', [$m[6], $m[5], $m[4]]);
+
+                        return [
+                            'where' => sprintf("DATE(created_at) >= '%s' AND DATE(created_at) <= '%s'", $this->modx->db->escape($from), $this->modx->db->escape($to)),
+                        ];
+                    }
+                },
+                'sort' => 10,
+            ],
+            'phone' => [
+                'title' => $this->lang['order.phone_field'],
+                'content' => function($data) {
+                    return '<input type="text" name="filters[phone]" value="' . (!empty($data['phone']) && is_scalar($data['phone']) ? htmlentities($data['phone']) : '') . '">';
+                },
+                'build' => function($data) {
+                    if (!empty($data['phone']) && is_scalar($data['phone'])) {
+                        return [
+                            'where' => "phone LIKE '%" . $this->modx->db->escape(trim($data['phone'])) . "%'",
+                        ];
+                    }
+                },
+                'sort' => 20,
+            ],
+            'email' => [
+                'title' => $this->lang['order.email_field'],
+                'content' => function($data) {
+                    return '<input type="text" name="filters[email]" value="' . (!empty($data['email']) && is_scalar($data['email']) ? htmlentities($data['email']) : '') . '">';
+                },
+                'build' => function($data) {
+                    if (!empty($data['email']) && is_scalar($data['email'])) {
+                        return [
+                            'where' => "email LIKE '%" . $this->modx->db->escape(trim($data['email'])) . "%'",
+                        ];
+                    }
+                },
+                'sort' => 30,
+            ],
+            'status_id' => [
+                'title' => $this->lang['order.status_title'],
+                'content' => function($data) {
+                    $statuses = $this->getStatuses();
+                    $out = '<option value=""></option>';
+
+                    $current = !empty($data['status_id']) ? $data['status_id'] : 0;
+
+                    foreach ($statuses as $id => $title) {
+                        $out .= '<option value="' . $id . '"' . ($id == $current ? ' selected' : '') . '>' . $title . '</option>';
+                    }
+
+                    return '<select name="filters[status_id]">' . $out . '</select>';
+                },
+                'build' => function($data) {
+                    if (!empty($data['status_id']) && is_scalar($data['status_id'])) {
+                        return [
+                            'where' => "status_id = '" . $this->modx->db->escape($data['status_id']) . "'",
+                        ];
+                    }
+                },
+                'sort' => 40,
             ],
         ];
     }

@@ -78,4 +78,9 @@ return [
     'module.order_saved' => 'Заказ сохранен',
     'module.not_selected' => '--- не выбрано ---',
     'module.order_changed' => 'Данные заказа изменены',
+    'module.filter_btn' => 'Применить',
+    'module.reset_filters_btn' => 'Сбросить фильтры',
+    'module.show_filters' => 'Показать фильтры',
+    'module.hide_filters' => 'Скрыть фильтры',
+    'module.dates_interval' => 'Временной интервал',
 ];
