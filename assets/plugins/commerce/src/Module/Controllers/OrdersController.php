@@ -52,31 +52,33 @@ class OrdersController extends Controller implements \Commerce\Module\Interfaces
             'filters' => &$filters,
         ]);
 
-        $filters = $this->sortFields($filters);
+        $where = !empty($config['addWhereList']) ? ['(' . $config['addWhereList'] . ')'] : [];
 
-        $filtersData   = !empty($_GET['filters']) ? $_GET['filters'] : [];
-        $filtersOutput = $this->processFields($filters, ['data' => $filtersData]);
+        if ($this->modx->getConfig('commerce_ordersfilters_active')) {
+            $filters = $this->sortFields($filters);
 
-        array_walk($filters, function(&$item, $key) use ($filtersOutput) {
-            $item['content'] = $filtersOutput[$key];
-        });
+            $filtersData   = !empty($_GET['filters']) ? $_GET['filters'] : [];
+            $filtersOutput = $this->processFields($filters, ['data' => $filtersData]);
 
-        $buildRows = $this->processfields($filters, ['data' => $filtersData], 'build');
-        $buildRows = array_filter($buildRows, function($entry) {
-            return !empty($entry);
-        });
+            array_walk($filters, function(&$item, $key) use ($filtersOutput) {
+                $item['content'] = $filtersOutput[$key];
+            });
+
+            $buildRows = $this->processfields($filters, ['data' => $filtersData], 'build');
+            $buildRows = array_filter($buildRows, function($entry) {
+                return !empty($entry);
+            });
+
+            foreach ($buildRows as $row) {
+                if (!empty($row['where'])) {
+                    $where[] = $row['where'];
+                }
+            }
+        }
 
         $columns   = $this->sortFields($columns);
         $config    = $this->injectPrepare($config, $columns);
         $ordersUrl = $this->module->makeUrl('orders') . '&' . http_build_query(['filters' => $filtersData]);
-
-        $where = !empty($config['addWhereList']) ? ['(' . $config['addWhereList'] . ')'] : [];
-
-        foreach ($buildRows as $row) {
-            if (!empty($row['where'])) {
-                $where[] = $row['where'];
-            }
-        }
 
         $list = $this->modx->runSnippet('DocLister', array_merge($config, [
             'controller'      => 'onetable',
