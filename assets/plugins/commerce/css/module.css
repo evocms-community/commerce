@@ -32,3 +32,9 @@ ul.order-groups > li > .sectionBody { margin: 0; }
 .list-filters .fa-times { float: right; text-decoration: none; margin: -0.5rem -0.5rem 0.5rem 0.5rem; padding: 0.5rem; color: #666; }
 
 ul.pagination { margin-top: 1rem; }
+
+@media (max-width: 800px) {
+    ul.order-groups > li { width: 100% !important; }
+    ul.order-groups > li .table.data td { width: 35%; }
+    ul.order-groups > li .table.data td + td { width: 65%; }
+}
