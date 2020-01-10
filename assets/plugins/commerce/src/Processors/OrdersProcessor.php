@@ -489,16 +489,34 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
         }
     }
 
+    /**
+     * Оплата заказа по его хэшу.
+     * Создается новый платеж и пользователь перенаправляется на оплату.
+     *
+     * @param string $hash Хэш заказа
+     */
     public function payOrderByHash($hash)
     {
         $db = ci()->db;
         $order = $db->getRow($db->select('*', $this->tableOrders, "`hash` = '" . $db->escape($hash) . "'"));
 
         if (!empty($order)) {
-           $amount = $this->getOrderPaymentsAmount($order['id']);
+            $amount = $this->getOrderPaymentsAmount($order['id']);
 
+            // Если сумма предыдущих оплат больше суммы заказа, отменяем оплату
             if ($amount >= $order['amount']) {
                 return false;
+            }
+
+            // Если оплат еще не было, проверяем,чтобы срок создания оплаты
+            // был не больше указанного в настройках плагина
+            if (!$amount) {
+                $hours = 24 * $this->modx->commerce->getSetting('payment_wait_time', 3);
+                $diff  = (new \DateTime())->diff(new \DateTime($order['created_at']));
+
+                if ($diff->days * 24 + $diff->h > $hours) {
+                    return false;
+                }
             }
 
             $order = $this->loadOrder($order['id']);
