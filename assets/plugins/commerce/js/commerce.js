@@ -36,8 +36,8 @@ var Commerce = {
                     data:   data,
                     hashes: hashes
                 }, function(response) {
-                    if (response.markup.carts) {
-                        Commerce.reloadCartsFromResponse(response.markup.carts);
+                    if (response.markup) {
+                        Commerce.reloadMarkupFromResponse(response.markup);
                     }
 
                     if (!initiator.closest('body').length) {
@@ -68,11 +68,18 @@ var Commerce = {
     },
 
     getCartsHashes: function() {
-        var hashes = [];
+        var hashes = {
+            carts: []
+        };
 
         $('[data-commerce-cart]').each(function() {
-            hashes.push($(this).attr('data-commerce-cart'));
+            hashes.carts.push($(this).attr('data-commerce-cart'));
         });
+
+        var $form = $('[data-commerce-order]');
+        if ($form.length) {
+            hashes.form = $form.attr('data-commerce-order');
+        }
 
         var event = $.Event('collect-hashes.commerce');
         $(document).trigger(event, {hashes: hashes});
@@ -84,6 +91,9 @@ var Commerce = {
         return hashes;
     },
 
+    /**
+     * TODO: REMOVE_V1
+     */
     updateCarts: function(options) {
         console.info('Commerce.updateCarts() is deprecated and will be removed in v1.0.0. Use Commerce.reloadCarts() instead.');
         this.reloadCarts(options);
@@ -99,7 +109,7 @@ var Commerce = {
         if (hashes.length) {
             $.post('commerce/cart/contents', $.extend(options, {hashes: hashes}), function(response) {
                 if (response.status == 'success' && response.markup) {
-                    Commerce.reloadCartsFromResponse(response.markup.carts);
+                    Commerce.reloadMarkupFromResponse(response.markup);
                 }
             }, 'json');
         }
@@ -107,13 +117,13 @@ var Commerce = {
         $(document).trigger('carts-reloaded.commerce');
     },
 
-    reloadCartsFromResponse: function(hashes) {
-        if (typeof hashes == 'object') {
-            for (var hash in hashes) {
+    reloadMarkupFromResponse: function(markup) {
+        if (typeof markup.carts == 'object') {
+            for (var hash in markup.carts) {
                 var $cart = $('[data-commerce-cart="' + hash + '"]');
 
                 if ($cart.length) {
-                    var $newCart = $(hashes[hash]);
+                    var $newCart = $(markup.carts[hash]);
                     var event = $.Event('cart-reload.commerce');
                     $cart.trigger(event, {newCart: $newCart});
 
@@ -126,15 +136,22 @@ var Commerce = {
                 }
             }
         }
+
+        if (typeof markup.form == 'object') {
+            if (typeof markup.form.delivery != 'undefined') {
+                $('[data-commerce-deliveries]').html(markup.form.delivery);
+            }
+
+            if (typeof markup.form.payments != 'undefined') {
+                $('[data-commerce-payments]').html(markup.form.payments);
+            }
+        }
     },
 
     updateOrderData: function($form) {
         var data = $form.serializeObject();
 
-        data.hashes = {
-            form: $form.attr('data-commerce-order'),
-            carts: this.getCartsHashes()
-        };
+        data.hashes = this.getCartsHashes();
 
         $form.trigger('order-data-update.commerce', {
             data: data
@@ -147,18 +164,8 @@ var Commerce = {
             });
 
             if (response.status == 'success') {
-                if (response.markup.form) {
-                    if (typeof response.markup.form.delivery != 'undefined') {
-                        $form.find('[data-commerce-deliveries]').html(response.markup.form.delivery);
-                    }
-
-                    if (typeof response.markup.form.payments != 'undefined') {
-                        $form.find('[data-commerce-payments]').html(response.markup.form.payments);
-                    }
-                }
-
-                if (response.markup.carts) {
-                    Commerce.reloadCartsFromResponse(response.markup.carts);
+                if (response.markup) {
+                    Commerce.reloadMarkupFromResponse(response.markup);
                 }
             }
         }, 'json');

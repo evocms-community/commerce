@@ -14,7 +14,7 @@ class Commerce
 {
     use SettingsTrait;
 
-    const VERSION = 'v0.5.1';
+    const VERSION = 'v0.5.2';
 
     public $currency;
 
@@ -245,6 +245,32 @@ class Commerce
         return $result;
     }
 
+    private function getFormMarkup($hash)
+    {
+        $result = [];
+
+        if (is_scalar($hash)) {
+            $params = $this->restoreParams($hash);
+
+            if ($params !== false) {
+                $controller = new \FormLister\Order($this->modx, array_merge($params, [
+                    'commerceCaptchaFix' => true,
+                    'disableSubmit'      => true,
+                ]));
+                $controller->initForm();
+                $output = $controller->getPaymentsAndDelivery();
+
+                foreach ($output as $type => $markup) {
+                    $output[$type] = $controller->parseChunk('@CODE:' . $markup, [], true);
+                }
+
+                $result = $output;
+            }
+        }
+
+        return $result;
+    }
+
     public function processRoute($route)
     {
         switch ($route) {
@@ -295,27 +321,6 @@ class Commerce
                         'status' => 'success',
                         'markup' => [],
                     ];
-
-                    if (!empty($_POST['hashes']['form'])) {
-                        if (($params = $this->restoreParams($_POST['hashes']['form'])) !== false) {
-                            $controller = new \FormLister\Order($this->modx, array_merge($params, [
-                                'commerceCaptchaFix' => true,
-                                'disableSubmit'      => true,
-                            ]));
-                            $controller->initForm();
-                            $output = $controller->getPaymentsAndDelivery();
-
-                            foreach ($output as $type => $markup) {
-                                $output[$type] = $controller->parseChunk('@CODE:' . $markup, [], true);
-                            }
-
-                            $result['markup']['form'] = $output;
-                        }
-                    }
-
-                    if (!empty($_POST['hashes']['carts']) && is_array($_POST['hashes']['carts'])) {
-                        $result['markup']['carts'] = $this->getCartsMarkup($_POST['hashes']['carts']);
-                    }
 
                     echo $this->prepareResponse($result);
                     exit;
@@ -545,14 +550,22 @@ class Commerce
 
     protected function prepareResponse($response)
     {
-        if (!empty($_POST['hashes']) && !isset($_POST['hashes']['carts'])) {
-            $markup = $this->getCartsMarkup($_POST['hashes']);
-
+        if (!empty($_POST['hashes']) && is_array($_POST['hashes'])) {
             if (!isset($response['markup'])) {
                 $response['markup'] = [];
             }
 
-            $response['markup']['carts'] = $markup;
+            if (!empty($_POST['hashes']['carts'])) {
+                $response['markup']['carts'] = $this->getCartsMarkup($_POST['hashes']['carts']);
+            }
+
+            if (!empty($_POST['hashes']['form'])) {
+                $markup = $this->getFormMarkup($_POST['hashes']['form']);
+
+                if (!empty($markup)) {
+                    $response['markup']['form'] = $markup;
+                }
+            }
         }
 
         $this->modx->invokeEvent('OnCommerceAjaxResponse', [
