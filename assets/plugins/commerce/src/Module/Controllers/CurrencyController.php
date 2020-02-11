@@ -161,12 +161,15 @@ class CurrencyController extends Controller implements \Commerce\Module\Interfac
             if ($db->getRecordCount($query)) {
                 $old = $db->getRow($query);
 
+                $preventChange = false;
+
                 $result = $this->modx->invokeEvent('OnManagerBeforeDefaultCurrencyChange', [
-                    'old' => $old,
-                    'new' => &$fields,
+                    'old'     => $old,
+                    'new'     => &$fields,
+                    'prevent' => &$preventChange,
                 ]);
 
-                if ($result === false) {
+                if ($preventChange) {
                     $this->module->sendRedirectBack(['error' => 'canceled by third party plugin']);
                 }
             }
