@@ -153,6 +153,7 @@ class OrdersController extends Controller implements \Commerce\Module\Interfaces
             'cart'       => $cart,
             'tree'       => 0,
             'api'        => 1,
+            'showNoPublish' => 1,
         ]));
 
         $products = json_decode($products, true);
@@ -241,6 +242,7 @@ class OrdersController extends Controller implements \Commerce\Module\Interfaces
             'cart'       => $cart,
             'tree'       => 0,
             'api'        => 1,
+            'showNoPublish' => 1,
         ]));
 
         $products = json_decode($products, true);
