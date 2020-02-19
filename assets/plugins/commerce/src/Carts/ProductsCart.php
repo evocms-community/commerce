@@ -187,10 +187,18 @@ class ProductsCart extends StoreCart implements \Commerce\Interfaces\Cart
     protected function getItemName($id)
     {
         if (is_numeric($id) && $id > 0) {
-            $doc = $this->modx->getDocument($id);
+            if (in_array($this->titleField, ['pagetitle', 'longtitle', 'description', 'introtext', 'menutitle'])) {
+                $doc = $this->modx->getDocument($id);
 
-            if (!empty($doc)) {
-                return $doc[$this->titleField];
+                if (!empty($doc)) {
+                    return $doc[$this->titleField];
+                }
+            } else {
+                $tv = $this->modx->getTemplateVar($this->titleField, '*', $id);
+
+                if (!empty($tv)) {
+                    return $tv['value'];
+                }
             }
         }
 
