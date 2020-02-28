@@ -17,6 +17,17 @@ class SimpleCart implements \Commerce\Interfaces\Cart
         'meta'    => [],
     ];
 
+    public function has($product_id)
+    {
+        foreach ($this->items as $item) {
+            if ($item['id'] == $product_id) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     public function getTotal()
     {
         $total = 0;
