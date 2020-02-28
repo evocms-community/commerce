@@ -117,8 +117,8 @@ $modx->db->query("
 ");
 
 $modx->db->query("ALTER TABLE " . $modx->getFullTablename('commerce_orders') . " ADD `hash` VARCHAR(32) NOT NULL AFTER `status_id`, ADD INDEX (`hash`);", false);
-
 $modx->db->query("ALTER TABLE " . $modx->getFullTablename('commerce_orders') . " ADD `customer_id` INT UNSIGNED NULL DEFAULT NULL AFTER `id`, ADD INDEX (`customer_id`);", false);
+$modx->db->query("ALTER TABLE " . $modx->getFullTablename('commerce_orders') . " ADD `lang` VARCHAR(32) NOT NULL AFTER `currency`;", false);
 
 $modx->db->query("
     CREATE TABLE IF NOT EXISTS " . $modx->getFullTablename('commerce_order_products') . " (

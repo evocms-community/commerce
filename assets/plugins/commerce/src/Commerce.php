@@ -171,6 +171,15 @@ class Commerce
         return false;
     }
 
+    public function getCurrentLang()
+    {
+        if (is_null($this->lang)) {
+            $this->setLang($this->backendLang);
+        }
+
+        return $this->lang;
+    }
+
     public function getUserLanguage($instance = 'common')
     {
         if (is_null($this->lang)) {
