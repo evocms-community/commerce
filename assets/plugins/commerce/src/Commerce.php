@@ -67,6 +67,16 @@ class Commerce
                 $carts->addCart($listname, $list);
             }
         }
+
+        if ($this->isBLangEnabled()) {
+            if (isset($_GET['lang']) && is_string($_GET['lang'])) {
+                $code = $this->currency->getLangCurrencyCode($_GET['lang']);
+            } else {
+                $code = $this->currency->getDefaultCurrencyCode();
+            }
+
+            $this->currency->setCurrency($code);
+        }
     }
 
     public function getCart()
@@ -391,8 +401,6 @@ class Commerce
                         echo $this->prepareResponse($response);
                         exit;
                     }
-
-                    ci()->carts->changeCurrency($this->currency->getCurrencyCode());
 
                     $response['status'] = 'success';
                     echo $this->prepareResponse($response);

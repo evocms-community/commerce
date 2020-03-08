@@ -23,16 +23,6 @@ class Currency
         if (is_null($this->activeCurrency)) {
             $this->activeCurrency = $this->defaultCurrency;
         }
-
-        if (ci()->commerce->isBLangEnabled()) {
-            if (isset($_GET['lang']) && is_string($_GET['lang'])) {
-                $code = $this->getLangCurrencyCode($_GET['lang']);
-            } else {
-                $code = $this->defaultCurrency;
-            }
-
-            $this->setCurrency($code);
-        }
     }
 
     public function getCurrencies()
@@ -137,9 +127,10 @@ class Currency
             throw new \Exception('Code "' . print_r($code, true) . '" is not scalar!');
         }
 
-        $currencies = $this->getCurrencies();
+        $currencies  = $this->getCurrencies();
+        $isNotActive = $this->activeCurrency != $code;
 
-        if ($this->activeCurrency != $code) {
+        if ($isNotActive) {
             ci()->modx->invokeEvent('OnBeforeCurrencyChange', [
                 'old' => $this->activeCurrency,
                 'new' => &$code,
@@ -152,6 +143,10 @@ class Currency
 
         $this->activeCurrency = $code;
         $_SESSION[$this->key] = $code;
+
+        if ($isNotActive) {
+            ci()->carts->changeCurrency($code);
+        }
     }
 
     public function format($amount, $code = null)
