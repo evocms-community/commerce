@@ -83,4 +83,6 @@ return [
     'module.show_filters' => 'Laat filters zien',
     'module.hide_filters' => 'Verstop filters',
     'module.dates_interval' => 'Tijdsinterval',
+    'module.related_language' => 'Code van de overeenkomstige taal',
+    'module.status_alias' => 'Bijnaam',
 ];

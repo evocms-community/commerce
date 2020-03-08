@@ -35,8 +35,6 @@ class Commerce
     {
         $this->modx = $modx;
         $this->setSettings($params);
-        $this->currency = new Currency($modx);
-
         $this->backendLang = $modx->getConfig('manager_language');
     }
 
@@ -45,6 +43,10 @@ class Commerce
         define('COMMERCE_INITIALIZED', true);
 
         $this->modx->invokeEvent('OnInitializeCommerce');
+
+        if (empty($this->currency)) {
+            $this->currency = new Currency($modx);
+        }
 
         $carts = ci()->carts;
         $carts->registerStore('session', new SessionCartStore());
@@ -156,19 +158,23 @@ class Commerce
         if ($code != $this->lang) {
             $this->lang = $code;
 
-            $this->lexicon = new Lexicon($this->modx, [
-                'langDir' => $this->langDir,
-                'lang'    => $this->lang,
-            ]);
-
-            foreach ($this->langKeys as $instance) {
-                $this->getUserLanguage($instance);
+            if (!$this->lexicon) {
+                $this->lexicon = new Lexicon($this->modx, [
+                    'langDir' => $this->langDir,
+                    'lang'    => $this->lang,
+                ]);
+            } else {
+                $this->lexicon->config->setConfig([
+                    'lang' => $this->lang,
+                ]);
             }
 
-            return true;
+            if (!isset($this->langData[$code])) {
+                $this->langData[$code] = $this->lexicon->loadLang($this->langKeys);
+            }
         }
 
-        return false;
+        return $this->lang;
     }
 
     public function getCurrentLang()
@@ -180,18 +186,27 @@ class Commerce
         return $this->lang;
     }
 
-    public function getUserLanguage($instance = 'common')
+    public function getUserLanguage($instance = 'common', $forceDefaultLanguage = false)
     {
         if (is_null($this->lang)) {
             $this->setLang($this->backendLang);
         }
 
-        if (!isset($this->langKeys[$instance])) {
-            $this->langKeys[$instance] = $instance;
-            $this->langData = array_merge($this->langData, $this->lexicon->loadLang($instance));
+        $usedLangCode = $forceDefaultLanguage ? $this->backendLang : $this->lang;
+
+        if (!isset($this->langData[$usedLangCode])) {
+            $this->langData[$usedLangCode] = $this->lexicon->loadLang($this->langKeys);
         }
 
-        return $this->langData;
+        if (!isset($this->langKeys[$instance])) {
+            $this->langKeys[$instance] = $instance;
+
+            foreach ($this->langData as $code => $data) {
+                $this->langData[$code] = array_merge($data, $this->lexicon->loadLang($instance, $code));
+            }
+        }
+
+        return $this->langData[$usedLangCode];
     }
 
     /**
@@ -211,6 +226,31 @@ class Commerce
         }
 
         throw new \Exception('Template "' . print_r($name, true) . '" not found!');
+    }
+
+    public function getUserLexicon($alias, $default = '')
+    {
+        $underscored = str_replace('.', '_', $alias);
+        $variants = ['__' . $underscored, $underscored, '__' . $alias, $alias];
+
+        $bLangEnabled    = $this->isBLangEnabled();
+        $evoBabelEnabled = $this->isEvoBabelEnabled();
+
+        foreach ($variants as $variant) {
+            if ($bLangEnabled && $value = $this->modx->getConfig($variant)) {
+                return $value;
+            }
+
+            if ($evoBabelEnabled && isset($_SESSION['perevod'][$variant])) {
+                return $_SESSION['perevod'][$variant];
+            }
+        }
+
+        if (isset($this->langData[$this->lang][$alias])) {
+            return $this->langData[$this->lang][$alias];
+        }
+
+        return $default;
     }
 
     public function setProcessor(Processor $processor)
@@ -660,5 +700,15 @@ class Commerce
         }
 
         return '<script src="' . MODX_BASE_URL . 'assets/plugins/commerce/js/commerce.js?' . self::VERSION . '"></script><script>Commerce.params = ' . json_encode($params, JSON_UNESCAPED_UNICODE | JSON_NUMERIC_CHECK) . ';</script>';
+    }
+
+    public function isBLangEnabled()
+    {
+        return !empty($this->modx->snippetCache['bLang']);
+    }
+
+    public function isEvoBabelEnabled()
+    {
+        return !empty($_SESSION['perevod']);
     }
 }

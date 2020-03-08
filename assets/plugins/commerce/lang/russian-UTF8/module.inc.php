@@ -83,4 +83,6 @@ return [
     'module.show_filters' => 'Показать фильтры',
     'module.hide_filters' => 'Скрыть фильтры',
     'module.dates_interval' => 'Временной интервал',
+    'module.related_language' => 'Код соответствующего языка',
+    'module.status_alias' => 'Псевдоним',
 ];

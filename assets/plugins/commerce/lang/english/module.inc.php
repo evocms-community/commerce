@@ -83,4 +83,6 @@ return [
     'module.show_filters' => 'Show filters',
     'module.hide_filters' => 'Hide filters',
     'module.dates_interval' => 'Dates interval',
+    'module.related_language' => 'Related language code',
+    'module.status_alias' => 'Alias',
 ];

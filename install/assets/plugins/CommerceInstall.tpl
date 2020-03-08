@@ -175,26 +175,28 @@ $modx->db->query("ALTER TABLE $table ADD `original_order_id` VARCHAR(255) NOT NU
 
 $table = $modx->getFullTablename('commerce_order_statuses');
 
-if (!tableExists($modx, $table)) {
-    $modx->db->query("
-        CREATE TABLE IF NOT EXISTS $table (
-            `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-            `title` varchar(255) NOT NULL,
-            `notify` tinyint(1) unsigned NOT NULL DEFAULT '0',
-            `default` tinyint(1) unsigned NOT NULL DEFAULT '0',
-            PRIMARY KEY (`id`)
-        ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
-    ");
+$modx->db->query("
+    CREATE TABLE IF NOT EXISTS $table (
+        `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+        `title` varchar(255) NOT NULL,
+        `notify` tinyint(1) unsigned NOT NULL DEFAULT '0',
+        `default` tinyint(1) unsigned NOT NULL DEFAULT '0',
+        PRIMARY KEY (`id`)
+    ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
+");
 
+$modx->db->query("ALTER TABLE $table ADD `alias` VARCHAR(255) NOT NULL DEFAULT '' AFTER `title`;", false);
+
+if (!tableExists($modx, $table)) {
     $lang = $lexicon->loadLang('order');
 
-    $modx->db->insert(['title' => $lang['order.status.new'], 'default' => 1], $table);
-    $modx->db->insert(['title' => $lang['order.status.processing']], $table);
-    $modx->db->insert(['title' => $lang['order.status.paid'], 'notify' => 1], $table);
-    $modx->db->insert(['title' => $lang['order.status.shipped']], $table);
-    $modx->db->insert(['title' => $lang['order.status.canceled'], 'notify' => 1], $table);
-    $modx->db->insert(['title' => $lang['order.status.complete']], $table);
-    $modx->db->insert(['title' => $lang['order.status.pending']], $table);
+    $modx->db->insert(['title' => $lang['order.status.new'], 'alias' => 'order.status.new', 'default' => 1], $table);
+    $modx->db->insert(['title' => $lang['order.status.processing'], 'alias' => 'order.status.processing'], $table);
+    $modx->db->insert(['title' => $lang['order.status.paid'], 'alias' => 'order.status.paid', 'notify' => 1], $table);
+    $modx->db->insert(['title' => $lang['order.status.shipped'], 'alias' => 'order.status.shipped'], $table);
+    $modx->db->insert(['title' => $lang['order.status.canceled'], 'alias' => 'order.status.canceled', 'notify' => 1], $table);
+    $modx->db->insert(['title' => $lang['order.status.complete'], 'alias' => 'order.status.complete'], $table);
+    $modx->db->insert(['title' => $lang['order.status.pending'], 'alias' => 'order.status.pending'], $table);
 }
 
 $table = $modx->getFullTablename('commerce_currency');
@@ -234,6 +236,8 @@ if (!tableExists($modx, $table)) {
         'default'  => 1,
     ], $table);
 }
+
+$modx->db->query("ALTER TABLE $table ADD `lang` VARCHAR(8) NOT NULL DEFAULT '' AFTER `default`;", false);
 
 $id = $modx->db->getValue($modx->db->select('MAX(id)', $tablePlugins, "`name` = 'Commerce'"));
 $modx->db->update(['disabled' => 0], $tablePlugins, "`id` = '$id'");
