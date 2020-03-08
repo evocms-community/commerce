@@ -146,10 +146,18 @@ class Order extends Form
 
         $items = $this->cart->getItems();
 
+        $preventOrder = false;
+
         $this->modx->invokeEvent('OnBeforeOrderProcessing', [
-            'FL'    => $this,
-            'items' => &$items,
+            'FL'      => $this,
+            'items'   => &$items,
+            'prevent' => &$preventOrder,
         ]);
+
+        if ($preventOrder) {
+            $this->addError('custom', 'custom', 'Заказ отменен!');
+            return;
+        }
 
         if (is_array($items)) {
             $this->cart->setItems($items);
