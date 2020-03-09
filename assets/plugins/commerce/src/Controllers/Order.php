@@ -123,7 +123,6 @@ class Order extends Form
     public function process()
     {
         $processor = $this->modx->commerce->loadProcessor();
-        $processor->startOrder();
 
         $cartName = $this->getCFGDef('cartName', 'products');
         $this->cart = ci()->carts->getCart($cartName);
