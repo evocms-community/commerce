@@ -18,6 +18,7 @@ spl_autoload_register(function ($class) {
             'Helpers\\Config'       => '/../../lib/Helpers/Config.php',
             'Helpers\\Debug'        => '/../../snippets/FormLister/lib/Debug.php',
             'APIhelpers'            => '/../../lib/APIHelpers.class.php',
+            'bLang\bLang'           => '/../../modules/blang/classes/bLang.php',
         ];
     }
 

@@ -9,6 +9,7 @@ use Commerce\Carts\CookiesCartStore;
 use Commerce\Carts\ProductsCart;
 use Commerce\Carts\ProductsList;
 use Commerce\Lexicon;
+use bLang\bLang;
 
 class Commerce
 {
@@ -30,6 +31,12 @@ class Commerce
     private $backendLang;
     private $langKeys = [];
     private $langData = [];
+
+    public $langRelated = [
+        'ru' => 'russian-UTF8',
+        'ua' => 'russian-UTF8',
+        'en' => 'english',
+    ];
 
     public function __construct($modx, array $params)
     {
@@ -68,14 +75,15 @@ class Commerce
             }
         }
 
-        if ($this->isBLangEnabled()) {
-            if (isset($_GET['lang']) && is_string($_GET['lang'])) {
-                $code = $this->currency->getLangCurrencyCode($_GET['lang']);
-            } else {
-                $code = $this->currency->getDefaultCurrencyCode();
+        if ($this->modx->isFrontend() && $this->isBLangEnabled()) {
+            $bLang = bLang::GetInstance($this->modx);
+
+            if (isset($this->langRelated[$bLang->lang])) {
+                $this->setLang($this->langRelated[$bLang->lang]);
             }
 
-            $this->currency->setCurrency($code);
+            $currencyCode = $this->currency->getLangCurrencyCode($bLang->lang);
+            $this->currency->setCurrency($currencyCode);
         }
     }
 
@@ -701,7 +709,12 @@ class Commerce
     {
         $params = [
             'currency' => array_intersect_key($this->currency->getCurrency(), array_flip(['left', 'right', 'decimals', 'decsep', 'thsep'])),
+            'path'     => $this->modx->getConfig('base_url'),
         ];
+
+        if ($this->isBLangEnabled()) {
+            $params['path'] .= $this->modx->getConfig('_root');
+        }
 
         if ($this->getSetting('cart_page_id') == $this->modx->documentIdentifier) {
             $params['isCartPage'] = true;

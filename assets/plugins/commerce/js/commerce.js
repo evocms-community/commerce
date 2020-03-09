@@ -31,7 +31,7 @@ var Commerce = {
             var hashes = this.getCartsHashes();
 
             (function(event, data, initiator) {
-                $.post('commerce/action', {
+                $.post(Commerce.params.path + 'commerce/action', {
                     action: action,
                     data:   data,
                     hashes: hashes
@@ -107,7 +107,7 @@ var Commerce = {
         }
 
         if (hashes.length) {
-            $.post('commerce/cart/contents', $.extend(options, {hashes: hashes}), function(response) {
+            $.post(Commerce.params.path + 'commerce/cart/contents', $.extend(options, {hashes: hashes}), function(response) {
                 if (response.status == 'success' && response.markup) {
                     Commerce.reloadMarkupFromResponse(response.markup);
                 }
@@ -157,7 +157,7 @@ var Commerce = {
             data: data
         });
 
-        $.post('commerce/data/update', data, function(response) {
+        $.post(Commerce.params.path + 'commerce/data/update', data, function(response) {
             $form.trigger('order-data-updated.commerce', {
                 data: data,
                 response: response
@@ -172,7 +172,7 @@ var Commerce = {
     },
 
     setCurrency: function(code) {
-        $.post('commerce/currency/set', {code: code}, function(response) {
+        $.post(Commerce.params.path + 'commerce/currency/set', {code: code}, function(response) {
             if (response.status == 'success') {
                 location.reload();
             }
