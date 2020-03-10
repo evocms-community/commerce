@@ -5,15 +5,16 @@
  * Order form, FormLister based
  *
  * @category    snippet
- * @version     0.4.0
+ * @version     0.6.0
  * @author      mnoskov
  * @internal    @modx_category Commerce
  * @internal    @installset base
 */
 
 if (defined('COMMERCE_INITIALIZED')) {
-    $commerce = ci()->commerce;
-    $lang = $commerce->getUserLanguage('order');
+    $commerce  = ci()->commerce;
+    $userLang  = $commerce->getUserLanguage('order');
+    $adminLang = $commerce->getUserLanguage('order', true);
 
     $params = array_merge([
         'controller'            => 'Order',
@@ -34,18 +35,18 @@ if (defined('COMMERCE_INITIALIZED')) {
         'ccSender'              => '1',
         'ccSenderField'         => 'email',
         'ccSenderTpl'           => $commerce->getUserLanguageTemplate('order_reportback'),
-        'subjectTpl'            => $lang['order.subject'],
-        'successTpl'            => $lang['order.success'],
+        'subjectTpl'            => $adminLang['order.subject'],
+        'successTpl'            => $userLang['order.success'],
         'rules'                 => [
             'name' => [
-                'required' => $lang['order.error.name_required'],
+                'required' => $userLang['order.error.name_required'],
             ],
             'email' => [
-                'required' => $lang['order.error.email_required'],
-                'email'    => $lang['order.error.email_incorrect'],
+                'required' => $userLang['order.error.email_required'],
+                'email'    => $userLang['order.error.email_incorrect'],
             ],
             'phone' => [
-                'required' => $lang['order.error.phone_required'],
+                'required' => $userLang['order.error.phone_required'],
             ],
         ],
     ], $params);
