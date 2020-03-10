@@ -1,4 +1,4 @@
-<?php
+//<?php
 /**
  * Order
  *
@@ -15,6 +15,7 @@ if (defined('COMMERCE_INITIALIZED')) {
     $commerce  = ci()->commerce;
     $userLang  = $commerce->getUserLanguage('order');
     $adminLang = $commerce->getUserLanguage('order', true);
+    $theme     = !empty($theme) ? $theme : '';
 
     $params = array_merge([
         'controller'            => 'Order',
@@ -25,11 +26,11 @@ if (defined('COMMERCE_INITIALIZED')) {
         'lexicon'               => 'common,delivery,payments,order',
         'templatePath'          => 'assets/plugins/commerce/templates/front/',
         'templateExtension'     => 'tpl',
-        'formTpl'               => '@FILE:order_form',
-        'deliveryTpl'           => '@FILE:order_form_delivery',
-        'deliveryRowTpl'        => '@FILE:order_form_delivery_row',
-        'paymentsTpl'           => '@FILE:order_form_payments',
-        'paymentsRowTpl'        => '@FILE:order_form_payments_row',
+        'formTpl'               => '@FILE:' . $theme . 'order_form',
+        'deliveryTpl'           => '@FILE:' . $theme . 'order_form_delivery',
+        'deliveryRowTpl'        => '@FILE:' . $theme . 'order_form_delivery_row',
+        'paymentsTpl'           => '@FILE:' . $theme . 'order_form_payments',
+        'paymentsRowTpl'        => '@FILE:' . $theme . 'order_form_payments_row',
         'reportTpl'             => $commerce->getUserLanguageTemplate('order_report', true),
         'to'                    => $commerce->getSetting('email', $modx->getConfig('emailsender')),
         'ccSender'              => '1',
