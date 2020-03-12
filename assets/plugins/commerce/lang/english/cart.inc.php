@@ -16,7 +16,7 @@ return [
     'cart.to_cart' => 'Go to the basket',
     'cart.to_checkout' => 'Checkout',
     'cart.decrease' => 'Decrease',
-    'cart.increase' => 'Zoom',
+    'cart.increase' => 'Increase',
     'cart.remove' => 'Delete',
     'cart.clean' => 'Clean',
 ];

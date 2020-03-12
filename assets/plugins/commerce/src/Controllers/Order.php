@@ -123,7 +123,6 @@ class Order extends Form
     public function process()
     {
         $processor = $this->modx->commerce->loadProcessor();
-        $processor->startOrder();
 
         $cartName = $this->getCFGDef('cartName', 'products');
         $this->cart = ci()->carts->getCart($cartName);
@@ -146,10 +145,18 @@ class Order extends Form
 
         $items = $this->cart->getItems();
 
+        $preventOrder = false;
+
         $this->modx->invokeEvent('OnBeforeOrderProcessing', [
-            'FL'    => $this,
-            'items' => &$items,
+            'FL'      => $this,
+            'items'   => &$items,
+            'prevent' => &$preventOrder,
         ]);
+
+        if ($preventOrder) {
+            $this->addError('custom', 'custom', 'Заказ отменен!');
+            return;
+        }
 
         if (is_array($items)) {
             $this->cart->setItems($items);

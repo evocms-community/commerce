@@ -6,6 +6,7 @@ class Currency
 {
     protected $table = 'commerce_currency';
     protected $currencies;
+    protected $langCurrencies;
     protected $defaultCurrency;
     protected $activeCurrency;
     protected $key = 'commerce.currency';
@@ -56,6 +57,37 @@ class Currency
         return $this->currencies;
     }
 
+    public function getLangCurrencyCode($lang)
+    {
+        $this->getCurrencies();
+
+        if (is_null($this->langCurrencies)) {
+            $this->langCurrencies = ci()->cache->getOrCreate('lang_currencies', function() {
+                $result = [];
+
+                foreach ($this->currencies as $currency) {
+                    if (empty($currency['lang'])) {
+                        continue;
+                    }
+
+                    $langs = array_map('trim', preg_split('/(;|,|\|\|| )/', $currency['lang']));
+
+                    foreach ($langs as $lang) {
+                        $result[$lang] = $currency['code'];
+                    }
+                }
+
+                return $result;
+            });
+        }
+
+        if (isset($this->langCurrencies[$lang])) {
+            return $this->langCurrencies[$lang];
+        }
+
+        return $this->defaultCurrency;
+    }
+
     public function getDefaultCurrencyCode()
     {
         if (is_null($this->defaultCurrency)) {
@@ -79,7 +111,7 @@ class Currency
         if (is_null($code)) {
             $code = $this->activeCurrency;
         }
-        
+
         $currencies = $this->getCurrencies();
 
         if (!isset($currencies[$code])) {
@@ -95,9 +127,10 @@ class Currency
             throw new \Exception('Code "' . print_r($code, true) . '" is not scalar!');
         }
 
-        $currencies = $this->getCurrencies();
+        $currencies  = $this->getCurrencies();
+        $isNotActive = $this->activeCurrency != $code;
 
-        if ($this->activeCurrency != $code) {
+        if ($isNotActive) {
             ci()->modx->invokeEvent('OnBeforeCurrencyChange', [
                 'old' => $this->activeCurrency,
                 'new' => &$code,
@@ -110,6 +143,10 @@ class Currency
 
         $this->activeCurrency = $code;
         $_SESSION[$this->key] = $code;
+
+        if ($isNotActive) {
+            ci()->carts->changeCurrency($code);
+        }
     }
 
     public function format($amount, $code = null)

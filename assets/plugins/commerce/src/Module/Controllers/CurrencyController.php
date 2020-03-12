@@ -149,6 +149,7 @@ class CurrencyController extends Controller implements \Commerce\Module\Interfac
             'thsep'    => $db->escape($data['thsep']),
             'active'   => !empty($data['active']) ? 1 : 0,
             'default'  => !empty($data['default']) ? 1 : 0,
+            'lang'     => !empty($data['lang']) ? $db->escape($data['lang']) : '',
         ];
 
         if (!$fields['active'] && $fields['default']) {

@@ -28,6 +28,7 @@
                         <tr>
                             <td style="width: 1%; text-align: center;">#</td>
                             <td><?= $lang['module.name_field'] ?></td>
+                            <td><?= $lang['module.status_alias'] ?></td>
                             <td style="white-space: nowrap;"><?= $lang['module.default_field'] ?></td>
                             <td style="white-space: nowrap;"><?= $lang['module.notify_field'] ?></td>
                             <td style="width: 1%;"></td>
@@ -39,6 +40,7 @@
                             <tr>
                                 <td style="width: 1%; text-align: center;"><?= $row['id'] ?></td>
                                 <td><?= $row['title'] ?></td>
+                                <td><?= $row['alias'] ?></td>
                                 <td style="white-space: nowrap;"><strong><?= !empty($row['default']) ? $lang['module.default_field'] : '' ?></strong></td>
                                 <td style="white-space: nowrap;"><?= !empty($row['notify']) ? $lang['module.notify'] : '' ?></td>
                 

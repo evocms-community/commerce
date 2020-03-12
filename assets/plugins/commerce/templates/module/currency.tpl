@@ -79,6 +79,12 @@
                         </td>
 
                     <tr>
+                        <td><?= $lang['module.related_language'] ?></td>
+                        <td>
+                            <input type="text" name="lang" value="<?= htmlentities($module->getFormAttr($currency, 'lang')) ?>">
+                        </td>
+
+                    <tr>
                         <td></td>
                         <td>
                             <label>

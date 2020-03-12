@@ -307,6 +307,7 @@ class OrdersController extends Controller implements \Commerce\Module\Interfaces
     public function save()
     {
         $order = $this->loadOrderFromRequest();
+        $commerce = $this->modx->commerce;
 
         if (empty($order)) {
             $this->module->sendRedirect('orders', ['error' => $this->lang['module.error.order_not_found']]);
@@ -370,7 +371,7 @@ class OrdersController extends Controller implements \Commerce\Module\Interfaces
             $rowErrors = [];
 
             foreach ($row['data'] as $rowData) {
-                $result = $this->modx->commerce->validate($rowData, $row['rules']);
+                $result = $commerce->validate($rowData, $row['rules']);
 
                 if (is_array($result)) {
                     $rowErrors = array_merge($rowErrors, $result);
@@ -397,7 +398,7 @@ class OrdersController extends Controller implements \Commerce\Module\Interfaces
         $fields['delivery_method_title'] = '';
 
         if (!empty($fields['delivery_method'])) {
-            $list = $this->modx->commerce->getDeliveries();
+            $list = $commerce->getDeliveries();
 
             if (isset($list[$fields['delivery_method']])) {
                 $fields['delivery_method_title'] = $list[$fields['delivery_method']]['title'];
@@ -407,7 +408,7 @@ class OrdersController extends Controller implements \Commerce\Module\Interfaces
         $fields['payment_method_title'] = '';
 
         if (!empty($fields['payment_method'])) {
-            $list = $this->modx->commerce->getPayments();
+            $list = $commerce->getPayments();
 
             if (isset($list[$fields['payment_method']])) {
                 $fields['payment_method_title'] = $list[$fields['payment_method']]['title'];
@@ -416,7 +417,7 @@ class OrdersController extends Controller implements \Commerce\Module\Interfaces
 
         unset($fields);
 
-        $processor = $this->modx->commerce->loadProcessor();
+        $processor = $commerce->loadProcessor();
 
         $result = $processor->updateOrder($order['id'], [
             'values'    => $data['order']['data'][0],
@@ -429,11 +430,16 @@ class OrdersController extends Controller implements \Commerce\Module\Interfaces
         }
 
         if (!empty($_POST['notify']) && !empty($order['email'])) {
-            $tpl      = ci()->tpl;
-            $lang     = $this->modx->commerce->getUserLanguage('order');
-            $template = $this->modx->commerce->getSetting('order_changed', $this->modx->commerce->getUserLanguageTemplate('order_changed'));
-
             $order = $processor->loadOrder($order['id'], true);
+
+            if (!empty($order['lang'])) {
+                $prevLangCode = $commerce->setLang($order['lang']);
+            }
+
+            $tpl      = ci()->tpl;
+            $lang     = $commerce->getUserLanguage('order');
+            $template = $commerce->getSetting('order_changed', $commerce->getUserLanguageTemplate('order_changed'));
+
             $processor->getCart();
 
             $subjectTpl = $lang['order.order_data_changed'];
@@ -453,6 +459,16 @@ class OrdersController extends Controller implements \Commerce\Module\Interfaces
                 'prevent' => &$preventSending,
             ]);
 
+            if (!empty($_POST['history_description'])) {
+                $description = trim($_POST['history_description']);
+            } else {
+                $description = $this->lang['module.order_changed'];
+            }
+
+            if (!empty($prevLangCode)) {
+                $commerce->setLang($prevLangCode);
+            }
+
             if (!$preventSending) {
                 $body    = $tpl->parseChunk($template, $templateData, true);
                 $subject = $tpl->parseChunk($subjectTpl, $templateData, true);
@@ -463,12 +479,6 @@ class OrdersController extends Controller implements \Commerce\Module\Interfaces
                 ]);
 
                 $mailer->send($body);
-
-                if (!empty($_POST['history_description'])) {
-                    $description = trim($_POST['history_description']);
-                } else {
-                    $description = $this->lang['module.order_changed'];
-                }
 
                 $processor->addOrderHistory($order['id'], $order['status_id'], $description, $notify = true);
             }

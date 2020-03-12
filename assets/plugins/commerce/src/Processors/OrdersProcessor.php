@@ -88,6 +88,7 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
 
         $values['amount']      = $this->normalizePrice($total);
         $values['currency']    = ci()->currency->getCurrencyCode();
+        $values['lang']        = $this->modx->commerce->getCurrentLang();
         $values['created_at']  = date('Y-m-d H:i:s');
         $values['customer_id'] = $this->modx->getLoginUserID('web');
         $values['hash']        = $this->modx->commerce->generateRandomString();
@@ -118,7 +119,7 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
 
         $defaultStatus = ci()->cache->getOrCreate('default_status', function() {
             $db = ci()->db;
-            $query = $db->select('id', $this->modx->getFullTablename('commerce_order_statuses'), "`default` = 1");
+            $query = $db->select('id', $this->tableStatuses, "`default` = 1");
 
             if (!$db->getRecordCount($query)) {
                 throw new \Exception('Default status not found');
@@ -166,6 +167,7 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
 
             /**
              * DB TRANSACTIONS NOT SUPPORTED IN EVO
+             * SHOULD DISABLE DEFAULT ERRORS PROCESSING
              */
             //if ($db instanceof \EvolutionCMS\Interfaces\DatabaseInterface) {
             //    $connection = $db->getDriver()->getConnect();
@@ -211,12 +213,21 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
         $this->addOrderHistory($order_id, $status_id, $comment, $notify);
 
         if ($notify && !empty($order['email'])) {
-            $tpl    = ci()->tpl;
-            $lang   = $this->modx->commerce->getUserLanguage('order');
-            $status = $this->modx->db->getValue($this->modx->db->select('title', $this->modx->getFullTablename('commerce_order_statuses'), "`id` = '" . intval($status_id) . "'"));
+            $tpl      = ci()->tpl;
+            $commerce = ci()->commerce;
+
+            if (!empty($order['lang'])) {
+                $prevLangCode = $commerce->setLang($order['lang']);
+            }
+
+            $lang = $commerce->getUserLanguage('order');
+            $status = $this->modx->db->getrow($this->modx->db->select('*', $this->tableStatuses, "`id` = '" . intval($status_id) . "'"));
+
+            $statusText = $commerce->getUserLexicon($status['alias'], $status['title']);
 
             if (is_null($template)) {
-                $template = $this->modx->commerce->getSetting('status_notification', $this->modx->commerce->getUserLanguageTemplate('status_notification'));
+                $template = $commerce->getUserLanguageTemplate('status_notification');
+                $template = $commerce->getSetting('status_notification', $template);
             }
 
             $subjectTpl = $lang['order.subject_status_changed'];
@@ -225,7 +236,7 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
             $templateData = [
                 'order_id' => $order_id,
                 'order'    => $order,
-                'status'   => $status,
+                'status'   => $statusText,
                 'comment'  => $comment,
             ];
 
@@ -247,8 +258,14 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
                     'subject' => $subject,
                 ]);
 
-                return $mailer->send($body);
+                $mailResult = $mailer->send($body);
             }
+
+            if (!empty($prevLangCode)) {
+                $commerce->setLang($prevLangCode);
+            }
+
+            return $mailResult;
         }
 
         return true;
@@ -646,6 +663,7 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
     public function processPayment($payment_id, $amount, $status = null)
     {
         $db = ci()->db;
+        $commerce = ci()->commerce;
 
         if (is_array($payment_id) && !empty($payment_id['id']) && !empty($payment_id['order_id'])) {
             $payment    = $payment_id;
@@ -673,7 +691,12 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
         $total = $this->getOrderPaymentsAmount($order_id);
 
         $tpl = ci()->tpl;
-        $lang = $this->modx->commerce->getUserLanguage('order');
+
+        if (!empty($order['lang'])) {
+            $prevLangCode = $commerce->setLang($order['lang']);
+        }
+
+        $lang = $commerce->getUserLanguage('order');
 
         if ($total >= $order['amount']) {
             $history = $lang['order.order_full_paid'];
@@ -686,14 +709,18 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
             'amount' => ci()->currency->format($amount),
         ]);
 
+        if (!empty($prevLangCode)) {
+            $commerce->setLang($prevLangCode);
+        }
+
         if (is_null($status)) {
-            $status = $this->modx->commerce->getSetting('status_id_after_payment', 3);
+            $status = $commerce->getSetting('status_id_after_payment', 3);
         }
 
         $this->changeStatus($order_id, $status, $comment, true);
 
         $this->getCart();
-        $template = $this->modx->commerce->getSetting('order_paid', $this->modx->commerce->getUserLanguageTemplate('order_paid'));
+        $template = $commerce->getSetting('order_paid', $commerce->getUserLanguageTemplate('order_paid'));
 
         $body = $tpl->parseChunk($template, [
             'payment' => $payment,
@@ -706,7 +733,7 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
         ], true);
 
         $mailer = new \Helpers\Mailer($this->modx, [
-            'to'      => $this->modx->commerce->getSetting('email', $this->modx->getConfig('emailsender')),
+            'to'      => $commerce->getSetting('email', $this->modx->getConfig('emailsender')),
             'subject' => $subject,
         ]);
 

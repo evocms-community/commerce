@@ -87,6 +87,12 @@ class StatusesController extends Controller implements \Commerce\Module\Interfac
                     'message' => 'title should be between 2 and 255 symbols',
                 ],
             ],
+            'alias' => [
+                'matches' => [
+                    'params'  => '/^[0-9a-z\._]{2,255}$/',
+                    'message' => 'alias can contain digits, symbols "a"-"z", "." and "_" and should be between 2 and 255 symbols',
+                ],
+            ],
         ]);
 
         if (is_array($result)) {
@@ -95,6 +101,7 @@ class StatusesController extends Controller implements \Commerce\Module\Interfac
 
         $fields = [
             'title'   => $db->escape($data['title']),
+            'alias'   => $db->escape($data['alias']),
             'notify'  => !empty($data['notify']) ? 1 : 0,
             'default' => !empty($data['default']) ? 1 : 0,
         ];

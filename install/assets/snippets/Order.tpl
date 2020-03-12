@@ -1,19 +1,21 @@
-<?php
+//<?php
 /**
  * Order
  *
  * Order form, FormLister based
  *
  * @category    snippet
- * @version     0.4.0
+ * @version     0.6.0
  * @author      mnoskov
  * @internal    @modx_category Commerce
  * @internal    @installset base
 */
 
 if (defined('COMMERCE_INITIALIZED')) {
-    $commerce = ci()->commerce;
-    $lang = $commerce->getUserLanguage('order');
+    $commerce  = ci()->commerce;
+    $userLang  = $commerce->getUserLanguage('order');
+    $adminLang = $commerce->getUserLanguage('order', true);
+    $theme     = !empty($theme) ? $theme : '';
 
     $params = array_merge([
         'controller'            => 'Order',
@@ -24,28 +26,28 @@ if (defined('COMMERCE_INITIALIZED')) {
         'lexicon'               => 'common,delivery,payments,order',
         'templatePath'          => 'assets/plugins/commerce/templates/front/',
         'templateExtension'     => 'tpl',
-        'formTpl'               => '@FILE:order_form',
-        'deliveryTpl'           => '@FILE:order_form_delivery',
-        'deliveryRowTpl'        => '@FILE:order_form_delivery_row',
-        'paymentsTpl'           => '@FILE:order_form_payments',
-        'paymentsRowTpl'        => '@FILE:order_form_payments_row',
+        'formTpl'               => '@FILE:' . $theme . 'order_form',
+        'deliveryTpl'           => '@FILE:' . $theme . 'order_form_delivery',
+        'deliveryRowTpl'        => '@FILE:' . $theme . 'order_form_delivery_row',
+        'paymentsTpl'           => '@FILE:' . $theme . 'order_form_payments',
+        'paymentsRowTpl'        => '@FILE:' . $theme . 'order_form_payments_row',
         'reportTpl'             => $commerce->getUserLanguageTemplate('order_report', true),
         'to'                    => $commerce->getSetting('email', $modx->getConfig('emailsender')),
         'ccSender'              => '1',
         'ccSenderField'         => 'email',
         'ccSenderTpl'           => $commerce->getUserLanguageTemplate('order_reportback'),
-        'subjectTpl'            => $lang['order.subject'],
-        'successTpl'            => $lang['order.success'],
+        'subjectTpl'            => $adminLang['order.subject'],
+        'successTpl'            => $userLang['order.success'],
         'rules'                 => [
             'name' => [
-                'required' => $lang['order.error.name_required'],
+                'required' => $userLang['order.error.name_required'],
             ],
             'email' => [
-                'required' => $lang['order.error.email_required'],
-                'email'    => $lang['order.error.email_incorrect'],
+                'required' => $userLang['order.error.email_required'],
+                'email'    => $userLang['order.error.email_incorrect'],
             ],
             'phone' => [
-                'required' => $lang['order.error.phone_required'],
+                'required' => $userLang['order.error.phone_required'],
             ],
         ],
     ], $params);

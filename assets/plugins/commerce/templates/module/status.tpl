@@ -37,6 +37,12 @@
                         </td>
 
                     <tr>
+                        <td><?= $lang['module.status_alias'] ?></td>
+                        <td>
+                            <input type="text" name="alias" value="<?= htmlentities($module->getFormAttr($status, 'alias')) ?>">
+                        </td>
+
+                    <tr>
                         <td></td>
                         <td>
                             <label>
