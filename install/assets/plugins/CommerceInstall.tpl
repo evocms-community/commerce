@@ -100,34 +100,38 @@ $lexicon = new \Helpers\Lexicon($modx, [
     'lang'    => $modx->getConfig('manager_language'),
 ]);
 
+$orders_table = $modx->getFullTablename('commerce_orders');
+
 $modx->db->query("
-    CREATE TABLE IF NOT EXISTS " . $modx->getFullTablename('commerce_orders') . " (
+    CREATE TABLE IF NOT EXISTS {$orders_table} (
         `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
         `name` varchar(255) DEFAULT NULL,
         `phone` varchar(255) DEFAULT NULL,
         `email` varchar(255) DEFAULT NULL,
-        `amount` float NOT NULL DEFAULT '0',
+        `amount` float NOT NULL,
         `currency` varchar(8) NOT NULL,
         `fields` text,
-        `status_id` tinyint(3) unsigned NOT NULL DEFAULT '0',
+        `status_id` tinyint(3) unsigned NOT NULL,
         `created_at` timestamp NULL DEFAULT NULL,
         `updated_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
         PRIMARY KEY (`id`)
     ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 ");
 
-$modx->db->query("ALTER TABLE " . $modx->getFullTablename('commerce_orders') . " ADD `hash` VARCHAR(32) NOT NULL AFTER `status_id`, ADD INDEX (`hash`);", false);
-$modx->db->query("ALTER TABLE " . $modx->getFullTablename('commerce_orders') . " ADD `customer_id` INT UNSIGNED NULL DEFAULT NULL AFTER `id`, ADD INDEX (`customer_id`);", false);
-$modx->db->query("ALTER TABLE " . $modx->getFullTablename('commerce_orders') . " ADD `lang` VARCHAR(32) NOT NULL AFTER `currency`;", false);
+$modx->db->query("ALTER TABLE {$orders_table} ADD `hash` VARCHAR(32) NOT NULL AFTER `status_id`, ADD INDEX (`hash`);", false);
+$modx->db->query("ALTER TABLE {$orders_table} ADD `customer_id` INT UNSIGNED NULL DEFAULT NULL AFTER `id`, ADD INDEX (`customer_id`);", false);
+$modx->db->query("ALTER TABLE {$orders_table} ADD `lang` VARCHAR(32) NOT NULL AFTER `currency`;", false);
+
+$table = $modx->getFullTablename('commerce_order_products');
 
 $modx->db->query("
-    CREATE TABLE IF NOT EXISTS " . $modx->getFullTablename('commerce_order_products') . " (
+    CREATE TABLE IF NOT EXISTS {$table} (
         `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
         `order_id` int(10) unsigned NOT NULL,
         `product_id` int(10) unsigned DEFAULT NULL,
         `title` varchar(255) NOT NULL,
         `price` float NOT NULL,
-        `count` float unsigned NOT NULL DEFAULT '1',
+        `count` float unsigned NOT NULL DEFAULT 1,
         `options` text,
         `meta` text,
         `position` tinyint(3) unsigned NOT NULL,
@@ -137,12 +141,23 @@ $modx->db->query("
 ");
 
 $modx->db->query("
-    CREATE TABLE IF NOT EXISTS " . $modx->getFullTablename('commerce_order_history') . " (
+	ALTER TABLE {$table} 
+		ADD CONSTRAINT `commerce_order_products_ibfk_1` 
+		FOREIGN KEY (`order_id`)
+		REFERENCES {$orders_table} (`id`)
+		ON DELETE CASCADE
+		ON UPDATE CASCADE
+", false);
+
+$table = $modx->getFullTablename('commerce_order_history');
+
+$modx->db->query("
+    CREATE TABLE IF NOT EXISTS {$table} (
         `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
         `order_id` int(10) unsigned NOT NULL,
         `status_id` int(10) unsigned NOT NULL,
         `comment` text NOT NULL,
-        `notify` tinyint(1) unsigned NOT NULL DEFAULT '1',
+        `notify` tinyint(1) unsigned NOT NULL DEFAULT 1,
         `user_id` int(11) DEFAULT NULL,
         `created_at` timestamp NULL DEFAULT NULL,
         PRIMARY KEY (`id`),
@@ -151,14 +166,23 @@ $modx->db->query("
     ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 ");
 
+$modx->db->query("
+	ALTER TABLE {$table} 
+		ADD CONSTRAINT `commerce_order_history_ibfk_1` 
+		FOREIGN KEY (`order_id`)
+		REFERENCES {$orders_table} (`id`)
+		ON DELETE CASCADE
+		ON UPDATE CASCADE
+", false);
+
 $table = $modx->getFullTablename('commerce_order_payments');
 
 $modx->db->query("
-    CREATE TABLE IF NOT EXISTS $table (
+    CREATE TABLE IF NOT EXISTS {$table} (
         `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
         `order_id` int(10) unsigned NOT NULL,
-        `amount` float NOT NULL DEFAULT '0',
-        `paid` tinyint(1) unsigned NOT NULL DEFAULT '0',
+        `amount` float NOT NULL,
+        `paid` tinyint(1) unsigned NOT NULL,
         `hash` varchar(16) NOT NULL,
         `created_at` timestamp NULL DEFAULT NULL,
         `updated_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
@@ -168,24 +192,33 @@ $modx->db->query("
     ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 ");
 
-$modx->db->query("ALTER TABLE $table CHANGE `hash` `hash` VARCHAR(128) NOT NULL;", false);
-$modx->db->query("ALTER TABLE $table ADD `meta` TEXT NOT NULL AFTER `hash`;", false);
-$modx->db->query("ALTER TABLE $table ADD `payment_method` VARCHAR(255) NOT NULL DEFAULT '' AFTER `hash`;", false);
-$modx->db->query("ALTER TABLE $table ADD `original_order_id` VARCHAR(255) NOT NULL DEFAULT '' AFTER `payment_method`;", false);
+$modx->db->query("ALTER TABLE {$table} CHANGE `hash` `hash` VARCHAR(128) NOT NULL;", false);
+$modx->db->query("ALTER TABLE {$table} ADD `meta` TEXT NOT NULL AFTER `hash`;", false);
+$modx->db->query("ALTER TABLE {$table} ADD `payment_method` VARCHAR(255) NOT NULL DEFAULT '' AFTER `hash`;", false);
+$modx->db->query("ALTER TABLE {$table} ADD `original_order_id` VARCHAR(255) NOT NULL DEFAULT '' AFTER `payment_method`;", false);
+
+$modx->db->query("
+	ALTER TABLE {$table} 
+		ADD CONSTRAINT `commerce_order_payments_ibfk_1` 
+		FOREIGN KEY (`order_id`)
+		REFERENCES {$orders_table} (`id`)
+		ON DELETE CASCADE
+		ON UPDATE CASCADE
+", false);
 
 $table = $modx->getFullTablename('commerce_order_statuses');
 
 $modx->db->query("
-    CREATE TABLE IF NOT EXISTS $table (
+    CREATE TABLE IF NOT EXISTS {$table} (
         `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
         `title` varchar(255) NOT NULL,
-        `notify` tinyint(1) unsigned NOT NULL DEFAULT '0',
-        `default` tinyint(1) unsigned NOT NULL DEFAULT '0',
+        `notify` tinyint(1) unsigned NOT NULL,
+        `default` tinyint(1) unsigned NOT NULL,
         PRIMARY KEY (`id`)
     ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 ");
 
-$modx->db->query("ALTER TABLE $table ADD `alias` VARCHAR(255) NOT NULL DEFAULT '' AFTER `title`;", false);
+$modx->db->query("ALTER TABLE {$table} ADD `alias` VARCHAR(255) NOT NULL DEFAULT '' AFTER `title`;", false);
 
 if (!tableExists($modx, $table)) {
     $lang = $lexicon->loadLang('order');
@@ -203,18 +236,18 @@ $table = $modx->getFullTablename('commerce_currency');
 
 if (!tableExists($modx, $table)) {
     $modx->db->query("
-        CREATE TABLE IF NOT EXISTS $table (
+        CREATE TABLE IF NOT EXISTS {$table} (
             `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
             `title` varchar(255) NOT NULL,
             `code` varchar(8) NOT NULL,
-            `value` float NOT NULL DEFAULT '1',
+            `value` float NOT NULL DEFAULT 1,
             `left` varchar(8) NOT NULL,
             `right` varchar(8) NOT NULL,
-            `decimals` tinyint(3) unsigned NOT NULL DEFAULT '2',
+            `decimals` tinyint(3) unsigned NOT NULL DEFAULT 2,
             `decsep` varchar(8) NOT NULL,
             `thsep` varchar(8) NOT NULL,
-            `active` tinyint(1) unsigned NOT NULL DEFAULT '1',
-            `default` tinyint(1) unsigned NOT NULL DEFAULT '0',
+            `active` tinyint(1) unsigned NOT NULL DEFAULT 1,
+            `default` tinyint(1) unsigned NOT NULL,
             `created_at` timestamp NULL DEFAULT NULL,
             `updated_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
             PRIMARY KEY (`id`),
@@ -237,7 +270,7 @@ if (!tableExists($modx, $table)) {
     ], $table);
 }
 
-$modx->db->query("ALTER TABLE $table ADD `lang` VARCHAR(8) NOT NULL DEFAULT '' AFTER `default`;", false);
+$modx->db->query("ALTER TABLE {$table} ADD `lang` VARCHAR(8) NOT NULL DEFAULT '' AFTER `default`;", false);
 
 $id = $modx->db->getValue($modx->db->select('MAX(id)', $tablePlugins, "`name` = 'Commerce'"));
 $modx->db->update(['disabled' => 0], $tablePlugins, "`id` = '$id'");
