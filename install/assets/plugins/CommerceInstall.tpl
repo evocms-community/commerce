@@ -141,12 +141,12 @@ $modx->db->query("
 ");
 
 $modx->db->query("
-	ALTER TABLE {$table} 
-		ADD CONSTRAINT `commerce_order_products_ibfk_1` 
-		FOREIGN KEY (`order_id`)
-		REFERENCES {$orders_table} (`id`)
-		ON DELETE CASCADE
-		ON UPDATE CASCADE
+    ALTER TABLE {$table} 
+        ADD CONSTRAINT `commerce_order_products_ibfk_1` 
+        FOREIGN KEY (`order_id`)
+        REFERENCES {$orders_table} (`id`)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE
 ", false);
 
 $table = $modx->getFullTablename('commerce_order_history');
@@ -167,12 +167,12 @@ $modx->db->query("
 ");
 
 $modx->db->query("
-	ALTER TABLE {$table} 
-		ADD CONSTRAINT `commerce_order_history_ibfk_1` 
-		FOREIGN KEY (`order_id`)
-		REFERENCES {$orders_table} (`id`)
-		ON DELETE CASCADE
-		ON UPDATE CASCADE
+    ALTER TABLE {$table} 
+        ADD CONSTRAINT `commerce_order_history_ibfk_1` 
+        FOREIGN KEY (`order_id`)
+        REFERENCES {$orders_table} (`id`)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE
 ", false);
 
 $table = $modx->getFullTablename('commerce_order_payments');
@@ -198,12 +198,12 @@ $modx->db->query("ALTER TABLE {$table} ADD `payment_method` VARCHAR(255) NOT NUL
 $modx->db->query("ALTER TABLE {$table} ADD `original_order_id` VARCHAR(255) NOT NULL DEFAULT '' AFTER `payment_method`;", false);
 
 $modx->db->query("
-	ALTER TABLE {$table} 
-		ADD CONSTRAINT `commerce_order_payments_ibfk_1` 
-		FOREIGN KEY (`order_id`)
-		REFERENCES {$orders_table} (`id`)
-		ON DELETE CASCADE
-		ON UPDATE CASCADE
+    ALTER TABLE {$table} 
+        ADD CONSTRAINT `commerce_order_payments_ibfk_1` 
+        FOREIGN KEY (`order_id`)
+        REFERENCES {$orders_table} (`id`)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE
 ", false);
 
 $table = $modx->getFullTablename('commerce_order_statuses');
