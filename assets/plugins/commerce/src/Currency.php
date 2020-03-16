@@ -155,7 +155,7 @@ class Currency
             return $amount;
         }
 
-        $amount = str_replace(',', '.', $amount);
+        $amount = trim(str_replace(',', '.', $amount));
         $currency = $this->getCurrency($code);
 
         if (!is_numeric($amount)) {
@@ -167,6 +167,12 @@ class Currency
 
     public function convert($amount, $from, $to)
     {
+        if (!is_scalar($amount)) {
+            return $amount;
+        }
+
+        $amount = trim(str_replace(',', '.', $amount));
+
         if (!is_numeric($amount)) {
             return $amount;
         }

@@ -99,6 +99,7 @@ class Payment implements \Commerce\Interfaces\Payment
             ];
         }
 
+        $total = 0;
         $subtotals = [];
         $cart->getSubtotals($subtotals, $total);
 

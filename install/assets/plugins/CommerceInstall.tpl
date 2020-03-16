@@ -182,7 +182,7 @@ $modx->db->query("
         `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
         `order_id` int(10) unsigned NOT NULL,
         `amount` decimal(16,2) NOT NULL,
-        `paid` tinyint(1) unsigned NOT NULL,
+        `paid` tinyint(1) unsigned NOT NULL DEFAULT '0',
         `hash` varchar(16) NOT NULL,
         `created_at` timestamp NULL DEFAULT NULL,
         `updated_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
