@@ -159,6 +159,7 @@ class OrdersController extends Controller implements \Commerce\Module\Interfaces
         $products = json_decode($products, true);
 
         $subcolumns = $this->sortFields($subcolumns);
+        $total = 0;
         $subtotals  = [];
         $cart->getSubtotals($subtotals, $total);
 
@@ -250,6 +251,7 @@ class OrdersController extends Controller implements \Commerce\Module\Interfaces
         $documents = $this->getDocuments($order);
 
         $subcolumns = $this->sortFields($subcolumns);
+        $total = 0;
         $subtotals  = [];
         $cart->getSubtotals($subtotals, $total);
 
