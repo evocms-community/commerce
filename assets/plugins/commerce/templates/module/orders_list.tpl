@@ -78,6 +78,21 @@
 
     <script src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
-    <script src="../assets/plugins/commerce/js/orders_list.js"></script>
+    <script>
+        var _dpl = {
+            applyLabel:       '<?= htmlentities($lang['dp.apply_label']) ?>',
+            cancelLabel:      '<?= htmlentities($lang['dp.cancel_label']) ?>',
+            customRangeLabel: '<?= htmlentities($lang['dp.custom_range_label']) ?>',
+            today:            '<?= htmlentities($lang['dp.today']) ?>',
+            yesterday:        '<?= htmlentities($lang['dp.yesterday']) ?>',
+            lastWeek:         '<?= htmlentities($lang['dp.last_week']) ?>',
+            lastMonth:        '<?= htmlentities($lang['dp.last_month']) ?>',
+            thisMonth:        '<?= htmlentities($lang['dp.this_month']) ?>',
+            prevMonth:        '<?= htmlentities($lang['dp.prev_month']) ?>',
+            daysOfWeek:       <?= json_encode($lang['dp.days_of_week'], JSON_UNESCAPED_UNICODE) ?>,
+            monthNames:       <?= json_encode($lang['dp.month_names'], JSON_UNESCAPED_UNICODE) ?>
+        };
+    </script>
+    <script src="../assets/plugins/commerce/js/orders_list.js?v=<?= $modx->commerce->getVersion() ?>"></script>
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css">
 <?php $this->endBlock(); ?>

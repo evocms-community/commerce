@@ -96,6 +96,9 @@ class OrdersController extends Controller implements \Commerce\Module\Interfaces
 
         $list = json_decode($list, true);
 
+        $lang = $this->modx->commerce->getUserLanguage('datepicker');
+        $this->view->setLang($lang);
+
         return $this->view->render('orders_list.tpl', [
             'columns' => $columns,
             'orders'  => $list,
@@ -753,15 +756,12 @@ class OrdersController extends Controller implements \Commerce\Module\Interfaces
                 },
                 'build' => function($data) {
                     if (!empty($data['interval']) && is_scalar($data['interval'])) {
-                        if (!preg_match('/^(\d\d)\.(\d\d)\.(\d{4}) - (\d\d)\.(\d\d)\.(\d{4})$/', $data['interval'], $m)) {
+                        if (!preg_match('/^(\d{4}-\d\d-\d\d) - (\d{4}-\d\d-\d\d)$/', $data['interval'], $m)) {
                             return [];
                         }
 
-                        $from = implode('-', [$m[3], $m[2], $m[1]]);
-                        $to   = implode('-', [$m[6], $m[5], $m[4]]);
-
                         return [
-                            'where' => sprintf("DATE(created_at) >= '%s' AND DATE(created_at) <= '%s'", $this->modx->db->escape($from), $this->modx->db->escape($to)),
+                            'where' => sprintf("DATE(created_at) >= '%s' AND DATE(created_at) <= '%s'", $this->modx->db->escape($m[1]), $this->modx->db->escape($m[2])),
                         ];
                     }
                 },
