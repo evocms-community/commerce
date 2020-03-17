@@ -9,6 +9,7 @@ return [
     'module.error.order_not_found' => 'Заказ не найден!',
     'module.order_updated' => 'Заказ обновлен',
     'module.show_order_btn' => 'Просмотр',
+    'module.delete_order_btn' => 'Удалить',
     'module.order_contents' => 'Содержимое заказа',
     'module.cart_contents_title' => 'Содержимое корзины',
     'module.order_history_title' => 'История заказа',

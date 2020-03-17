@@ -23,6 +23,7 @@ class OrdersController extends Controller implements \Commerce\Module\Interfaces
             'index'          => 'index',
             'edit'           => 'edit',
             'save'           => 'save',
+            'delete'         => 'delete',
             'get-tree'       => 'getTree',
             'view'           => 'view',
             'change-status'  => 'changeStatus',
@@ -490,6 +491,19 @@ class OrdersController extends Controller implements \Commerce\Module\Interfaces
         }
 
         $this->module->sendRedirectWithQuery('orders/view', 'order_id=' . $order['id'], ['success' => $this->lang['module.order_saved']]);
+    }
+
+    public function delete() {
+        $order = $this->loadOrderFromRequest();
+
+        if (empty($order)) {
+            $this->module->sendRedirect('orders', ['error' => $this->lang['module.error.order_not_found']]);
+        }
+
+        $processor = $this->modx->commerce->loadProcessor();
+        $processor->deleteOrder($order['id']);
+
+        $this->module->sendRedirect('orders');
     }
 
     private function collectRules($fields)

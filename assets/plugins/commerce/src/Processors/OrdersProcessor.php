@@ -353,6 +353,18 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
         return true;
     }
 
+    public function deleteOrder($order_id) {
+        $order_id = (int)$order_id;
+        $params = [
+            'order_id' => $order_id,
+        ];
+        $this->modx->invokeEvent('OnBeforeOrderDeleting', $params);
+        $this->modx->db->delete($this->tableOrders, "`id` = {$order_id}");
+        $this->modx->invokeEvent('OnOrderDeleted', $params);
+
+        return true;
+    }
+
     public function getOrder()
     {
         if (empty($this->order) && !empty($this->order_id)) {
