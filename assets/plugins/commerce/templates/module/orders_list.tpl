@@ -65,7 +65,7 @@
                                     <a href="<?= $this->module->makeUrl('orders/view', 'order_id=' . $order['id']) ?>" class="btn btn-primary" title="<?= $lang['module.show_order_btn'] ?>">
                                         <i class="fa fa-eye"></i>
                                     </a>
-                                    <a href="<?= $this->module->makeUrl('orders/delete', 'order_id=' . $order['id']) ?>" class="btn btn-danger" title="<?= $lang['module.delete_order_btn'] ?>">
+                                    <a href="<?= $this->module->makeUrl('orders/delete', 'order_id=' . $order['id']) . '&hash=' . md5(MODX_MANAGER_PATH . $order['hash']) ?>" class="btn btn-danger" title="<?= $lang['module.delete_order_btn'] ?>">
                                         <i class="fa fa-trash"></i>
                                     </a>
                                 </td>
