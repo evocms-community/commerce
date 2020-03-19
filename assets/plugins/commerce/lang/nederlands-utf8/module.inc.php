@@ -10,6 +10,7 @@ return [
     'module.order_updated' => 'bijgewerkte bestelling',
     'module.show_order_btn' => 'Details',
     'module.delete_order_btn' => 'Verwijder',
+    'module.confirm_delete' => 'Are you sure you want to delete an order?',
     'module.order_contents' => 'Inhoud bestelling',
     'module.cart_contents_title' => 'Prullenbak',
     'module.order_history_title' => 'Bestelgeschiedenis',
