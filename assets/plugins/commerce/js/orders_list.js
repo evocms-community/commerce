@@ -33,5 +33,11 @@
         $dateInput.on('cancel.daterangepicker', function(ev, picker) {
             $(this).val('');
         });
+        
+        $('.order-delete').on('click', function(e) {
+            if (!confirm(_oll.confirmDelete)) {
+                e.preventDefault();
+            }
+        });
     });
 })(jQuery);

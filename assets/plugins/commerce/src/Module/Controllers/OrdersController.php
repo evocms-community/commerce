@@ -23,6 +23,7 @@ class OrdersController extends Controller implements \Commerce\Module\Interfaces
             'index'          => 'index',
             'edit'           => 'edit',
             'save'           => 'save',
+            'delete'         => 'delete',
             'get-tree'       => 'getTree',
             'view'           => 'view',
             'change-status'  => 'changeStatus',
@@ -492,6 +493,19 @@ class OrdersController extends Controller implements \Commerce\Module\Interfaces
         $this->module->sendRedirectWithQuery('orders/view', 'order_id=' . $order['id'], ['success' => $this->lang['module.order_saved']]);
     }
 
+    public function delete() {
+        $order = $this->loadOrderFromRequest();
+
+        if (empty($order) || !$this->checkOrderRequest()) {
+            $this->module->sendRedirect('orders', ['error' => $this->lang['module.error.order_not_found']]);
+        }
+
+        $processor = $this->modx->commerce->loadProcessor();
+        $processor->deleteOrder($order['id']);
+
+        $this->module->sendRedirect('orders');
+    }
+
     private function collectRules($fields)
     {
         $rules = [];
@@ -575,6 +589,20 @@ class OrdersController extends Controller implements \Commerce\Module\Interfaces
         }
 
         return null;
+    }
+
+    /**
+     * @return bool
+     */
+    private function checkOrderRequest()
+    {
+        $type = !empty($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST' ? INPUT_POST : INPUT_GET;
+        $order_hash = filter_input($type, 'hash');
+        $processor = $this->modx->commerce->loadProcessor();
+        $order = $processor->getOrder();
+        $result = isset($order['hash']) && $order_hash == md5(MODX_MANAGER_PATH . $order['hash']);
+
+        return $result;
     }
 
     public function changeStatus()

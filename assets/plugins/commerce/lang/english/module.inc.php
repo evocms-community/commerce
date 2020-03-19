@@ -9,6 +9,8 @@ return [
     'module.error.order_not_found' => 'Order not found!',
     'module.order_updated' => 'Order updated',
     'module.show_order_btn' => 'View',
+    'module.delete_order_btn' => 'Delete',
+    'module.confirm_delete' => 'Are you sure you want to delete an order?',
     'module.order_contents' => 'Order description',
     'module.cart_contents_title' => 'Recycle bin',
     'module.order_history_title' => 'Order history',

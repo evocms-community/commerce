@@ -61,9 +61,12 @@
                                     <td<?= !empty($columns[$name]['style']) ? ' style="' . $columns[$name]['style'] . '"' : '' ?>><?= $cell ?></td>
                                 <?php endforeach; ?>
 
-                                <td>
-                                    <a href="<?= $this->module->makeUrl('orders/view', 'order_id=' . $order['id']) ?>" class="btn btn-primary">
-                                        <?= $lang['module.show_order_btn'] ?>
+                                <td style="white-space: nowrap;">
+                                    <a href="<?= $this->module->makeUrl('orders/view', 'order_id=' . $order['id']) ?>" class="btn btn-primary" title="<?= $lang['module.show_order_btn'] ?>">
+                                        <i class="fa fa-eye"></i>
+                                    </a>
+                                    <a href="<?= $this->module->makeUrl('orders/delete', 'order_id=' . $order['id']) . '&hash=' . md5(MODX_MANAGER_PATH . $order['hash']) ?>" class="btn btn-danger order-delete" title="<?= $lang['module.delete_order_btn'] ?>">
+                                        <i class="fa fa-trash"></i>
                                     </a>
                                 </td>
                             </tr>
@@ -91,6 +94,9 @@
             prevMonth:        '<?= htmlentities($lang['dp.prev_month']) ?>',
             daysOfWeek:       <?= json_encode($lang['dp.days_of_week'], JSON_UNESCAPED_UNICODE) ?>,
             monthNames:       <?= json_encode($lang['dp.month_names'], JSON_UNESCAPED_UNICODE) ?>
+        };
+        var _oll = {
+            confirmDelete: '<?= htmlentities($lang['module.confirm_delete']) ?>'
         };
     </script>
     <script src="../assets/plugins/commerce/js/orders_list.js?v=<?= $modx->commerce->getVersion() ?>"></script>
