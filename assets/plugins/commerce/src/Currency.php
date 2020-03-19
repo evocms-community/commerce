@@ -155,14 +155,14 @@ class Currency
             return $amount;
         }
 
-        $amount = trim(str_replace(',', '.', $amount));
-        $currency = $this->getCurrency($code);
+        $cleaned = trim(str_replace(',', '.', $amount));
 
-        if (!is_numeric($amount)) {
+        if (!is_numeric($cleaned)) {
             return $amount;
         }
 
-        return $currency['left'] . number_format($amount, $currency['decimals'], $currency['decsep'], $currency['thsep']) . $currency['right'];
+        $currency = $this->getCurrency($code);
+        return $currency['left'] . number_format($cleaned, $currency['decimals'], $currency['decsep'], $currency['thsep']) . $currency['right'];
     }
 
     public function convert($amount, $from, $to)
@@ -171,9 +171,9 @@ class Currency
             return $amount;
         }
 
-        $amount = trim(str_replace(',', '.', $amount));
+        $cleaned = trim(str_replace(',', '.', $amount));
 
-        if (!is_numeric($amount)) {
+        if (!is_numeric($cleaned)) {
             return $amount;
         }
 
@@ -183,7 +183,7 @@ class Currency
             throw new \Exception('Currency not defined');
         }
 
-        return $amount * $currencies[$to]['value'] / $currencies[$from]['value'];
+        return $cleaned * $currencies[$to]['value'] / $currencies[$from]['value'];
     }
 
     public function convertToDefault($amount, $from = null)

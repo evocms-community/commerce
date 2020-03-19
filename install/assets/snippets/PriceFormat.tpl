@@ -5,7 +5,7 @@
  * Format price using predefined settings
  *
  * @category    snippet
- * @version     0.4.0
+ * @version     0.6.1
  * @author      mnoskov
  * @internal    @modx_category Commerce
  * @internal    @installset base
@@ -18,10 +18,6 @@ if (defined('COMMERCE_INITIALIZED')) {
         'price'   => 0,
         'convert' => 1,
     ], $params);
-
-    if (!is_numeric($params['price'])) {
-        return $params['price'];
-    }
 
     if ($params['convert']) {
         $params['price'] = $currency->convertToActive($params['price']);
