@@ -105,6 +105,15 @@ class Cache
         file_put_contents($path . '/' . $filename, sprintf("%'.010d", $time) . serialize($content));
     }
 
+    public function forget($name)
+    {
+        $path = MODX_BASE_PATH . trim($this->path, '/ ') . '/' . $this->generateKey($name);
+
+        if (file_exists($path)) {
+            unlink($path);
+        }
+    }
+
     public function clean($path = null)
     {
         if (is_null($path)) {
