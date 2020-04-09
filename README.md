@@ -2,6 +2,26 @@
 
 <img src="https://img.shields.io/badge/CMS-%3E%3D1.4.6-green.svg"> <img src="https://img.shields.io/badge/PHP-%3E=5.6-green.svg?php=5.6">
 
+E-commerce solution for Evolution CMS.
+
+Payment methods:
+
+<a href="https://github.com/mnoskov/commerce-payment-robokassa" target="_blank">Robokassa</a><br>
+<a href="https://github.com/mnoskov/commerce-payment-paymaster" target="_blank">Paymaster</a><br>
+<a href="https://github.com/mnoskov/commerce-payment-paypal" target="_blank">PayPal</a><br>
+<a href="https://github.com/mnoskov/commerce-payment-cloudpayments" target="_blank">CloudPayments</a><br>
+<a href="https://github.com/mnoskov/commerce-payment-sberbank" target="_blank">Sberbank</a><br>
+<a href="https://github.com/mnoskov/commerce-payment-pokupay" target="_blank">Sberbank Credit</a><br>
+<a href="https://github.com/mnoskov/commerce-payment-bill" target="_blank">Bill</a><br>
+
+Other:
+
+<a href="https://github.com/mnoskov/commerce-options" target="_blank">Product Options</a><br>
+<a href="https://github.com/webber12/CommerceCoupons" target="_blank">Coupons</a><br>
+<a href="https://github.com/webber12/CommerceDiscounts" target="_blank">Discounts</a><br>
+<a href="https://github.com/mnoskov/commerce-cbr-currency-updater" target="_blank">CBR Currency Updater</a><br>
+<a href="https://github.com/mnoskov/commerce-dashboard" target="_blank">Dashboard</a><br>
+
 Add product to cart:
 ```html
 <form action="#" data-commerce-action="add">
