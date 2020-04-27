@@ -52,7 +52,7 @@ class Commerce
         $this->modx->invokeEvent('OnInitializeCommerce');
 
         if (empty($this->currency)) {
-            $this->currency = new Currency($modx);
+            $this->currency = new Currency($this->modx);
         }
 
         $carts = ci()->carts;
