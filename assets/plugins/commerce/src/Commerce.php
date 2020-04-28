@@ -15,7 +15,7 @@ class Commerce
 {
     use SettingsTrait;
 
-    const VERSION = 'v0.6.3';
+    const VERSION = '0.6.4';
 
     public $currency;
 
@@ -443,7 +443,7 @@ class Commerce
             }
         }
 
-        if (preg_match('/^commerce\/([a-z-_]+?)\/(payment-[a-z-]+?)$/', $route, $parts)) {
+        if (preg_match('/commerce\/([a-z-_]+?)\/(payment-[a-z-]+?)$/', $route, $parts)) {
             try {
                 $payment = $this->getPayment($parts[1]);
             } catch (\Exception $e) {
