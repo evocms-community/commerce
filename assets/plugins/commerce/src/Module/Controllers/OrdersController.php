@@ -701,7 +701,8 @@ class OrdersController extends Controller implements \Commerce\Module\Interfaces
             'date' => [
                 'title'   => $this->lang['order.created_at'],
                 'content' => function($data, $DL, $eDL) {
-                    return (new \DateTime($data['created_at']))->format('d.m.Y H:i:s');
+                    $timestamp = strtotime($data['created_at']) + $this->modx->getConfig('server_offset_time');
+                    return (new \DateTime())->setTimestamp($timestamp)->format('d.m.Y H:i:s');
                 },
                 'sort' => 10,
             ],
@@ -869,7 +870,8 @@ class OrdersController extends Controller implements \Commerce\Module\Interfaces
                     'date' => [
                         'title'   => $this->lang['order.created_at'],
                         'content' => function($data) {
-                            return (new \DateTime($data['created_at']))->format('d.m.Y H:i:s');
+                            $timestamp = strtotime($data['created_at']) + $this->modx->getConfig('server_offset_time');
+                            return (new \DateTime())->setTimestamp($timestamp)->format('d.m.Y H:i:s');
                         },
                         'sort' => 20,
                     ],
