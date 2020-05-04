@@ -4,8 +4,8 @@ namespace Commerce\Module\Controllers;
 
 class StatusesController extends Controller implements \Commerce\Module\Interfaces\Controller
 {
-    private $lang;
-    private $table = 'commerce_order_statuses';
+    protected $lang;
+    protected $table = 'commerce_order_statuses';
 
     protected $icon = 'fa fa-play-circle';
 
