@@ -6,7 +6,7 @@ class OrdersController extends Controller implements \Commerce\Module\Interfaces
 {
     use \Commerce\Module\CustomizableFieldsTrait;
 
-    private $lang;
+    protected $lang;
 
     protected $icon = 'fa fa-list';
     protected $statuses = null;
@@ -506,7 +506,7 @@ class OrdersController extends Controller implements \Commerce\Module\Interfaces
         $this->module->sendRedirect('orders');
     }
 
-    private function collectRules($fields)
+    protected function collectRules($fields)
     {
         $rules = [];
 
@@ -534,7 +534,7 @@ class OrdersController extends Controller implements \Commerce\Module\Interfaces
         ], JSON_UNESCAPED_UNICODE);
     }
 
-    private function getDocuments($order, $parent_id = 0)
+    protected function getDocuments($order, $parent_id = 0)
     {
         $config = [
             'tvList' => ['image', 'price'],
@@ -578,7 +578,7 @@ class OrdersController extends Controller implements \Commerce\Module\Interfaces
         return $result;
     }
 
-    private function loadOrderFromRequest()
+    protected function loadOrderFromRequest()
     {
         $type = !empty($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST' ? INPUT_POST : INPUT_GET;
         $order_id = filter_input($type, 'order_id', FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
@@ -594,7 +594,7 @@ class OrdersController extends Controller implements \Commerce\Module\Interfaces
     /**
      * @return bool
      */
-    private function checkOrderRequest()
+    protected function checkOrderRequest()
     {
         $type = !empty($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST' ? INPUT_POST : INPUT_GET;
         $order_hash = filter_input($type, 'hash');
@@ -664,7 +664,7 @@ class OrdersController extends Controller implements \Commerce\Module\Interfaces
         $this->module->sendRedirectBack();
     }
 
-    private function getStatuses()
+    protected function getStatuses()
     {
         if (is_null($this->statuses)) {
             $query = $this->modx->db->select('id, title', $this->modx->getFullTablename('commerce_order_statuses'));
@@ -678,7 +678,7 @@ class OrdersController extends Controller implements \Commerce\Module\Interfaces
         return $this->statuses;
     }
 
-    private function getDefaultDocListerCartConfig()
+    protected function getDefaultDocListerCartConfig()
     {
         return [
             'imageField' => 'tv.image',
@@ -686,7 +686,7 @@ class OrdersController extends Controller implements \Commerce\Module\Interfaces
         ];
     }
 
-    private function getOrdersListColumns()
+    protected function getOrdersListColumns()
     {
         $statuses = $this->getStatuses();
         $defaultCurrency = ci()->currency->getDefaultCurrencyCode();
@@ -701,7 +701,8 @@ class OrdersController extends Controller implements \Commerce\Module\Interfaces
             'date' => [
                 'title'   => $this->lang['order.created_at'],
                 'content' => function($data, $DL, $eDL) {
-                    return (new \DateTime($data['created_at']))->format('d.m.Y H:i:s');
+                    $timestamp = strtotime($data['created_at']) + $this->modx->getConfig('server_offset_time');
+                    return (new \DateTime())->setTimestamp($timestamp)->format('d.m.Y H:i:s');
                 },
                 'sort' => 10,
             ],
@@ -774,7 +775,7 @@ class OrdersController extends Controller implements \Commerce\Module\Interfaces
         ];
     }
 
-    private function getOrdersListFilters()
+    protected function getOrdersListFilters()
     {
         return [
             'interval' => [
@@ -849,7 +850,7 @@ class OrdersController extends Controller implements \Commerce\Module\Interfaces
         ];
     }
 
-    private function getOrderGroups()
+    protected function getOrderGroups()
     {
         $statuses = $this->getStatuses();
         $defaultCurrency = ci()->currency->getDefaultCurrencyCode();
@@ -869,7 +870,8 @@ class OrdersController extends Controller implements \Commerce\Module\Interfaces
                     'date' => [
                         'title'   => $this->lang['order.created_at'],
                         'content' => function($data) {
-                            return (new \DateTime($data['created_at']))->format('d.m.Y H:i:s');
+                            $timestamp = strtotime($data['created_at']) + $this->modx->getConfig('server_offset_time');
+                            return (new \DateTime())->setTimestamp($timestamp)->format('d.m.Y H:i:s');
                         },
                         'sort' => 20,
                     ],
@@ -946,7 +948,7 @@ class OrdersController extends Controller implements \Commerce\Module\Interfaces
         ];
     }
 
-    private function getOrderCartColumns()
+    protected function getOrderCartColumns()
     {
         $lang = ci()->commerce->getUserLanguage('cart');
         $order = ci()->commerce->loadProcessor()->getOrder();
@@ -1034,7 +1036,7 @@ class OrdersController extends Controller implements \Commerce\Module\Interfaces
         ];
     }
 
-    private function getOrderSubtotalsColumns()
+    protected function getOrderSubtotalsColumns()
     {
         $commerce = ci()->commerce;
         $currency = ci()->currency;
@@ -1066,7 +1068,7 @@ class OrdersController extends Controller implements \Commerce\Module\Interfaces
         ];
     }
 
-    private function getOrderEditableFields()
+    protected function getOrderEditableFields()
     {
         return [
             'name' => [
@@ -1130,7 +1132,7 @@ class OrdersController extends Controller implements \Commerce\Module\Interfaces
         ];
     }
 
-    private function getOrderCartEditableColumns()
+    protected function getOrderCartEditableColumns()
     {
         $lang  = ci()->commerce->getUserLanguage('cart');
         $order = ci()->commerce->loadProcessor()->getOrder();
@@ -1206,7 +1208,7 @@ class OrdersController extends Controller implements \Commerce\Module\Interfaces
         ];
     }
 
-    private function getOrderSubtotalsEditableColumns()
+    protected function getOrderSubtotalsEditableColumns()
     {
         $lang  = ci()->commerce->getUserLanguage('cart');
         $order = ci()->commerce->loadProcessor()->getOrder();

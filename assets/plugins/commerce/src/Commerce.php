@@ -15,7 +15,7 @@ class Commerce
 {
     use SettingsTrait;
 
-    const VERSION = 'v0.6.1';
+    const VERSION = '0.6.5';
 
     public $currency;
 
@@ -52,7 +52,7 @@ class Commerce
         $this->modx->invokeEvent('OnInitializeCommerce');
 
         if (empty($this->currency)) {
-            $this->currency = new Currency($modx);
+            $this->currency = new Currency($this->modx);
         }
 
         $carts = ci()->carts;
@@ -443,7 +443,7 @@ class Commerce
             }
         }
 
-        if (preg_match('/^commerce\/([a-z-_]+?)\/(payment-[a-z-]+?)$/', $route, $parts)) {
+        if (preg_match('/commerce\/([a-z-_]+?)\/(payment-[a-z-]+?)$/', $route, $parts)) {
             try {
                 $payment = $this->getPayment($parts[1]);
             } catch (\Exception $e) {

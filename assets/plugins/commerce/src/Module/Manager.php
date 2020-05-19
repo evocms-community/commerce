@@ -41,13 +41,13 @@ class Manager
 
         $this->route = $controller . '/' . $route;
 
-        $this->modx->invokeEvent('OnManagerRegisterCommerceController', [
-            'module' => $this,
-        ]);
-
         $this->registerController('orders', new Controllers\OrdersController($this->modx, $this));
         $this->registerController('statuses', new Controllers\StatusesController($this->modx, $this));
         $this->registerController('currency', new Controllers\CurrencyController($this->modx, $this));
+
+        $this->modx->invokeEvent('OnManagerRegisterCommerceController', [
+            'module' => $this,
+        ]);
 
         if (!isset($this->controllers[$controller])) {
             $this->modx->sendRedirect('index.php?a=106');

@@ -106,7 +106,7 @@ var Commerce = {
             options = {};
         }
 
-        if (hashes.length) {
+        if (hashes.carts.length || hashes.form) {
             $.post(Commerce.params.path + 'commerce/cart/contents', $.extend(options, {hashes: hashes}), function(response) {
                 if (response.status == 'success' && response.markup) {
                     Commerce.reloadMarkupFromResponse(response.markup);

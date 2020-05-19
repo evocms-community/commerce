@@ -4,8 +4,8 @@ namespace Commerce\Module\Controllers;
 
 class CurrencyController extends Controller implements \Commerce\Module\Interfaces\Controller
 {
-    private $lang;
-    private $table = 'commerce_currency';
+    protected $lang;
+    protected $table = 'commerce_currency';
 
     protected $icon = 'fa fa-usd';
 

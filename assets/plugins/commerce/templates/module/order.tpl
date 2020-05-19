@@ -122,7 +122,7 @@
                 <tbody>
                     <?php foreach ($history as $row): ?>
                         <tr>
-                            <td style="white-space: nowrap;"><?= (new \DateTime($row['created_at']))->format('d.m.Y H:i:s') ?></td>
+                            <td style="white-space: nowrap;"><?= (new \DateTime())->setTimestamp(strtotime($row['created_at']) + $modx->getConfig('server_offset_time'))->format('d.m.Y H:i:s') ?></td>
                             <td style="white-space: nowrap;"><?= !empty($statuses[$row['status_id']]) ? $statuses[$row['status_id']] : '' ?></td>
                             <td><?= !empty($row['notify']) ? $_lang['yes'] : $_lang['no'] ?></td>
                             <td><?= htmlentities($row['comment']) ?></td>

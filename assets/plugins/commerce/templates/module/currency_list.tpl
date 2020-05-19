@@ -46,7 +46,7 @@
                                 <td><?= $row['value'] ?></td>
                                 <td><?= !empty($row['active']) ? $lang['module.active_title'] : '' ?></td>
                                 <td style="white-space: nowrap;"><strong><?= !empty($row['default']) ? $lang['module.default_currency_field'] : '' ?></strong></td>
-                                <td style="white-space: nowrap;"><?= (new \DateTime($row['updated_at']))->format('d.m.Y H:i:s') ?></td>
+                                <td style="white-space: nowrap;"><?= (new \DateTime())->setTimestamp(strtotime($row['updated_at']) + $modx->getConfig('server_offset_time'))->format('d.m.Y H:i:s') ?></td>
                 
                                 <td style="white-space: nowrap;">
                                     <a href="<?= $this->module->makeUrl('currency/edit', 'currency_id=' . $row['id']) ?>" class="btn btn-primary btn-sm">

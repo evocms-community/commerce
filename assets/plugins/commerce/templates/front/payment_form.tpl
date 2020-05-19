@@ -1,4 +1,4 @@
-<form action="<?= $url ?>" method="get" id="payment_request" style="display: none;">
+<form action="<?= $url ?>" method="<?= !empty($method) ? $method : 'get' ?>" id="payment_request" style="display: none;">
     <?php foreach ($data as $key => $value): ?>
         <input type="hidden" name="<?= $key ?>" value="<?= htmlentities($value) ?>">
     <?php endforeach; ?>

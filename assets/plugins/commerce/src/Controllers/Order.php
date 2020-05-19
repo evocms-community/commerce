@@ -117,6 +117,10 @@ class Order extends Form
             $this->setPlaceholder($type, $markup);
         }
 
+        if ($this->isSubmitted()) {
+            $this->modx->commerce->loadProcessor()->updateRawData($_POST);
+        }
+
         return parent::render();
     }
 

@@ -198,6 +198,7 @@ $modx->db->query("ALTER TABLE {$table} CHANGE `hash` `hash` VARCHAR(128) NOT NUL
 $modx->db->query("ALTER TABLE {$table} ADD `meta` TEXT NOT NULL AFTER `hash`;", false);
 $modx->db->query("ALTER TABLE {$table} ADD `payment_method` VARCHAR(255) NOT NULL DEFAULT '' AFTER `hash`;", false);
 $modx->db->query("ALTER TABLE {$table} ADD `original_order_id` VARCHAR(255) NOT NULL DEFAULT '' AFTER `payment_method`;", false);
+$modx->db->query("ALTER TABLE {$table} ADD INDEX (`original_order_id`);", false);
 
 $modx->db->query("
     ALTER TABLE {$table} 
@@ -209,6 +210,7 @@ $modx->db->query("
 ", false);
 
 $table = $modx->getFullTablename('commerce_order_statuses');
+$tableExists = tableExists($modx, $table);
 
 $modx->db->query("
     CREATE TABLE IF NOT EXISTS {$table} (
@@ -218,11 +220,11 @@ $modx->db->query("
         `default` tinyint(1) unsigned NOT NULL,
         PRIMARY KEY (`id`)
     ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
-");
+", false);
 
 $modx->db->query("ALTER TABLE {$table} ADD `alias` VARCHAR(255) NOT NULL DEFAULT '' AFTER `title`;", false);
 
-if (!tableExists($modx, $table)) {
+if (!$tableExists) {
     $lang = $lexicon->loadLang('order');
 
     $modx->db->insert(['title' => $lang['order.status.new'], 'alias' => 'order.status.new', 'default' => 1], $table);
