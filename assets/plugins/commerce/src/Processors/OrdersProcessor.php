@@ -241,12 +241,13 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
             ];
 
             $this->modx->invokeEvent('OnBeforeCustomerNotifySending', [
-                'reason'  => 'status_changed',
-                'order'   => &$order,
-                'subject' => &$subjectTpl,
-                'body'    => &$template,
-                'data'    => &$templateData,
-                'prevent' => &$preventSending,
+                'reason'     => 'status_changed',
+                'status_id'  => $status_id,
+                'order'      => &$order,
+                'subject'    => &$subjectTpl,
+                'body'       => &$template,
+                'data'       => &$templateData,
+                'prevent'    => &$preventSending,
             ]);
 
             if (!$preventSending) {
