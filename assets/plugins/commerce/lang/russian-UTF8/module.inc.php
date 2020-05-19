@@ -87,4 +87,5 @@ return [
     'module.dates_interval' => 'Временной интервал',
     'module.related_language' => 'Код соответствующего языка',
     'module.status_alias' => 'Псевдоним',
+    'module.status_marker_color' => 'Цвет маркера',
 ];

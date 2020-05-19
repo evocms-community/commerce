@@ -39,7 +39,7 @@
                         <?php foreach ($list as $row): ?>
                             <tr>
                                 <td style="width: 1%; text-align: center;"><?= $row['id'] ?></td>
-                                <td><?= $row['title'] ?></td>
+                                <td><i class="status-color fa fa-circle" style="color:#<?= !empty($row['color']) ? $row['color'] : 'FFFFFF' ?>"></i> <?= $row['title'] ?></td>
                                 <td><?= $row['alias'] ?></td>
                                 <td style="white-space: nowrap;"><strong><?= !empty($row['default']) ? $lang['module.default_field'] : '' ?></strong></td>
                                 <td style="white-space: nowrap;"><?= !empty($row['notify']) ? $lang['module.notify'] : '' ?></td>
