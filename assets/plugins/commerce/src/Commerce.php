@@ -340,6 +340,7 @@ class Commerce
 
     public function processRoute($route)
     {
+        $route = trim($route, '/');
         switch ($route) {
             case 'commerce/action': {
                 if (!empty($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['action']) && is_string($_POST['action']) && preg_match('/^[a-z]+\/[a-z]+$/', $_POST['action'])) {
