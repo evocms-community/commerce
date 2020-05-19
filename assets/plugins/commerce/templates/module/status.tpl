@@ -35,13 +35,19 @@
                         <td>
                             <input type="text" name="title" value="<?= htmlentities($module->getFormAttr($status, 'title')) ?>">
                         </td>
-
+                    </tr>
                     <tr>
                         <td><?= $lang['module.status_alias'] ?></td>
                         <td>
                             <input type="text" name="alias" value="<?= htmlentities($module->getFormAttr($status, 'alias')) ?>">
                         </td>
-
+                    </tr>
+                    <tr>
+                        <td><?= $lang['module.status_marker_color'] ?></td>
+                        <td style="white-space: nowrap; vertical-align: baseline;">
+                            <i class="status-color fa fa-circle" style="color:#<?= htmlentities($module->getFormAttr($status, 'color')) ?>"></i> <input type="text" name="color" value="<?= htmlentities($module->getFormAttr($status, 'color')) ?>">
+                        </td>
+                    </tr>
                     <tr>
                         <td></td>
                         <td>
@@ -51,7 +57,7 @@
                                 <?= $lang['module.status_change_notify'] ?>
                             </label>
                         </td>
-
+                    </tr>
                     <tr>
                         <td></td>
                         <td>
@@ -61,6 +67,7 @@
                                 <?= $lang['module.default_field'] ?>
                             </label>
                         </td>
+                    </tr>
                 </table>
 
                 <?php if (!empty($status['id'])): ?>
@@ -71,4 +78,22 @@
             </form>
         </div>
     </div>
+<?php $this->endBlock(); ?>
+
+<?php $this->block('footer'); ?>
+<script src="../assets/plugins/commerce/js/vanilla-picker.min.js"></script>
+<script>
+    var color_input = document.getElementsByName('color')[0];
+    var color_marker = document.getElementsByClassName('status-color')[0];
+    var picker = new Picker({
+        parent: color_input.parentNode,
+        popup: 'bottom',
+        alpha: false,
+        color: '#' + color_input.value,
+        onDone: function(color){
+            color_input.value = color.hex.substring(1,7).toUpperCase();
+            color_marker.style.color = color.hex;
+        }
+    });
+</script>
 <?php $this->endBlock(); ?>

@@ -667,13 +667,14 @@ class OrdersController extends Controller implements \Commerce\Module\Interfaces
     protected function getStatuses()
     {
         if (is_null($this->statuses)) {
-            $query = $this->modx->db->select('id, title, notify', $this->modx->getFullTablename('commerce_order_statuses'));
+            $query = $this->modx->db->select('id, title, notify, color', $this->modx->getFullTablename('commerce_order_statuses'));
             $this->statuses = [];
 
             while ($row = $this->modx->db->getRow($query)) {
                 $this->statuses[$row['id']] = [
                     'title'  => $row['title'],
-                    'notify' => $row['notify']
+                    'notify' => $row['notify'],
+                    'color'  => !empty($row['color']) ? $row['color'] : 'FFFFFF'
                 ];
             }
         }
@@ -771,8 +772,11 @@ class OrdersController extends Controller implements \Commerce\Module\Interfaces
                         $out .= '<option value="' . $id . '"' . ($id == $data['status_id'] ? ' selected' : '') . '>' . $status['title'] . '</option>';
                     }
 
-                    return '<select name="status_id" onchange="location = \'' . $this->module->makeUrl('orders/change-status', 'order_id=' . $data['id'] . '&status_id=') . '\' + jQuery(this).val();">' . $out . '</select>';
+                    $color = '<i class="status-color fa fa-circle" style="color:#' . (isset($statuses[$data['status_id']]) ? $statuses[$data['status_id']]['color'] : 'FFFFFF') . '"></i>';
+
+                    return $color . '<select name="status_id" onchange="location = \'' . $this->module->makeUrl('orders/change-status', 'order_id=' . $data['id'] . '&status_id=') . '\' + jQuery(this).val();">' . $out . '</select>';
                 },
+                'style' => 'white-space: nowrap; vertical-align: baseline;',
                 'sort' => 80,
             ],
         ];

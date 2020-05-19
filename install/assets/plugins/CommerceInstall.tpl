@@ -219,21 +219,21 @@ $modx->db->query("
         `notify` tinyint(1) unsigned NOT NULL,
         `default` tinyint(1) unsigned NOT NULL,
         PRIMARY KEY (`id`)
-    ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 ", false);
 
 $modx->db->query("ALTER TABLE {$table} ADD `alias` VARCHAR(255) NOT NULL DEFAULT '' AFTER `title`;", false);
+$modx->db->query("ALTER TABLE {$table} ADD `color` VARCHAR(6) NOT NULL DEFAULT '' AFTER `alias`;", false);
 
 if (!$tableExists) {
     $lang = $lexicon->loadLang('order');
-
-    $modx->db->insert(['title' => $lang['order.status.new'], 'alias' => 'order.status.new', 'default' => 1], $table);
-    $modx->db->insert(['title' => $lang['order.status.processing'], 'alias' => 'order.status.processing'], $table);
-    $modx->db->insert(['title' => $lang['order.status.paid'], 'alias' => 'order.status.paid', 'notify' => 1], $table);
-    $modx->db->insert(['title' => $lang['order.status.shipped'], 'alias' => 'order.status.shipped'], $table);
-    $modx->db->insert(['title' => $lang['order.status.canceled'], 'alias' => 'order.status.canceled', 'notify' => 1], $table);
-    $modx->db->insert(['title' => $lang['order.status.complete'], 'alias' => 'order.status.complete'], $table);
-    $modx->db->insert(['title' => $lang['order.status.pending'], 'alias' => 'order.status.pending'], $table);
+    $modx->db->insert(['title' => $lang['order.status.new'], 'alias' => 'order.status.new', 'default' => 1, 'color' => '000000'], $table);
+    $modx->db->insert(['title' => $lang['order.status.processing'], 'alias' => 'order.status.processing'], $table, 'color' => '4CAF50');
+    $modx->db->insert(['title' => $lang['order.status.paid'], 'alias' => 'order.status.paid', 'notify' => 1, 'color' => 'E91E63'], $table);
+    $modx->db->insert(['title' => $lang['order.status.shipped'], 'alias' => 'order.status.shipped', 'color' => '673AB7'], $table);
+    $modx->db->insert(['title' => $lang['order.status.canceled'], 'alias' => 'order.status.canceled', 'notify' => 1, 'color' => 'FF5722'], $table);
+    $modx->db->insert(['title' => $lang['order.status.complete'], 'alias' => 'order.status.complete', 'color' => '2196F3'], $table);
+    $modx->db->insert(['title' => $lang['order.status.pending'], 'alias' => 'order.status.pending', 'color' => '9E9E9E'], $table);
 }
 
 $table = $modx->getFullTablename('commerce_currency');
