@@ -143,7 +143,7 @@
                     <tr>
                         <td><?= $lang['module.status_title'] ?></td>
                         <td>
-                            <select name="status_id" id="status_id">
+                            <select name="status_id">
                                 <?php foreach ($statuses as $id => $status): ?>
                                     <option value="<?= $id ?>"><?= $status['title'] ?></option>
                                 <?php endforeach; ?>
