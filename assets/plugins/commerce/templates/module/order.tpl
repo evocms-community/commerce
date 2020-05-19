@@ -123,7 +123,11 @@
                     <?php foreach ($history as $row): ?>
                         <tr>
                             <td style="white-space: nowrap;"><?= (new \DateTime())->setTimestamp(strtotime($row['created_at']) + $modx->getConfig('server_offset_time'))->format('d.m.Y H:i:s') ?></td>
-                            <td style="white-space: nowrap;"><?= !empty($statuses[$row['status_id']]) ? $statuses[$row['status_id']] : '' ?></td>
+                            <?php if(!empty($statuses[$row['status_id']])): ?>
+                                <td style="white-space: nowrap;"><i class="status-color fa fa-circle" style="color:#<?= $statuses[$row['status_id']]['color'] ?>"></i> <?= $statuses[$row['status_id']]['title'] ?></td>
+                            <?php else: ?>
+                                <td style="white-space: nowrap;"></td>
+                            <?php endif; ?>
                             <td><?= !empty($row['notify']) ? $_lang['yes'] : $_lang['no'] ?></td>
                             <td><?= htmlentities($row['comment']) ?></td>
                             <td><?= $row['user_id'] > 0 ? htmlentities($users[$row['user_id']]) : '' ?></td>
@@ -142,10 +146,10 @@
                 <table class="table">
                     <tr>
                         <td><?= $lang['module.status_title'] ?></td>
-                        <td>
-                            <select name="status_id">
-                                <?php foreach ($statuses as $id => $title): ?>
-                                    <option value="<?= $id ?>"><?= $title ?></option>
+                        <td style="white-space: nowrap; vertical-align: baseline;">
+                            <i class="status-color fa fa-circle" id="status_color"></i> <select name="status_id">
+                                <?php foreach ($statuses as $id => $status): ?>
+                                    <option value="<?= $id ?>"><?= $status['title'] ?></option>
                                 <?php endforeach; ?>
                             </select>
                         </td>
@@ -170,4 +174,22 @@
             </form>
         </div>
     </div>
+<?php $this->endBlock(); ?>
+
+<?php $this->block('footer'); ?>
+<script>
+    var statuses = <?= json_encode($statuses) ?>;
+    var status_selector = document.getElementsByName('status_id')[0];
+    var status_color = document.getElementById('status_color');
+    status_selector.onchange = function() {
+        var value = this.value;
+        if (typeof statuses[value] !== 'undefined') {
+            var notify = statuses[value].notify;
+            var notify_checkbox = document.getElementsByName('notify')[1];
+            notify_checkbox.checked = notify == '1';
+            status_color.style.color = '#' + statuses[value].color;
+        }
+    };
+    status_selector.onchange();
+</script>
 <?php $this->endBlock(); ?>

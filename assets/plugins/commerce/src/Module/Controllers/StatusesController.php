@@ -49,6 +49,8 @@ class StatusesController extends Controller implements \Commerce\Module\Interfac
 
             if (empty($status)) {
                 $this->module->sendRedirect('statuses', ['error' => $this->lang['module.error.status_not_found']]);
+            } else {
+                $status['color'] = !empty($status['color']) ? $status['color'] : 'FFFFFF';
             }
         } else {
             $status = [];
@@ -79,6 +81,7 @@ class StatusesController extends Controller implements \Commerce\Module\Interfac
         }
 
         $data = $_POST;
+        $data['color'] = !empty($data['color']) && is_scalar($data['color']) && preg_match('/^[0-9a-fA-F]{6}$/', $data['color']) ? $data['color'] : '';
 
         $result = $this->modx->commerce->validate($data, [
             'title' => [
@@ -102,6 +105,7 @@ class StatusesController extends Controller implements \Commerce\Module\Interfac
         $fields = [
             'title'   => $db->escape($data['title']),
             'alias'   => $db->escape($data['alias']),
+            'color'   => $db->escape(strtoupper($data['color'])),
             'notify'  => !empty($data['notify']) ? 1 : 0,
             'default' => !empty($data['default']) ? 1 : 0,
         ];

@@ -87,4 +87,5 @@ return [
     'module.dates_interval' => 'Dates interval',
     'module.related_language' => 'Related language code',
     'module.status_alias' => 'Alias',
+    'module.status_marker_color' => 'Status marker color',
 ];
