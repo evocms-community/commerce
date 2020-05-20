@@ -1163,7 +1163,7 @@ class OrdersController extends Controller implements \Commerce\Module\Interfaces
                     return '
                         <input type="hidden" name="order[cart][' . $data['iteration'] . '][order_row_id]" value="' . htmlentities($data['order_row_id']) . '">
                         <input type="hidden" name="order[cart][' . $data['iteration'] . '][id]" value="' . htmlentities($data['id']) . '">
-                        <input type="text" class="form-control" name="order[cart][' . $data['iteration'] . '][title]" value="' . htmlentities($data['title']) . '">
+                        <input type="text" class="form-control" name="order[cart][' . $data['iteration'] . '][title]" value="' . htmlentities($data['pagetitle']) . '">
                     ';
                 },
                 'rules'   => [

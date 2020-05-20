@@ -35,7 +35,7 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
         $fields = [
             'order_id'   => $order_id,
             'product_id' => (int)$item['id'],
-            'title'      => $this->modx->db->escape(isset($item['title']) ? $item['title'] : $item['name']),
+            'title'      => $this->modx->db->escape(trim(isset($item['title']) ? $item['title'] : $item['name'])),
             'price'      => $this->normalizePrice($item['price']),
             'count'      => $this->normalizePrice($item['count']),
             'position'   => $position,
