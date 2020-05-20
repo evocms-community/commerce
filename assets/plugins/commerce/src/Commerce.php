@@ -431,7 +431,7 @@ class Commerce
                 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     $manager = new \Commerce\Module\Manager($this->modx, []);
 
-                    $route = filter_input(INPUT_POST, 'route', FILTER_VALIDATE_REGEXP, ['options' => [
+                    $route = filter_input(INPUT_POST, 'type', FILTER_VALIDATE_REGEXP, ['options' => [
                         'regexp'  => '/^[a-z]+(:?\/[a-z-]+)*$/',
                         'default' => '',
                     ]]);
