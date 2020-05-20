@@ -268,7 +268,7 @@ class OrdersController extends Controller implements \Commerce\Module\Interfaces
             'iteration' => '{%iteration%}',
             'title'     => '{%pagetitle%}',
             'count'     => 1,
-            'price'     => '{%tv_price%}',
+            'price'     => '{%price%}',
             'currency'  => $order['currency'],
         ];
 
@@ -536,11 +536,13 @@ class OrdersController extends Controller implements \Commerce\Module\Interfaces
 
     protected function getDocuments($order, $parent_id = 0)
     {
-        $priceField = $this->modx->commerce->getSetting('price_field', 'price');
+        $commerce = $this->modx->commerce;
+        $priceField = $commerce->getSetting('price_field', 'price');
 
         $config = [
+            'priceField' => 'tv.' . $priceField,
             'tvList' => ['image', $priceField],
-            'api'    => ['id', 'pagetitle', 'isfolder', 'tv.image', 'tv_price'],
+            'api'    => ['id', 'pagetitle', 'isfolder', 'tv.image', 'price'],
         ];
 
         $this->modx->invokeEvent('OnManagerBeforeSelectorLevelRender', [
@@ -557,14 +559,22 @@ class OrdersController extends Controller implements \Commerce\Module\Interfaces
         $currency = ci()->currency;
 
         $config['prepare'][] = function($data, $modx, $DL, $eDL) use ($order, $currency, $priceField) {
-            if (!empty($data['tv.' . $priceField])) {
-                $data['tv_price'] = $currency->convertFromDefault($data['tv.' . $priceField], $order['currency']);
+            $priceField = $DL->getCFGDef('priceField', 'tv.price');
+            if (!empty($data[$priceField])) {
+                $data['price'] = $currency->convertFromDefault($data[$priceField], $order['currency']);
             } else {
-                $data['tv_price'] = 0;
+                $data['price'] = 0;
             }
 
             return $data;
         };
+
+        if(!isset($config['addWhereList'])) {
+            $templates = \APIhelpers::cleanIDs($commerce->getSetting('product_templates'));
+            if (!empty($templates)) {
+                $config['addWhereList'] = '(c.isfolder = 1 OR c.template IN (' . implode(',', $templates) . '))';
+            }
+        }
 
         $result = $this->modx->runSnippet('DocLister', array_merge($config, [
             'depth'   => 0,
