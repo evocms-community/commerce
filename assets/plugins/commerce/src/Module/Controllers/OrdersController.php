@@ -536,9 +536,11 @@ class OrdersController extends Controller implements \Commerce\Module\Interfaces
 
     protected function getDocuments($order, $parent_id = 0)
     {
+        $priceField = $this->modx->commerce->getSetting('price_field', 'price');
+
         $config = [
-            'tvList' => ['image', 'price'],
-            'api'    => ['id', 'pagetitle', 'isfolder', 'tv.image', 'tv.price'],
+            'tvList' => ['image', $priceField],
+            'api'    => ['id', 'pagetitle', 'isfolder', 'tv.image', 'tv_price'],
         ];
 
         $this->modx->invokeEvent('OnManagerBeforeSelectorLevelRender', [
@@ -554,9 +556,11 @@ class OrdersController extends Controller implements \Commerce\Module\Interfaces
 
         $currency = ci()->currency;
 
-        $config['prepare'][] = function($data, $modx, $DL, $eDL) use ($order, $currency) {
-            if (!empty($data['tv.price'])) {
-                $data['tv.price'] = $currency->convertFromDefault($data['tv.price'], $order['currency']);
+        $config['prepare'][] = function($data, $modx, $DL, $eDL) use ($order, $currency, $priceField) {
+            if (!empty($data['tv.' . $priceField])) {
+                $data['tv_price'] = $currency->convertFromDefault($data['tv.' . $priceField], $order['currency']);
+            } else {
+                $data['tv_price'] = 0;
             }
 
             return $data;
