@@ -87,4 +87,6 @@ return [
     'module.dates_interval' => 'Tijdsinterval',
     'module.related_language' => 'Code van de overeenkomstige taal',
     'module.status_alias' => 'Bijnaam',
+    'module.status_marker_color' => 'Kleur van de statusmarker',
+    'module.canbepaid_field' => 'Bestellingen met deze status kunnen worden betaald',
 ];

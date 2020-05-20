@@ -62,6 +62,16 @@
                         <td></td>
                         <td>
                             <label>
+                                <input type="hidden" name="canbepaid" value="0">
+                                <input type="checkbox" name="canbepaid" value="1"<?= !empty($module->getFormAttr($status, 'canbepaid')) ? ' checked' : '' ?>>
+                                <?= $lang['module.canbepaid_field'] ?>
+                            </label>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td>
+                            <label>
                                 <input type="hidden" name="default" value="0">
                                 <input type="checkbox" name="default" value="1"<?= !empty($module->getFormAttr($status, 'default')) ? ' checked' : '' ?>>
                                 <?= $lang['module.default_field'] ?>

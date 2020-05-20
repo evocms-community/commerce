@@ -22,8 +22,8 @@ $tableEvents     = $modx->getFullTablename('site_plugin_events');
 $previousVersion = '0.0.0';
 
 $description = $modx->db->getValue($modx->db->select('description', $tablePlugins, "`name` = 'Commerce'", '`id` DESC', '1, 1'));
-if (!empty($description) && preg_match('/strong>(.+?)<\/strong/', $description, $matches)) {
-    $previousVersion = $matches[1];
+if (!empty($description) && preg_match('/<(b|strong)>(.+?)<\/(b|strong)>/', $description, $matches)) {
+    $previousVersion = $matches[2];
 }
 
 function tableExists($modx, $table)
@@ -224,6 +224,7 @@ $modx->db->query("
 
 $modx->db->query("ALTER TABLE {$table} ADD `alias` VARCHAR(255) NOT NULL DEFAULT '' AFTER `title`;", false);
 $modx->db->query("ALTER TABLE {$table} ADD `color` VARCHAR(6) NOT NULL DEFAULT '' AFTER `alias`;", false);
+$modx->db->query("ALTER TABLE {$table} ADD `canbepaid` TINYINT(1) UNSIGNED NOT NULL DEFAULT '1' AFTER `default`;", false);
 
 $lang = $lexicon->loadLang('order');
 
@@ -232,8 +233,8 @@ if (!$tableExists) {
     $modx->db->insert(['title' => $lang['order.status.processing'], 'alias' => 'order.status.processing', 'color' => '4CAF50'], $table);
     $modx->db->insert(['title' => $lang['order.status.paid'], 'alias' => 'order.status.paid', 'notify' => 1, 'color' => 'E91E63'], $table);
     $modx->db->insert(['title' => $lang['order.status.shipped'], 'alias' => 'order.status.shipped', 'color' => '673AB7'], $table);
-    $modx->db->insert(['title' => $lang['order.status.canceled'], 'alias' => 'order.status.canceled', 'notify' => 1, 'color' => 'FF5722'], $table);
-    $modx->db->insert(['title' => $lang['order.status.complete'], 'alias' => 'order.status.complete', 'color' => '2196F3'], $table);
+    $modx->db->insert(['title' => $lang['order.status.canceled'], 'alias' => 'order.status.canceled', 'notify' => 1, 'color' => 'FF5722', 'canbepaid' => 0], $table);
+    $modx->db->insert(['title' => $lang['order.status.complete'], 'alias' => 'order.status.complete', 'color' => '2196F3', 'canbepaid' => 0], $table);
     $modx->db->insert(['title' => $lang['order.status.pending'], 'alias' => 'order.status.pending', 'color' => '9E9E9E'], $table);
 } else {
     $modx->db->update(['color' => '000000'], $table, "`color` = '' AND `title` = '{$lang['order.status.new']}'");
@@ -243,6 +244,11 @@ if (!$tableExists) {
     $modx->db->update(['color' => 'FF5722'], $table, "`color` = '' AND `title` = '{$lang['order.status.canceled']}'");
     $modx->db->update(['color' => '2196F3'], $table, "`color` = '' AND `title` = '{$lang['order.status.complete']}'");
     $modx->db->update(['color' => '9E9E9E'], $table, "`color` = '' AND `title` = '{$lang['order.status.pending']}'");
+
+    if (version_compare($previousVersion, '0.6.4', '<=')) {
+        $modx->db->update(['canbepaid' => 0], $table, "`title` = '{$lang['order.status.canceled']}'");
+        $modx->db->update(['canbepaid' => 0], $table, "`title` = '{$lang['order.status.complete']}'");
+    }
 }
 
 $table = $modx->getFullTablename('commerce_currency');

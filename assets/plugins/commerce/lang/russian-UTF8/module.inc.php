@@ -88,4 +88,5 @@ return [
     'module.related_language' => 'Код соответствующего языка',
     'module.status_alias' => 'Псевдоним',
     'module.status_marker_color' => 'Цвет маркера',
+    'module.canbepaid_field' => 'Заказы с этим статусом могут быть оплачены',
 ];

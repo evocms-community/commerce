@@ -103,11 +103,12 @@ class StatusesController extends Controller implements \Commerce\Module\Interfac
         }
 
         $fields = [
-            'title'   => $db->escape($data['title']),
-            'alias'   => $db->escape($data['alias']),
-            'color'   => $db->escape(strtoupper($data['color'])),
-            'notify'  => !empty($data['notify']) ? 1 : 0,
-            'default' => !empty($data['default']) ? 1 : 0,
+            'title'     => $db->escape($data['title']),
+            'alias'     => $db->escape($data['alias']),
+            'color'     => $db->escape(strtoupper($data['color'])),
+            'notify'    => !empty($data['notify']) ? 1 : 0,
+            'canbepaid' => !empty($data['canbepaid']) ? 1 : 0,
+            'default'   => !empty($data['default']) ? 1 : 0,
         ];
 
         if ($fields['default'] == 0) {

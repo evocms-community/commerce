@@ -531,6 +531,12 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
         $order = $db->getRow($db->select('*', $this->tableOrders, "`hash` = '" . $db->escape($hash) . "'"));
 
         if (!empty($order)) {
+            $statusCanBePaid = $this->modx->db->getValue($this->modx->db->select('canbepaid', $this->tableStatuses, "`id` = '" . intval($order['status_id']) . "'"));
+
+            if (empty($statusCanBePaid)) {
+                return false;
+            }
+
             $amount = $this->getOrderPaymentsAmount($order['id']);
 
             // Если сумма предыдущих оплат больше суммы заказа, отменяем оплату
@@ -698,6 +704,12 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
 
         if (is_null($order)) {
             throw new \Exception('Order ' . print_r($order_id, true) . ' not found!');
+        }
+
+        $statusCanBePaid = $this->modx->db->getValue($this->modx->db->select('canbepaid', $this->tableStatuses, "`id` = '" . intval($order['status_id']) . "'"));
+
+        if (empty($statusCanBePaid)) {
+            throw new \Exception('Order ' . print_r($order_id, true) . ' cannot be paid by status restriction!');
         }
 
         $db->update(['paid' => 1], $this->tablePayments, "`id` = '" . intval($payment_id) . "'");

@@ -88,4 +88,5 @@ return [
     'module.related_language' => 'Related language code',
     'module.status_alias' => 'Alias',
     'module.status_marker_color' => 'Status marker color',
+    'module.canbepaid_field' => 'Orders with this status can be paid',
 ];
