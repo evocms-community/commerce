@@ -990,7 +990,8 @@ class OrdersController extends Controller implements \Commerce\Module\Interfaces
                 'title'   => $lang['cart.item_title'],
                 'content' => function($data, $DL, $eDL) {
                     $url = $this->modx->makeUrl($data['id']);
-                    return '<a href="' . $url . '" target="_blank">' . $data['title'] . '</a>';
+                    $edited = $data['original_title'] !== $data['pagetitle'] ? '<i class="fa fa-edit"></i>&nbsp;' : '';
+                    return '<a href="' . $url . '" target="_blank">' . $edited . $data['pagetitle'] . '</a>';
                 },
                 'sort'    => 30,
             ],
