@@ -1004,7 +1004,8 @@ class OrdersController extends Controller implements \Commerce\Module\Interfaces
                 'title'   => $lang['cart.item_title'],
                 'content' => function($data, $DL, $eDL) {
                     $url = $this->modx->makeUrl($data['id']);
-                    return '<a href="' . $url . '" target="_blank">' . $data['title'] . '</a>';
+                    $edited = $data['original_title'] !== $data['pagetitle'] ? '<i class="fa fa-edit"></i>&nbsp;' : '';
+                    return '<a href="' . $url . '" target="_blank">' . $edited . $data['pagetitle'] . '</a>';
                 },
                 'sort'    => 30,
             ],
@@ -1177,7 +1178,7 @@ class OrdersController extends Controller implements \Commerce\Module\Interfaces
                     return '
                         <input type="hidden" name="order[cart][' . $data['iteration'] . '][order_row_id]" value="' . htmlentities($data['order_row_id']) . '">
                         <input type="hidden" name="order[cart][' . $data['iteration'] . '][id]" value="' . htmlentities($data['id']) . '">
-                        <input type="text" class="form-control" name="order[cart][' . $data['iteration'] . '][title]" value="' . htmlentities($data['title']) . '">
+                        <input type="text" class="form-control" name="order[cart][' . $data['iteration'] . '][title]" value="' . htmlentities($data['pagetitle']) . '">
                     ';
                 },
                 'rules'   => [
