@@ -38,7 +38,7 @@ class OrdersController extends Controller implements \Commerce\Module\Interfaces
 
         $config = [
             'orderBy'         => 'created_at DESC',
-            'display'         => 10,
+            'display'         => $this->modx->commerce->getSetting('orders_display', 10),
             'paginate'        => 'pages',
             'TplWrapPaginate' => '@CODE:<ul class="[+class+]">[+wrap+]</ul>',
             'TplCurrentPage'  => '@CODE:<li class="page-item active"><span class="page-link">[+num+]</span></li>',
