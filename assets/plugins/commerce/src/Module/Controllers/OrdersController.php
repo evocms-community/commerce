@@ -266,7 +266,7 @@ class OrdersController extends Controller implements \Commerce\Module\Interfaces
         $productBlank = [
             'id'        => '{%id%}',
             'iteration' => '{%iteration%}',
-            'title'     => '{%pagetitle%}',
+            'pagetitle' => '{%pagetitle%}',
             'count'     => 1,
             'price'     => '{%price%}',
             'currency'  => $order['currency'],
