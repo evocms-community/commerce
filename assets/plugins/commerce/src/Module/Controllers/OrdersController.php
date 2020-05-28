@@ -569,8 +569,8 @@ class OrdersController extends Controller implements \Commerce\Module\Interfaces
             return $data;
         };
 
-        if(!isset($config['addWhereList'])) {
-            $templates = \APIhelpers::cleanIDs($commerce->getSetting('product_templates'));
+        if (!isset($config['addWhereList'])) {
+            $templates = \APIhelpers::cleanIDs($commerce->getSetting('product_templates', ''));
             if (!empty($templates)) {
                 $config['addWhereList'] = '(c.isfolder = 1 OR c.template IN (' . implode(',', $templates) . '))';
             }
