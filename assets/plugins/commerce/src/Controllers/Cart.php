@@ -27,9 +27,9 @@ class CartDocLister extends CustomLangDocLister
         setlocale(LC_NUMERIC, 'C');
     }
 
-    public function prepareCartOuter($data, $modx, $DL, $e)
+    protected function getCartAdditionals()
     {
-        $data['placeholders'] = array_merge($data['placeholders'], [
+        return [
             'hash'        => $this->getCFGDef('hash'),
             'items_price' => $this->priceTotal,
             'subtotals'   => $this->renderSubtotals(),
@@ -37,7 +37,12 @@ class CartDocLister extends CustomLangDocLister
             'count'       => $this->productsCount,
             'rows_count'  => $this->rowsCount,
             'settings'    => $this->modx->commerce->getSettings(),
-        ]);
+        ];
+    }
+
+    public function prepareCartOuter($data, $modx, $DL, $e)
+    {
+        $data['placeholders'] = array_merge($data['placeholders'], $this->getCartAdditionals());
 
         return $data;
     }
@@ -77,25 +82,31 @@ class CartDocLister extends CustomLangDocLister
 
         $this->getCFGDef('cart')->getSubtotals($rows, $this->priceTotal);
 
-        if (!empty($rows)) {
-            foreach ($rows as $row) {
-                $row = $this->prepareSubtotalsRow($row);
+        if ($this->getCFGDef('api') == 1) {
+            if ($this->getCFGDef('JSONformat') == 'new') {
+                $result = $rows;
+            }
+        } else {
+            if (!empty($rows)) {
+                foreach ($rows as $row) {
+                    $row = $this->prepareSubtotalsRow($row);
 
-                if ($row !== false) {
-                    $result .= $DLTemplate->parseChunk($tpl, $row);
+                    if ($row !== false) {
+                        $result .= $DLTemplate->parseChunk($tpl, $row);
+                    }
                 }
             }
-        }
 
-        $params = $this->prepareSubtotalsWrap([
-            'docs'         => $rows,
-            'placeholders' => [
-                'wrap' => $result,
-            ],
-        ]);
+            $params = $this->prepareSubtotalsWrap([
+                'docs'         => $rows,
+                'placeholders' => [
+                    'wrap' => $result,
+                ],
+            ]);
 
-        if ($params !== false && !empty($result)) {
-            $result = $DLTemplate->parseChunk($this->getCFGDef('subtotalsTpl'), $params);
+            if ($params !== false && !empty($result)) {
+                $result = $DLTemplate->parseChunk($this->getCFGDef('subtotalsTpl'), $params);
+            }
         }
 
         return $result;
@@ -228,5 +239,22 @@ class CartDocLister extends CustomLangDocLister
         }
 
         return parent::_render($tpl);
+    }
+
+    public function getJSON($data, $fields, $array = array())
+    {
+        $result = parent::getJSON($data, $fields, $array);
+
+        if ($this->getCFGDef('JSONformat') == 'new') {
+            $result = json_decode($result, true);
+            $result = array_merge($result, $this->getCartAdditionals());
+
+            $this->outData = json_encode($result);
+            $this->isErrorJSON($result);
+
+            $result = $this->getCFGDef('debug') ? jsonHelper::json_format($this->outData) : $this->outData;
+        }
+
+        return $result;
     }
 }
