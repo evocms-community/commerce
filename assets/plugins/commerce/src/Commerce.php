@@ -15,7 +15,7 @@ class Commerce
 {
     use SettingsTrait;
 
-    const VERSION = '0.6.8';
+    const VERSION = '0.6.9';
 
     public $currency;
 
