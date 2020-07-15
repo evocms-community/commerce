@@ -12,6 +12,7 @@ Payment methods:
 <a href="https://github.com/mnoskov/commerce-payment-cloudpayments" target="_blank">CloudPayments</a><br>
 <a href="https://github.com/mnoskov/commerce-payment-sberbank" target="_blank">Sberbank</a><br>
 <a href="https://github.com/mnoskov/commerce-payment-pokupay" target="_blank">Sberbank Credit</a><br>
+<a href="https://github.com/mnoskov/commerce-payment-yandexkassa" target="_blank">Яндекс.Касса</a><br>
 <a href="https://github.com/mnoskov/commerce-payment-bill" target="_blank">Bill</a><br>
 
 Other:
