@@ -163,15 +163,17 @@ class CartDocLister extends CustomLangDocLister
             if (!empty($doc['count'])) {
                 $doc['price'] = (float)$doc['price'];
                 $doc['count'] = (float)$doc['count'];
-
-                $this->productsCount += $doc['count'];
-                $this->rowsCount++;
-
                 $doc['total'] = $doc['price'] * $doc['count'];
-                $this->priceTotal += $doc['total'];
             }
 
             $this->_docs[$hash] = $doc;
+        }
+
+        $this->rowsCount = count($cartItems);
+
+        foreach ($cartItems as $item) {
+            $this->productsCount += $item['count'];
+            $this->priceTotal += $item['price'] * $item['count'];
         }
 
         return $this->_docs;
