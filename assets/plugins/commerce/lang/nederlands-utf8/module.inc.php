@@ -89,4 +89,5 @@ return [
     'module.status_alias' => 'Bijnaam',
     'module.status_marker_color' => 'Kleur van de statusmarker',
     'module.canbepaid_field' => 'Bestellingen met deze status kunnen worden betaald',
+    'module.error.status_not_saved' => 'Fout bij opslaan!',
 ];

@@ -89,4 +89,5 @@ return [
     'module.status_alias' => 'Псевдоним',
     'module.status_marker_color' => 'Цвет маркера',
     'module.canbepaid_field' => 'Заказы с этим статусом могут быть оплачены',
+    'module.error.status_not_saved' => 'Ошибка при изменении статуса!',
 ];

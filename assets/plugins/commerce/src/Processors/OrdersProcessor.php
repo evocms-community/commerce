@@ -3,6 +3,7 @@
 namespace Commerce\Processors;
 
 use Commerce\Carts\OrderCart;
+use Exception;
 
 class OrdersProcessor implements \Commerce\Interfaces\Processor
 {
@@ -102,19 +103,48 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
             'subtotals' => &$subtotals,
         ]);
 
-        $values['fields'] = $this->modx->db->escape(json_encode($fields, JSON_UNESCAPED_UNICODE));
+        $db = $this->modx->db;
 
-        $order_id = $this->modx->db->insert($values, $this->tableOrders);
-        $this->order_id = $order_id;
+        $values['fields'] = $db->escape(json_encode($fields, JSON_UNESCAPED_UNICODE));
 
-        $position = 1;
+        try {
+            if (!$db->begin(0, 'Commerce')) {
+                throw new Exception("Cannot begin transaction!");
+            }
 
-        foreach ($items as $item) {
-            $this->modx->db->insert($this->prepareOrderProduct($order_id, $position++, $item), $this->tableProducts);
-        }
+            $order_id = $db->insert($values, $this->tableOrders);
 
-        foreach ($subtotals as $item) {
-            $this->modx->db->insert($this->prepareOrderSubtotal($order_id, $position++, $item), $this->tableProducts);
+            if (!$order_id) {
+                throw new Exception("Cannot insert order record!\n" . print_r($values, true));
+            }
+
+            $this->order_id = $order_id;
+
+            $position = 1;
+
+            foreach ($items as $item) {
+                $itemValues = $this->prepareOrderProduct($order_id, $position++, $item);
+
+                if (!$db->insert($itemValues, $this->tableProducts)) {
+                    throw new Exception("Cannot insert order product!\n" . print_r($itemValues, true));
+                }
+            }
+
+            foreach ($subtotals as $item) {
+                $itemValues = $this->prepareOrderSubtotal($order_id, $position++, $item);
+
+                if (!$db->insert($itemValues, $this->tableProducts)) {
+                    throw new Exception("Cannot insert order subtotal!\n" . print_r($itemValues, true));
+                }
+            }
+
+            if (!$db->commit()) {
+                throw new Exception("Cannot commit transaction!");
+            }
+        } catch (Exception $e) {
+            $db->rollback();
+            $this->modx->logEvent(0, 3, 'Cannot create order:<br><pre>' . $e->getMessage() . '</pre>', 'Commerce');
+            return false;
         }
 
         $defaultStatus = ci()->cache->getOrCreate('default_status', function() {
@@ -122,7 +152,7 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
             $query = $db->select('id', $this->tableStatuses, "`default` = 1");
 
             if (!$db->getRecordCount($query)) {
-                throw new \Exception('Default status not found');
+                throw new Exception('Default status not found');
             }
 
             return $db->getValue($query);
@@ -165,38 +195,42 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
         if (!$preventChange) {
             $db = $this->modx->db;
 
-            /**
-             * DB TRANSACTIONS NOT SUPPORTED IN EVO
-             * SHOULD DISABLE DEFAULT ERRORS PROCESSING
-             */
-            //if ($db instanceof \EvolutionCMS\Interfaces\DatabaseInterface) {
-            //    $connection = $db->getDriver()->getConnect();
-            //    $connection->beginTransaction();
-            //} else {
-            //    $connection = $db->conn;
-            //    $connection->begin_transaction();
-            //}
-
             try {
-                if ($order['status_id'] != $status_id) {
-                    $db->update(['status_id' => $status_id], $this->tableOrders, "`id` = '$order_id'");
+                if (!$db->begin(0, 'Commerce')) {
+                    throw new Exception("Cannot begin transaction!");
                 }
 
-                $db->insert([
+                if ($order['status_id'] != $status_id) {
+                    $result = $db->update(['status_id' => $status_id], $this->tableOrders, "`id` = '$order_id'");
+
+                    if (!$result) {
+                        throw new Exception("Cannot update status [" . print_r($status_id, true) . "] for order [" . print_r($order_id, true) . "]!");
+                    }
+                }
+
+                $fields = [
                     'order_id'   => (int)$order_id,
                     'status_id'  => (int)$status_id,
                     'comment'    => $db->escape($comment),
                     'notify'     => !empty($notify) ? 1 : 0,
                     'user_id'    => $this->modx->getLoginUserID('mgr'),
                     'created_at' => date('Y-m-d H:i:s'),
-                ], $this->tableHistory);
-            } catch (\Exception $e) {
-                //$connection->rollback();
-                $this->modx->logEvent(0, 3, 'Cannot update order history: ' . $e->getMessage() . '<br><pre>' . htmlentities(print_r($order, true)) . '</pre>', 'Commerce');
+                ];
+
+                $result = $db->insert($fields, $this->tableHistory);
+
+                if (!$result) {
+                    throw new Exception("Cannot insert history record!\n" . print_r($fields, true));
+                }
+
+                if (!$db->commit()) {
+                    throw new Exception("Cannot commit transaction!");
+                }
+            } catch (Exception $e) {
+                $db->rollback();
+                $this->modx->logEvent(0, 3, 'Cannot update order history:<br><pre>' . $e->getMessage() . '<br>' . htmlentities(print_r($order, true)) . '</pre>', 'Commerce');
                 return false;
             }
-
-            //$connection->commit();
         }
 
         return true;
@@ -210,7 +244,9 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
             return false;
         }
 
-        $this->addOrderHistory($order_id, $status_id, $comment, $notify);
+        if (!$this->addOrderHistory($order_id, $status_id, $comment, $notify)) {
+            return false;
+        }
 
         if ($notify && !empty($order['email'])) {
             $tpl      = ci()->tpl;
@@ -221,7 +257,7 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
             }
 
             $lang = $commerce->getUserLanguage('order');
-            $status = $this->modx->db->getrow($this->modx->db->select('*', $this->tableStatuses, "`id` = '" . intval($status_id) . "'"));
+            $status = $this->modx->db->getRow($this->modx->db->select('*', $this->tableStatuses, "`id` = '" . intval($status_id) . "'"));
 
             $statusText = $commerce->getUserLexicon($status['alias'], $status['title']);
 
@@ -289,6 +325,10 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
         $db = $this->modx->db;
 
         try {
+            if (!$db->begin(0, 'Commerce')) {
+                throw new Exception("Cannot begin transaction!");
+            }
+
             $position = 1;
             $totalPrice = 0;
 
@@ -300,16 +340,27 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
                     $item = $this->prepareOrderProduct($order_id, $position++, $item);
 
                     if (!empty($row_id)) {
-                        $db->update($item, $this->tableProducts, "id = '$row_id'");
+                        if (!$db->update($item, $this->tableProducts, "id = '$row_id'")) {
+                            throw new Exception("Cannot update order product [" . print_r($row_id, true) . "]!\n" . print_r($item, true));
+                        }
+
                         $exists[] = $row_id;
                     } else {
-                        $exists[] = $db->insert($item, $this->tableProducts);
+                        $row_id = $db->insert($item, $this->tableProducts);
+
+                        if (!$row_id) {
+                            throw new Exception("Cannot insert new order product!\n" . print_r($item, true));
+                        }
+
+                        $exists[] = $row_id;
                     }
 
                     $totalPrice += $item['price'] * $item['count'];
                 }
 
-                $db->delete($this->tableProducts, "`order_id` = '$order_id' AND `product_id` IS NOT NULL AND `id` NOT IN ('" . implode("', '", $exists) . "')");
+                if (!$db->delete($this->tableProducts, "`order_id` = '$order_id' AND `product_id` IS NOT NULL AND `id` NOT IN ('" . implode("', '", $exists) . "')")) {
+                    throw new Exception("Cannot delete order products [" . implode(', ', $exists) . "]!\n");
+                }
             }
 
             if (isset($params['subtotals'])) {
@@ -320,16 +371,27 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
                     $item = $this->prepareOrderSubtotal($order_id, $position++, $item);
 
                     if (!empty($row_id)) {
-                        $db->update($item, $this->tableProducts, "id = '$row_id'");
+                        if (!$db->update($item, $this->tableProducts, "id = '$row_id'")) {
+                            throw new Exception("Cannot update order subtotal [" . print_r($row_id, true) . "]!\n" . print_r($item, true));
+                        }
+
                         $exists[] = $row_id;
                     } else {
-                        $exists[] = $db->insert($item, $this->tableProducts);
+                        $row_id = $db->insert($item, $this->tableProducts);
+
+                        if (!$row_id) {
+                            throw new Exception("Cannot insert new order subtotal!\n" . print_r($item, true));
+                        }
+
+                        $exists[] = $row_id;
                     }
 
                     $totalPrice += $item['price'];
                 }
 
-                $db->delete($this->tableProducts, "`order_id` = '$order_id' AND `product_id` IS NULL AND `id` NOT IN ('" . implode("', '", $exists) . "')");
+                if (!$db->delete($this->tableProducts, "`order_id` = '$order_id' AND `product_id` IS NULL AND `id` NOT IN ('" . implode("', '", $exists) . "')")) {
+                    throw new Exception("Cannot delete order subtotals [" . implode(', ', $exists) . "]!\n");
+                }
             }
 
             if (!empty($params['values'])) {
@@ -343,9 +405,17 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
                     $params['values']['amount'] = $totalPrice;
                 }
 
-                $db->update($params['values'], $this->tableOrders, "id = '" . $order['id'] . "'");
+                if (!$db->update($params['values'], $this->tableOrders, "id = '" . $order['id'] . "'")) {
+                    throw new Exception("Cannot update order [" . print_r($order['id'], true) . "]!\n" . print_r($params['values'], true));
+                }
             }
-        } catch (\Exception $e) {
+
+            if (!$db->commit()) {
+                throw new Exception("Cannot commit transaction!");
+            }
+        } catch (Exception $e) {
+            $db->rollback();
+            $this->modx->logEvent(0, 3, 'Cannot update order:<br><pre>' . $e->getMessage() . '<br>' . htmlentities(print_r($order, true)) . '</pre>', 'Commerce');
             return false;
         }
 
@@ -359,11 +429,15 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
         $params = [
             'order_id' => $order_id,
         ];
-        $this->modx->invokeEvent('OnBeforeOrderDeleting', $params);
-        $this->modx->db->delete($this->tableOrders, "`id` = {$order_id}");
-        $this->modx->invokeEvent('OnOrderDeleted', $params);
 
-        return true;
+        $this->modx->invokeEvent('OnBeforeOrderDeleting', $params);
+
+        if ($this->modx->db->delete($this->tableOrders, "`id` = {$order_id}")) {
+            $this->modx->invokeEvent('OnOrderDeleted', $params);
+            return true;
+        }
+
+        return false;
     }
 
     public function getOrder()
@@ -692,24 +766,24 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
         }
 
         if (empty($payment)) {
-            throw new \Exception('Payment ' . print_r($payment_id, true) . ' not found!');
+            throw new Exception('Payment ' . print_r($payment_id, true) . ' not found!');
         }
 
         if (!empty($payment['paid'])) {
-            throw new \Exception('Payment ' . print_r($payment_id, true) . ' already paid!');
+            throw new Exception('Payment ' . print_r($payment_id, true) . ' already paid!');
         }
 
         $order_id = $payment['order_id'];
         $order = $this->loadOrder($order_id);
 
         if (is_null($order)) {
-            throw new \Exception('Order ' . print_r($order_id, true) . ' not found!');
+            throw new Exception('Order ' . print_r($order_id, true) . ' not found!');
         }
 
         $statusCanBePaid = $this->modx->db->getValue($this->modx->db->select('canbepaid', $this->tableStatuses, "`id` = '" . intval($order['status_id']) . "'"));
 
         if (empty($statusCanBePaid)) {
-            throw new \Exception('Order ' . print_r($order_id, true) . ' cannot be paid by status restriction!');
+            throw new Exception('Order ' . print_r($order_id, true) . ' cannot be paid by status restriction!');
         }
 
         $db->update(['paid' => 1], $this->tablePayments, "`id` = '" . intval($payment_id) . "'");

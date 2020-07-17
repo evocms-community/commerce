@@ -655,7 +655,9 @@ class OrdersController extends Controller implements \Commerce\Module\Interfaces
             $shouldNotify = !empty($this->modx->db->getValue($query));
         }
 
-        $processor->changeStatus($order['id'], $data['status_id'], !empty($data['description']) ? $data['description'] : '', $shouldNotify);
+        if (!$processor->changeStatus($order['id'], $data['status_id'], !empty($data['description']) ? $data['description'] : '', $shouldNotify)) {
+            $this->module->sendRedirectBack(['error' => $this->lang['module.error.status_not_saved']]);
+        }
 
         $this->module->sendRedirectBack(['success' => $this->lang['module.status_changed']]);
     }

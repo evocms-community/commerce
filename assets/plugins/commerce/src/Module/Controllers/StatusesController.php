@@ -2,6 +2,8 @@
 
 namespace Commerce\Module\Controllers;
 
+use Exception;
+
 class StatusesController extends Controller implements \Commerce\Module\Interfaces\Controller
 {
     protected $lang;
@@ -120,17 +122,36 @@ class StatusesController extends Controller implements \Commerce\Module\Interfac
         }
 
         try {
+            if (!$db->begin(0, 'Commerce')) {
+                throw new Exception("Cannot begin transaction!");
+            }
+
             if (!empty($status['id'])) {
-                $db->update($fields, $this->table, "`id` = '" . $status['id'] . "'");
+                if (!$db->update($fields, $this->table, "`id` = '" . $status['id'] . "'")) {
+                    throw new Exception("Cannot update status [" . print_r($status['id'], true) . "]!\n" . print_r($fields, true));
+                }
             } else {
                 $status['id'] = $db->insert($fields, $this->table);
+
+                if (!$status['id']) {
+                    throw new Exception("Cannot insert status row!\n" . print_r($fields, true));
+                }
             }
 
             if ($fields['default'] == 1) {
-                $db->update(['default' => 0], $this->table, "`id` != '" . $status['id'] . "'");
+                if (!$db->update(['default' => 0], $this->table, "`id` != '" . $status['id'] . "'")) {
+                    throw new Exception("Cannot change default status!");
+                }
+
                 $this->modx->clearCache('full');
             }
-        } catch (\Exception $e) {
+
+            if (!$db->commit()) {
+                throw new Exception("Cannot commit transaction!");
+            }
+        } catch (Exception $e) {
+            $db->rollback();
+            $this->modx->logEvent(0, 3, 'Saving error:<br><pre>' . $e->getMessage() . '</pre>', 'Commerce');
             $this->module->sendRedirectBack(['error' => $e->getMessage()]);
         }
 
@@ -155,7 +176,7 @@ class StatusesController extends Controller implements \Commerce\Module\Interfac
                         $this->module->sendRedirect('statuses', ['success' => $this->lang['module.status_deleted']]);
                     }
                 }
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 $this->module->sendRedirect('statuses', ['error' => $e->getMessage()]);
             }
         }

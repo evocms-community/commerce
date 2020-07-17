@@ -2,6 +2,8 @@
 
 namespace Commerce\Module\Controllers;
 
+use Exception;
+
 class CurrencyController extends Controller implements \Commerce\Module\Interfaces\Controller
 {
     protected $lang;
@@ -181,18 +183,38 @@ class CurrencyController extends Controller implements \Commerce\Module\Interfac
         }
 
         try {
+            if (!$db->begin(0, 'Commerce')) {
+                throw new Exception("Cannot begin transaction!");
+            }
+
             if (!empty($currency['id'])) {
-                $db->update($fields, $this->table, "`id` = '" . $currency['id'] . "'");
+                if (!$db->update($fields, $this->table, "`id` = '" . $currency['id'] . "'")) {
+                    throw new Exception("Cannot update currency [" . print_r($currency['id'], true) . "]!\n" . print_r($fields, true));
+                }
             } else {
-                $currency['id'] = $db->insert(array_merge($fields, [
+                $fields = array_merge($fields, [
                     'created_at' => date('Y-m-d H:i:s'),
-                ]), $this->table);
+                ]);
+
+                $currency['id'] = $db->insert($fields, $this->table);
+
+                if (!$currency['id']) {
+                    throw new Exception("Cannot insert currency row!\n" . print_r($fields, true));
+                }
             }
 
             if ($fields['default'] == 1) {
-                $db->update(['default' => 0], $this->table, "`id` != '" . $currency['id'] . "'");
+                if (!$db->update(['default' => 0], $this->table, "`id` != '" . $currency['id'] . "'")) {
+                    throw new Exception("Cannot change default currency!");
+                }
             }
-        } catch (\Exception $e) {
+
+            if (!$db->commit()) {
+                throw new Exception("Cannot commit transaction!");
+            }
+        } catch (Exception $e) {
+            $db->rollback();
+            $this->modx->logEvent(0, 3, 'Saving error:<br><pre>' . $e->getMessage() . '</pre>', 'Commerce');
             $this->module->sendRedirectBack(['error' => $e->getMessage()]);
         }
 
@@ -218,7 +240,7 @@ class CurrencyController extends Controller implements \Commerce\Module\Interfac
                         $this->module->sendRedirect('currency', ['success' => $this->lang['module.currency_deleted']]);
                     }
                 }
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 $this->module->sendRedirect('currency', ['error' => $e->getMessage()]);
             }
         }
