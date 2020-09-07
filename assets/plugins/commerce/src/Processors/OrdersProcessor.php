@@ -213,7 +213,7 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
                     'status_id'  => (int)$status_id,
                     'comment'    => $db->escape($comment),
                     'notify'     => !empty($notify) ? 1 : 0,
-                    'user_id'    => $this->modx->getLoginUserID('mgr'),
+                    'user_id'    => (int)$this->modx->getLoginUserID('mgr'),
                     'created_at' => date('Y-m-d H:i:s'),
                 ];
 
