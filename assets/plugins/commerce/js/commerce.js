@@ -258,15 +258,17 @@ $(document).on('submit click change', '[data-commerce-action]', function(e) {
                 }
 
                 if ($count.length == 1) {
+                    var min = parseFloat($count.data('min'));
+                    var max = parseFloat($count.data('max'));
                     var count = parseFloat($count.val()) || 0,
                         diff  = data.count ? parseFloat(data.count) || 1 : 1;
 
                     count += action == 'increase' ? diff : -diff;
                     count = Math.max(0, count);
 
-                    if (!count) {
+                    if (!count && (min !== min || min === 0)) {
                         Commerce.action('cart/remove', {row: row, cart: cart, data: data}, $self);
-                    } else {
+                    } else if ((min !== min || count >= min) && (max !== max || count <= max )) {
                         $count.val(count);
                         Commerce.action('cart/update', {row: row, cart: cart, data: data, attributes: {count: count}}, $self);
                     }
@@ -291,11 +293,12 @@ $(document).on('submit click change', '[data-commerce-action]', function(e) {
         switch (action) {
             case 'recount': {
                 var count = parseFloat($self.val());
-
-                if (typeof count != 'NaN' && count >= 0) {
-                    if (!count) {
+                var min = parseFloat($self.data('min'));
+                var max = parseFloat($self.data('max'));
+                if (count === count && count >= 0) {
+                    if (!count && (min !== min || min === 0)) {
                         Commerce.action('cart/remove', {row: row, data: data}, $self);
-                    } else {
+                    } else if ((min !== min || count >= min) && (max !== max || count <= max )) {
                         Commerce.action('cart/update', {row: row, data: data, attributes: {count: count}}, $self);
                     }
                 }
