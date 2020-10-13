@@ -3,7 +3,7 @@
 setlocale(LC_ALL, 'en_US.UTF-8');
 
 return [
-    'cart.caption' => 'Reload',
+    'cart.caption' => 'Cart',
     'cart.items_count' => 'product(s) on',
     'cart.item_title' => 'Name',
     'cart.image' => 'Image',
