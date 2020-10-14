@@ -294,6 +294,17 @@ $modx->db->query("ALTER TABLE {$table} ADD `lang` VARCHAR(8) NOT NULL DEFAULT ''
 $id = $modx->db->getValue($modx->db->select('MAX(id)', $tablePlugins, "`name` = 'Commerce'"));
 $modx->db->update(['disabled' => 0], $tablePlugins, "`id` = '$id'");
 
+// need to move language templates to a new location
+$files = glob(MODX_BASE_PATH . 'assets/plugins/commerce/lang/*/*.tpl');
+
+foreach ($files as $source) {
+    if (is_readable($source)) {
+        $target = str_replace('/lang/', '/templates/front/', $source);
+        file_put_contents(MODX_BASE_PATH . 'in.txt', "$source\n$target\n\n", FILE_APPEND);
+        @rename($source, $target);
+    }
+}
+
 // remove installer
 $query = $modx->db->select('id', $tablePlugins, "`name` = 'CommerceInstall'");
 
