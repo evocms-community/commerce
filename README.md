@@ -1,6 +1,6 @@
 ## Commerce
 
-<img src="https://img.shields.io/badge/CMS-%3E%3D1.4.6-green.svg"> <img src="https://img.shields.io/badge/PHP-%3E=5.6-green.svg?php=5.6">
+<img src="https://img.shields.io/badge/CMS-%3E%3D1.4.6-green.svg"> <img src="https://img.shields.io/badge/PHP-%3E=7.1-green.svg?php=7.1">
 
 E-commerce solution for Evolution CMS.
 
@@ -13,6 +13,7 @@ Payment methods:
 <a href="https://github.com/mnoskov/commerce-payment-sberbank" target="_blank">Sberbank</a><br>
 <a href="https://github.com/mnoskov/commerce-payment-pokupay" target="_blank">Sberbank Credit</a><br>
 <a href="https://github.com/mnoskov/commerce-payment-yandexkassa" target="_blank">Яндекс.Касса</a><br>
+<a href="https://github.com/dzhuryn/commerce-payment-liqpay" target="_blank">LiqPay</a><br>
 <a href="https://github.com/mnoskov/commerce-payment-bill" target="_blank">Bill</a><br>
 
 Other:
