@@ -1,9 +1,15 @@
 <?php
 
+use Commerce\Controllers\Traits;
+
 class CustomLangDocLister extends site_contentDocLister
 {
+    use Traits\CustomTemplatesPathTrait;
+
     public function __construct($modx, $cfg = [], $startTime = null)
     {
+        $cfg = $this->initializeCustomTemplatesPath($cfg);
+
         parent::__construct($modx, $cfg, $startTime);
 
         $customLang = $this->getCFGDef('customLang');

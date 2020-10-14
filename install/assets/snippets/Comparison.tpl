@@ -1,11 +1,11 @@
-<?php
+//<?php
 /**
  * Comparison
  *
  * Comparison snippet, DocLister based
  *
  * @category    snippet
- * @version     0.4.0
+ * @version     0.6.11
  * @author      mnoskov
  * @internal    @modx_category Commerce
  * @internal    @installset base
@@ -65,8 +65,6 @@ if ($showCategories) {
 
     if (count($parents) > 1) {
         $categoryParams = array_merge([
-            'templatePath'      => 'assets/plugins/commerce/templates/front/',
-            'templateExtension' => 'tpl',
             'tpl'               => '@FILE:comparison_category',
             'ownerTPL'          => '@FILE:comparison_categories',
             'itemClass'         => 'btn-secondary',
@@ -76,10 +74,12 @@ if ($showCategories) {
                 return $data;
             },
         ], $categoryParams, [
-            'currentId' => $currentCategory,
-            'idType'    => 'documents',
-            'documents' => $parents,
-            'sortType'  => 'doclist',
+            'controller' => 'CustomLang',
+            'dir'        => 'assets/plugins/commerce/src/Controllers/',
+            'currentId'  => $currentCategory,
+            'idType'     => 'documents',
+            'documents'  => $parents,
+            'sortType'   => 'doclist',
         ]);
 
         $categories = $modx->runSnippet('DocLister', $categoryParams);
@@ -92,8 +92,6 @@ if ($showCategories) {
 }
 
 $params = array_merge([
-    'templatePath'      => 'assets/plugins/commerce/templates/front/',
-    'templateExtension' => 'tpl',
     'ownerTPL'          => '@FILE:comparison_table',
     'headerTpl'         => '@FILE:comparison_table_header_cell',
     'footerTpl'         => '@FILE:comparison_table_footer_cell',
@@ -110,31 +108,6 @@ $params = array_merge([
     'category'   => $currentCategory,
     'rows'       => array_flip($items),
 ]);
-
-$priceField = $modx->commerce->getSetting('price_field', 'price');
-$params['tvList'] = (isset($params['tvList']) ? $params['tvList'] . ',' : '') . $priceField;
-
-if (isset($params['prepare'])) {
-    if (!is_array($params['prepare'])) {
-        $params['prepare'] = explode(',', $params['prepare']);
-    } else if (is_callable($params['prepare'])) {
-        $params['prepare'] = [$params['prepare']];
-    }
-} else {
-    $params['prepare'] = [];
-}
-
-$tvPrefix = isset($params['tvPrefix']) ? $params['tvPrefix'] : 'tv.';
-$priceField = $tvPrefix . $priceField;
-
-$params['prepare'][] = function($data, $modx, $DL, $eDL) use ($priceField) {
-    if (isset($data[$priceField])) {
-        $data[$priceField] = $modx->runSnippet('PriceFormat', ['price' => $data[$priceField]]);
-    }
-
-    return $data;
-};
-
 
 $docs = $modx->runSnippet('DocLister', $params);
 return $categories . $docs;

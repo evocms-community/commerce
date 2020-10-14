@@ -1,13 +1,25 @@
 <?php
 
+use Commerce\Controllers\Traits;
+
 class ComparisonDocLister extends CustomLangDocLister
 {
+    use Traits\PrepareTrait;
+
     protected $compareTV = [];
 
     public function __construct($modx, $cfg = [], $startTime = null)
     {
+        $cfg = $this->initializePrepare($cfg);
+
+        $this->priceField = $modx->commerce->getSetting('price_field', 'price');
+        $cfg['tvList']    = $this->priceField . (!empty($cfg['tvList']) ? ',' . $cfg['tvList'] : '');
+        $this->priceField = (isset($cfg['tvPrefix']) ? $cfg['tvPrefix'] : 'tv.') . $this->priceField;
+
+        $cfg['prepare'][] = [$this, 'prepareRow'];
+
         parent::__construct($modx, $cfg, $startTime);
-        
+
         $this->compareTV = $this->getCompareTV();
 
         if (!empty($this->compareTV)) {
@@ -15,6 +27,12 @@ class ComparisonDocLister extends CustomLangDocLister
                 'tvList' => implode(',', array_column($this->compareTV, 'name')) . (!empty($cfg['tvList']) ? ',' . $cfg['tvList'] : ''),
             ]);
         }
+    }
+
+    public function prepareRow($data, $modx, $DL, $eDL)
+    {
+        $data[$this->priceField] = ci()->currency->format($data[$this->priceField]);
+        return $data;
     }
 
     protected function getCompareTV()
@@ -44,9 +62,9 @@ class ComparisonDocLister extends CustomLangDocLister
                 $tvid    = $this->modx->db->getValue($query);
                 $docid   = $this->getCFGDef('category');
                 $parents = $this->modx->getParentIds($docid);
-                array_unshift($docid);
+                array_unshift($parents, $docid);
                 $parents = array_values($parents);
-                
+
                 $query = $this->modx->db->select('*', $this->modx->getFullTablename('site_tmplvar_contentvalues'), "`contentid` IN ('" . implode("','", $parents) . "') AND `tmplvarid` = '$tvid'");
 
                 if ($this->modx->db->getRecordCount($query)) {
@@ -63,7 +81,7 @@ class ComparisonDocLister extends CustomLangDocLister
                     foreach ($parents as $docid => $values) {
                         if (is_array($values)) {
                             $tvids = array_unique(array_column($values, 'param_id'));
-                            
+
                             if (!empty($tvids)) {
                                 $where[] = "`id` IN ('" . implode("','", $tvids) . "')";
                             }

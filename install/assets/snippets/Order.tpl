@@ -5,7 +5,7 @@
  * Order form, FormLister based
  *
  * @category    snippet
- * @version     0.6.0
+ * @version     0.6.11
  * @author      mnoskov
  * @internal    @modx_category Commerce
  * @internal    @installset base
@@ -24,8 +24,6 @@ if (defined('COMMERCE_INITIALIZED')) {
         'parseDocumentSource'   => 1,
         'langDir'               => 'assets/plugins/commerce/lang/',
         'lexicon'               => 'common,delivery,payments,order',
-        'templatePath'          => 'assets/plugins/commerce/templates/front/',
-        'templateExtension'     => 'tpl',
         'formTpl'               => '@FILE:' . $theme . 'order_form',
         'deliveryTpl'           => '@FILE:' . $theme . 'order_form_delivery',
         'deliveryRowTpl'        => '@FILE:' . $theme . 'order_form_delivery_row',

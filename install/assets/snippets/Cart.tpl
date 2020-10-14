@@ -1,11 +1,11 @@
-<?php
+//<?php
 /**
  * Cart
  *
  * Cart contents, DocLister based
  *
  * @category    snippet
- * @version     0.4.0
+ * @version     0.6.11
  * @author      mnoskov
  * @internal    @modx_category Commerce
  * @internal    @installset base
@@ -20,8 +20,6 @@ if (defined('COMMERCE_INITIALIZED')) {
         return $modx->runSnippet('DocLister', array_merge([
             'controller'        => 'Cart',
             'dir'               => 'assets/plugins/commerce/src/Controllers/',
-            'templatePath'      => 'assets/plugins/commerce/templates/front/',
-            'templateExtension' => 'tpl',
             'tpl'               => '@FILE:' . $theme . 'cart_row',
             'optionsTpl'        => '@FILE:' . $theme . 'cart_row_options_row',
             'ownerTPL'          => '@FILE:' . $theme . 'cart_wrap',

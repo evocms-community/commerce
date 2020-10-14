@@ -1,7 +1,11 @@
 <?php
 
+use Commerce\Controllers\Traits;
+
 class CartDocLister extends CustomLangDocLister
 {
+    use Traits\PrepareTrait;
+
     protected $productsCount = 0;
     protected $rowsCount     = 0;
     protected $priceTotal    = 0;
@@ -9,18 +13,9 @@ class CartDocLister extends CustomLangDocLister
 
     public function __construct($modx, $cfg = [], $startTime = null)
     {
-        if (isset($cfg['prepareWrap'])) {
-            if (!is_array($cfg['prepareWrap'])) {
-                $cfg['prepareWrap'] = explode(',', $cfg['prepareWrap']);
-            } else if (is_callable($cfg['prepareWrap'])) {
-                $cfg['prepareWrap'] = [$cfg['prepareWrap']];
-            }
-        } else {
-            $cfg['prepareWrap'] = [];
-        }
+        $cfg = $this->initializePrepare($cfg);
 
         array_unshift($cfg['prepareWrap'], [$this, 'prepareCartOuter']);
-
         $cfg['lang'] = $modx->commerce->getCurrentLang();
 
         parent::__construct($modx, $cfg, $startTime);

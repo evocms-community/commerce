@@ -3,14 +3,19 @@
 namespace FormLister;
 
 use Commerce\Lexicon;
+use Commerce\Controllers\Traits;
 
 class Order extends Form
 {
+    use Traits\CustomTemplatesPathTrait;
+
     private $order;
     private $cart;
 
     public function __construct (\DocumentParser $modx, $cfg = array())
     {
+        $cfg = $this->initializeCustomTemplatesPath($cfg);
+
         parent::__construct($modx, $cfg);
 
         $this->lexicon = new Lexicon($modx, array(

@@ -15,7 +15,7 @@ class Commerce
 {
     use SettingsTrait;
 
-    const VERSION = '0.6.10';
+    const VERSION = '0.6.11';
 
     public $currency;
 
@@ -237,10 +237,26 @@ class Commerce
     public function getUserLanguageTemplate($name, $forceDefaultLanguage = false)
     {
         $lang = $forceDefaultLanguage ? $this->backendLang : $this->lang;
-        $filename = realpath(MODX_BASE_PATH . $this->langDir . $lang . '/' . $name . '.tpl');
 
-        if ($filename && is_readable($filename)) {
-            return '@CODE:' . file_get_contents($filename);
+        $defaultPath = 'assets/plugins/commerce/templates/front/';
+        $customPath  = trim($this->getSetting('templates_path'), '/ ');
+
+        $filenames = empty($customPath) ? [] : [
+            ['B_CODE', $customPath . '/' . $lang . '/' . $name . '.blade.php'],
+            ['B_CODE', $defaultPath . $lang . '/' . $name . '.blade.php'],
+        ];
+
+        $filenames = array_merge($filenames, [
+            ['CODE', $customPath . '/' . $lang . '/' . $name . '.tpl'],
+            ['CODE', $defaultPath . $lang . '/' . $name . '.tpl'],
+        ]);
+
+        foreach ($filenames as list($type, $filename)) {
+            $filename = realpath(MODX_BASE_PATH . $filename);
+
+            if ($filename && is_readable($filename)) {
+                return '@' . $type . ':' . file_get_contents($filename);
+            }
         }
 
         throw new \Exception('Template "' . print_r($name, true) . '" not found!');
