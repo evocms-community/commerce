@@ -138,10 +138,12 @@ class Payment implements \Commerce\Interfaces\Payment
             foreach ($items as $i => $item) {
                 if ($i < $last) {
                     $items[$i]['price'] = number_format($item['price'] * $ratio, 2, '.', '');
-                    $total += $items[$i]['price'] * $items[$i]['count'];
                 } else {
                     $items[$i]['price'] = number_format(($to - $total) / $items[$i]['count'], 2, '.', '');
                 }
+
+                $items[$i]['total'] = number_format($items[$i]['price'] * $items[$i]['count'], 2, '.', '');
+                $total += $items[$i]['total'];
             }
         }
 
