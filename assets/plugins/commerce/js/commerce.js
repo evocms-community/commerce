@@ -145,6 +145,8 @@ var Commerce = {
             if (typeof markup.form.payments != 'undefined') {
                 $('[data-commerce-payments]').html(markup.form.payments);
             }
+
+            $('[data-commerce-order]').trigger('form-reloaded.commerce');
         }
     },
 
