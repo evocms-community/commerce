@@ -168,7 +168,7 @@ class CartDocLister extends CustomLangDocLister
 
         foreach ($cartItems as $item) {
             $this->productsCount += $item['count'];
-            $this->priceTotal += $item['price'] * $item['count'];
+            $this->priceTotal += (float)$item['price'] * $item['count'];
         }
 
         return $this->_docs;
