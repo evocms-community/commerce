@@ -80,12 +80,15 @@ class Order extends Form
             }
 
             foreach ($rows as $code => $row) {
+                $active = $default == $code;
                 $output .= $this->DLTemplate->parseChunk($this->getCFGDef($type . 'RowTpl'), [
                     'code'   => $code,
                     'title'  => $row['title'],
                     'price'  => isset($row['price']) ? $row['price'] : '',
                     'markup' => isset($row['markup']) ? $row['markup'] : '',
-                    'active' => 1 * ($default == $code),
+                    'active' => (int)$active,
+                    'selected' => $active ? ' selected' : '',
+                    'checked' => $active ? ' checked' : '',
                     'index'  => $index++,
                 ]);
 
