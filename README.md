@@ -16,6 +16,10 @@ Payment methods:
 <a href="https://github.com/dzhuryn/commerce-payment-liqpay" target="_blank">LiqPay</a><br>
 <a href="https://github.com/mnoskov/commerce-payment-bill" target="_blank">Bill</a><br>
 
+Delivery:
+
+<a href="https://github.com/dzhuryn/commerce-delivery-novaposhta-pickup" target="_blank">Новая почта</a><br>
+
 Other:
 
 <a href="https://github.com/mnoskov/commerce-options" target="_blank">Product Options</a><br>
