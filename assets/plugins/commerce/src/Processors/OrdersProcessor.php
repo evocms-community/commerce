@@ -105,7 +105,18 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
 
         $db = $this->modx->db;
 
+        $defaultStatus = ci()->cache->getOrCreate('default_status', function() use ($db) {
+            $query = $db->select('id', $this->tableStatuses, "`default` = 1");
+
+            if (!$db->getRecordCount($query)) {
+                throw new Exception('Default status not found');
+            }
+
+            return $db->getValue($query);
+        });
+
         $values['fields'] = $db->escape(json_encode($fields, JSON_UNESCAPED_UNICODE));
+        $values['status_id'] = $defaultStatus;
 
         try {
             if (!$db->begin(0, 'Commerce')) {
@@ -147,18 +158,7 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
             return false;
         }
 
-        $defaultStatus = ci()->cache->getOrCreate('default_status', function() {
-            $db = ci()->db;
-            $query = $db->select('id', $this->tableStatuses, "`default` = 1");
-
-            if (!$db->getRecordCount($query)) {
-                throw new Exception('Default status not found');
-            }
-
-            return $db->getValue($query);
-        });
-
-        $this->changeStatus($order_id, $defaultStatus);
+        $this->addOrderHistory($order_id, $defaultStatus);
 
         $this->modx->invokeEvent('OnOrderSaved', [
             'order_id'  => $order_id,

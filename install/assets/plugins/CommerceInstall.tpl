@@ -123,7 +123,6 @@ $modx->db->query("
 $modx->db->query("ALTER TABLE {$orders_table} ADD `hash` VARCHAR(32) NOT NULL AFTER `status_id`, ADD INDEX (`hash`);", false);
 $modx->db->query("ALTER TABLE {$orders_table} ADD `customer_id` INT UNSIGNED NULL DEFAULT NULL AFTER `id`, ADD INDEX (`customer_id`);", false);
 $modx->db->query("ALTER TABLE {$orders_table} ADD `lang` VARCHAR(32) NOT NULL AFTER `currency`;", false);
-$modx->db->query("ALTER TABLE {$orders_table} MODIFY COLUMN `status_id` TINYINT(3) UNSIGNED DEFAULT NULL", false);
 
 $table = $modx->getFullTablename('commerce_order_products');
 
