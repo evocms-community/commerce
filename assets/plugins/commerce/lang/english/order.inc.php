@@ -37,5 +37,5 @@ return [
     'order.redirecting_to_payment' => 'Redirect to payment ...',
     'order.order_payment_link' => '@CODE:<p>To pay for the order, follow the link <a href="[+link+]">[+link+]</a></p>',
     'order.order_data_changed' => '@CODE:Order #[+order.id+] has been changed!',
-    'order.' => '',
+    'order.order_cancelled' => 'Order has been cancelled!',
 ];

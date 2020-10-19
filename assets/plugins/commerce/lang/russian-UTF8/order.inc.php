@@ -37,4 +37,5 @@ return [
     'order.redirecting_to_payment' => 'Перенаправление на оплату...',
     'order.order_payment_link' => '@CODE:<p>Для оплаты заказа перейдите по ссылке <a href="[+link+]">[+link+]</a></p>',
     'order.order_data_changed' => '@CODE:Данные заказа #[+order.id+] изменены!',
+    'order.order_cancelled' => 'Заказ отменен!',
 ];

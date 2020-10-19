@@ -37,5 +37,5 @@ return [
     'order.redirecting_to_payment' => 'Doorsturen betaling...',
     'order.order_payment_link' => '@CODE:<p>Om te betalen voor de bestelling, klikt u op de link <a href="[+link+]">[+link+]</a></p>',
     'order.order_data_changed' => '@CODE:Volgorde #[+order.id+] is gewijzigd!',
-    'order.' => '',
+    'order.order_cancelled' => 'De bestelling is geannuleerd!',
 ];

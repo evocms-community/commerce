@@ -163,7 +163,10 @@ class Order extends Form
         ]);
 
         if ($preventOrder) {
-            $this->addError('custom', 'custom', 'Заказ отменен!');
+            if (empty($this->getFormData('messages'))) {
+                $this->addMessage('[%order.order_cancelled%]');
+            }
+
             return;
         }
 
