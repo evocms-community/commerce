@@ -91,7 +91,7 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
         $values['currency']    = ci()->currency->getCurrencyCode();
         $values['lang']        = $this->modx->commerce->getCurrentLang();
         $values['created_at']  = date('Y-m-d H:i:s');
-        $values['customer_id'] = $this->modx->getLoginUserID('web');
+        $values['customer_id'] = (int)$this->modx->getLoginUserID('web');
         $values['hash']        = $this->modx->commerce->generateRandomString();
         $values['fields']      = &$fields;
 
