@@ -742,7 +742,10 @@ class Commerce
 
     public function isBLangEnabled()
     {
-        return !empty($this->modx->snippetCache['bLang']);
+        $snippets = array_map('strtolower', array_keys($this->modx->snippetCache));
+        $plugins = array_map('strtolower', array_keys($this->modx->pluginCache));
+
+        return in_array('blang', array_merge($snippets, $plugins));
     }
 
     public function isEvoBabelEnabled()
