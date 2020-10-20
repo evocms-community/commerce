@@ -562,7 +562,7 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
                     if (!empty($redirect['link'])) {
                         $FL->config->setConfig(['redirectTo' => [
                             'page'   => $redirect['link'],
-                            'header' => 'HTTP/1.1 301 Moved Permanently',
+                            'header' => 'HTTP/1.1 307 Temporary Redirect',
                         ]]);
                     } else {
                         $successTpl .= $redirect['markup'];
