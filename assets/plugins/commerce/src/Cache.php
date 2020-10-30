@@ -122,19 +122,25 @@ class Cache
 
         $dir = opendir($path);
 
-        while (($file = readdir($dir)) !== false) {
-            if (!in_array($file, ['.', '..'])) {
+        if (!empty($dir)) {
+            while (($file = readdir($dir)) !== false) {
                 $full = $path . '/' . $file;
 
-                if (is_dir($full)) {
-                    $this->clean($full);
-                } else {
-                    unlink($full);
+                if (!is_readable($full)) {
+                    continue;
+                }
+
+                if (!in_array($file, ['.', '..'])) {
+                    if (is_dir($full)) {
+                        $this->clean($full);
+                    } else {
+                        unlink($full);
+                    }
                 }
             }
-        }
 
-        closedir($dir);
-        rmdir($path);
+            closedir($dir);
+            @rmdir($path);
+        }
     }
 }
