@@ -17,6 +17,7 @@ spl_autoload_register(function ($class) {
             'Helpers\\Mailer'       => '/../../lib/Helpers/Mailer.php',
             'Helpers\\Config'       => '/../../lib/Helpers/Config.php',
             'Helpers\\Debug'        => '/../../snippets/FormLister/lib/Debug.php',
+            'Helpers\\FS'           => '/../../lib/Helpers/FS.php',
             'APIhelpers'            => '/../../lib/APIHelpers.class.php',
             'bLang\bLang'           => '/../../modules/blang/classes/bLang.php',
         ];
@@ -30,7 +31,7 @@ spl_autoload_register(function ($class) {
     if (strpos($class, 'Commerce\\') === 0) {
         $parts = explode('\\', $class);
         array_shift($parts);
-        
+
         $filename = __DIR__ . '/src/' . implode('/', $parts) . '.php';
 
         if (is_readable($filename)) {

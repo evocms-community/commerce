@@ -2,6 +2,8 @@
 
 namespace Commerce;
 
+use Helpers\FS;
+
 class Cache
 {
     static protected $self;
@@ -9,13 +11,23 @@ class Cache
     protected $path = 'assets/cache/commerce';
     protected $salt = 'i_LjFSmtLz9i5zQ_KWCB';
 
+    protected $filesystem = null;
+
     public static function getInstance()
     {
         if (is_null(self::$self)) {
             self::$self = new self();
+            self::$self->initialize();
         }
 
         return self::$self;
+    }
+
+    public function initialize()
+    {
+        if (is_null($this->filesystem)) {
+            $this->filesystem = FS::getInstance();
+        }
     }
 
     private function __construct() {}
@@ -107,40 +119,11 @@ class Cache
 
     public function forget($name)
     {
-        $path = MODX_BASE_PATH . trim($this->path, '/ ') . '/' . $this->generateKey($name);
-
-        if (file_exists($path)) {
-            unlink($path);
-        }
+        $this->filesystem->unlink(MODX_BASE_PATH . trim($this->path, '/ ') . '/' . $this->generateKey($name));
     }
 
-    public function clean($path = null)
+    public function clean()
     {
-        if (is_null($path)) {
-            $path = MODX_BASE_PATH . trim($this->path, '/ ');
-        }
-
-        $dir = opendir($path);
-
-        if (!empty($dir)) {
-            while (($file = readdir($dir)) !== false) {
-                $full = $path . '/' . $file;
-
-                if (!is_readable($full)) {
-                    continue;
-                }
-
-                if (!in_array($file, ['.', '..'])) {
-                    if (is_dir($full)) {
-                        $this->clean($full);
-                    } else {
-                        unlink($full);
-                    }
-                }
-            }
-
-            closedir($dir);
-            @rmdir($path);
-        }
+        $this->filesystem->rmDir($this->path);
     }
 }
