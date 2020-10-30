@@ -105,20 +105,22 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
 
         $db = $this->modx->db;
 
-        $defaultStatus = ci()->cache->getOrCreate('default_status', function() use ($db) {
-            $query = $db->select('id', $this->tableStatuses, "`default` = 1");
-
-            if (!$db->getRecordCount($query)) {
-                throw new Exception('Default status not found');
-            }
-
-            return $db->getValue($query);
-        });
-
+        
         $values['fields'] = $db->escape(json_encode($fields, JSON_UNESCAPED_UNICODE));
-        $values['status_id'] = $defaultStatus;
 
         try {
+            $defaultStatus = ci()->cache->getOrCreate('default_status', function() use ($db) {
+                $query = $db->select('id', $this->tableStatuses, "`default` = 1");
+
+                if (!$db->getRecordCount($query)) {
+                    throw new Exception('Default status not found');
+                }
+
+                return $db->getValue($query);
+            });
+        
+            $values['status_id'] = $defaultStatus;
+
             if (!$db->begin(0, 'Commerce')) {
                 throw new Exception("Cannot begin transaction!");
             }
@@ -560,7 +562,7 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
                     if (!empty($redirect['link'])) {
                         $FL->config->setConfig(['redirectTo' => [
                             'page'   => $redirect['link'],
-                            'header' => 'HTTP/1.1 301 Moved Permanently',
+                            'header' => 'HTTP/1.1 303 See Other',
                         ]]);
                     } else {
                         $successTpl .= $redirect['markup'];
