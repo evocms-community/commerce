@@ -16,6 +16,7 @@ Payment methods:
 <a href="https://github.com/dzhuryn/commerce-payment-liqpay" target="_blank">LiqPay</a><br>
 <a href="https://github.com/Pathologic/commerce-payment-payneteasy" target="_blank">PaynetEasy</a><br>
 <a href="https://github.com/mnoskov/commerce-payment-bill" target="_blank">Bill</a><br>
+<a href="https://github.com/DDAProduction/commerce-payment-stripe" target="_blank">Stripe</a><br>
 
 Delivery:
 
