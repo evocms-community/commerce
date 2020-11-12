@@ -520,28 +520,22 @@ class Commerce
             'status' => 'failed',
         ];
 
-        if (!empty($data['cart']['hash']) && is_string($data['cart']['hash'])) {
-            $instance = ci()->carts->getInstanceByHash($data['cart']['hash']);
+        $instance = 'products';
 
-            if (!is_null($instance)) {
-                $response['instance'] = $instance;
-                $cart = ci()->carts->getCart($instance);
+        if (!empty($data['cart']['instance']) && is_string($data['cart']['instance'])) {
+            $instance = $data['cart']['instance'];
+        } elseif (!empty($data['instance']) && is_string($data['instance'])) {
+            $instance = $data['instance'];
+        } elseif (!empty($data['cart']['hash']) && is_string($data['cart']['hash'])) {
+            $hashInstance = ci()->carts->getInstanceByHash($data['cart']['hash']);
+
+            if (!is_null($hashInstance)) {
+                $instance = $hashInstance;
             }
         }
 
-        if (empty($cart)) {
-            $instance = 'products';
-
-            if (isset($data['cart']['instance']) && is_string($data['cart']['instance'])) {
-                $instance = $data['cart']['instance'];
-            } elseif (isset($data['instance']) && is_string($data['instance'])) {
-                $instance = $data['instance'];
-            }
-
-            $response['instance'] = $instance;
-
-            $cart = ci()->carts->getCart($instance);
-        }
+        $response['instance'] = $instance;
+        $cart = ci()->carts->getCart($instance);
 
         if (!is_null($cart)) {
             switch ($action) {

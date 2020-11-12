@@ -1,4 +1,4 @@
-<div class="wishlist-table table-responsive">
+<div class="wishlist-table table-responsive" data-commerce-cart="[+hash+]">
     <table class="table">
         <thead>
             <tr>

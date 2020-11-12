@@ -9,7 +9,7 @@
         [!PriceFormat? &price=`[+tv.price+]`!]
 
     <td>
-        <a href="#" class="btn btn-primary" data-commerce-action="add" data-id="[+id+]">
+        <a href="#" class="btn btn-primary" data-commerce-action="add" data-instance="products" data-id="[+id+]">
             [%common.add_to_cart%]
         </a>
 
