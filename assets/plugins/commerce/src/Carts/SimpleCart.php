@@ -111,7 +111,7 @@ class SimpleCart implements \Commerce\Interfaces\Cart
                 }
             }
 
-            $row = uniqid();
+            $row = ci()->commerce->generateRandomString(16);
             $new['row'] = $row;
             $this->items[$row] = $new;
 
