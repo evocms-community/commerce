@@ -15,7 +15,7 @@ class Commerce
 {
     use SettingsTrait;
 
-    const VERSION = '0.6.12';
+    const VERSION = '0.6.13';
 
     public $currency;
 
@@ -42,7 +42,12 @@ class Commerce
     {
         $this->modx = $modx;
         $this->setSettings($params);
-        $this->backendLang = $modx->getConfig('manager_language');
+
+        $this->lexicon = new Lexicon($this->modx, [
+            'langDir' => $this->langDir,
+        ]);
+
+        $this->backendLang = $this->lexicon->getAlias($modx->getConfig('manager_language'));
     }
 
     public function initializeCommerce()
@@ -174,21 +179,14 @@ class Commerce
     public function setLang($code)
     {
         if ($code != $this->lang) {
-            $this->lang = $code;
+            $this->lang = $this->lexicon->getAlias($code);
 
-            if (!$this->lexicon) {
-                $this->lexicon = new Lexicon($this->modx, [
-                    'langDir' => $this->langDir,
-                    'lang'    => $this->lang,
-                ]);
-            } else {
-                $this->lexicon->config->setConfig([
-                    'lang' => $this->lang,
-                ]);
-            }
+            $this->lexicon->config->setConfig([
+                'lang' => $this->lang,
+            ]);
 
-            if (!isset($this->langData[$code])) {
-                $this->langData[$code] = $this->lexicon->loadLang($this->langKeys);
+            if (!isset($this->langData[$this->lang])) {
+                $this->langData[$this->lang] = $this->lexicon->loadLang($this->langKeys);
             }
         }
 

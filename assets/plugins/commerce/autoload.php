@@ -12,7 +12,6 @@ spl_autoload_register(function ($class) {
             'FormLister\\Core'      => '/../../snippets/FormLister/core/FormLister.abstract.php',
             'site_contentDocLister' => '/../../snippets/DocLister/core/controller/site_content.php',
             'DLTemplate'            => '/../../snippets/DocLister/lib/DLTemplate.class.php',
-            'Helpers\\Lexicon'      => '/../../snippets/FormLister/lib/Lexicon.php',
             'FormLister\\Validator' => '/../../snippets/FormLister/lib/Validator.php',
             'Helpers\\Mailer'       => '/../../lib/Helpers/Mailer.php',
             'Helpers\\Config'       => '/../../lib/Helpers/Config.php',
@@ -20,11 +19,25 @@ spl_autoload_register(function ($class) {
             'Helpers\\FS'           => '/../../lib/Helpers/FS.php',
             'APIhelpers'            => '/../../lib/APIHelpers.class.php',
             'bLang\bLang'           => '/../../modules/blang/classes/bLang.php',
+            'Helpers\\Lexicon'      => [
+                '/../../lib/Helpers/Lexicon.php',
+                '/../../snippets/DocLister/lib/Lexicon.php',
+            ],
         ];
     }
 
     if (isset($classes[$class])) {
-        require __DIR__ . $classes[$class];
+        if (is_array($classes[$class])) {
+            foreach ($classes[$class] as $classFile) {
+                if (is_readable(__DIR__ . $classFile)) {
+                    require __DIR__ . $classFile;
+                    return;
+                }
+            }
+        } else {
+            require __DIR__ . $classes[$class];
+        }
+
         return;
     }
 

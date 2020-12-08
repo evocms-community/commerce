@@ -15,6 +15,7 @@ class Order extends Form
     public function __construct (\DocumentParser $modx, $cfg = array())
     {
         $cfg = $this->initializeCustomTemplatesPath($cfg);
+        $cfg['lang'] = $modx->commerce->getCurrentLang();
 
         parent::__construct($modx, $cfg);
 
