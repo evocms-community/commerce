@@ -12,16 +12,18 @@ Payment methods:
 <a href="https://github.com/mnoskov/commerce-payment-paymaster" target="_blank">Paymaster</a><br>
 <a href="https://github.com/Pathologic/commerce-payment-payneteasy" target="_blank">PaynetEasy</a><br>
 <a href="https://github.com/mnoskov/commerce-payment-paypal" target="_blank">PayPal</a><br>
-<a href="https://github.com/DDAProduction/commerce-payment-stripe" target="_blank">Stripe</a><br>
 <a href="https://github.com/mnoskov/commerce-payment-robokassa" target="_blank">Robokassa</a><br>
 <a href="https://github.com/mnoskov/commerce-payment-sberbank" target="_blank">Сбербанк</a><br>
 <a href="https://github.com/mnoskov/commerce-payment-pokupay" target="_blank">Сбербанк кредит "Покупай со Сбербанком"</a><br>
+<a href="https://github.com/DDAProduction/commerce-payment-stripe" target="_blank">Stripe</a><br>
+<a href="https://github.com/autogen-travel/commerce-tinkoff" target="_blank">Tinkoff</a><br>
 <a href="https://github.com/dzhuryn/commerce-payment-ckassa" target="_blank">Центральная касса (нужен тестовый аккаунт для проверки)</a><br>
 <a href="https://github.com/mnoskov/commerce-payment-yandexkassa" target="_blank">Яндекс.Касса</a><br>
 
 Delivery:
 
 <a href="https://github.com/dzhuryn/commerce-delivery-novaposhta-pickup" target="_blank">Новая почта</a><br>
+<a href="https://github.com/autogen-travel/commerce-cdek" target="_blank">СДЭК</a><br>
 
 Other:
 
