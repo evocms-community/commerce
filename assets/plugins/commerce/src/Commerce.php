@@ -61,7 +61,10 @@ class Commerce
         }
 
         $carts = ci()->carts;
-        $carts->registerStore('session', new SessionCartStore());
+
+        if (!$carts->hasStore('session')) {
+            $carts->registerStore('session', new SessionCartStore());
+        }
 
         if (!$carts->has('products')) {
             $cart = new ProductsCart($this->modx);

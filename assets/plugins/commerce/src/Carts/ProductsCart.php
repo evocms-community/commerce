@@ -33,7 +33,8 @@ class ProductsCart extends StoreCart implements \Commerce\Interfaces\Cart
     {
         $this->modx = $modx;
         $this->instance = $instance;
-        parent::__construct(new SessionCartStore(), $instance);
+
+        parent::__construct(ci()->carts->getStore('session'), $instance);
     }
 
     public function prepareItem(array $item)

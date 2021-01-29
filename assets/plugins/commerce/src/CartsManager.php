@@ -82,4 +82,9 @@ class CartsManager
 
         return clone $this->stores[$name];
     }
+
+    public function hasStore($name)
+    {
+        return isset($this->stores[$name]);
+    }
 }
