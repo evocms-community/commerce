@@ -63,22 +63,27 @@ class Commerce
         $carts = ci()->carts;
 
         if (!$carts->hasStore('session')) {
-            $carts->registerStore('session', new SessionCartStore());
+            $carts->registerStore('session', SessionCartStore::class);
+        }
+
+        if (!$carts->hasStore('cookies')) {
+            $carts->registerStore('cookies', CookiesCartStore::class);
         }
 
         if (!$carts->has('products')) {
             $cart = new ProductsCart($this->modx);
-            $cart->setCurrency($this->currency->getCurrencyCode());
             $carts->addCart('products', $cart);
+        } else {
+            $cart = $carts->getCart('products');
         }
 
+        $cart->setCurrency($this->currency->getCurrencyCode());
         $cart->setTitleField($this->getSetting('title_field', 'pagetitle'));
         $cart->setPriceField($this->getSetting('price_field', 'price'));
 
         foreach (['wishlist', 'comparison'] as $listname) {
             if (!$carts->has($listname)) {
-                $list = new ProductsList($this->modx, $listname);
-                $list->setStore(new CookiesCartStore($listname));
+                $list = new ProductsList($this->modx, $listname, 'cookies');
                 $carts->addCart($listname, $list);
             }
         }

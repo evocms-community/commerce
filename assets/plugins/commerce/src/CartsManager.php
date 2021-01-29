@@ -3,7 +3,6 @@
 namespace Commerce;
 
 use Commerce\Interfaces\Cart;
-use Commerce\Interfaces\CartStore;
 
 class CartsManager
 {
@@ -65,7 +64,7 @@ class CartsManager
         return null;
     }
 
-    public function registerStore($name, CartStore $store)
+    public function registerStore($name, $store)
     {
         if (isset($this->stores[$name])) {
             throw new \Exception('Store "' . print_r($name, true) . '" already registered!');
@@ -80,7 +79,7 @@ class CartsManager
             throw new \Exception('Store "' . print_r($name, true) . '" not registered!');
         }
 
-        return clone $this->stores[$name];
+        return new $this->stores[$name];
     }
 
     public function hasStore($name)

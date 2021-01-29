@@ -29,12 +29,12 @@ class ProductsCart extends StoreCart implements \Commerce\Interfaces\Cart
         ],
     ];
 
-    public function __construct($modx, $instance = 'products')
+    public function __construct($modx, $instance = 'products', $store = 'session')
     {
         $this->modx = $modx;
         $this->instance = $instance;
 
-        parent::__construct(ci()->carts->getStore('session'), $instance);
+        parent::__construct(ci()->carts->getStore($store), $instance);
     }
 
     public function prepareItem(array $item)
