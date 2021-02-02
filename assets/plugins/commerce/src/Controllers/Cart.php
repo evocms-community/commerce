@@ -187,7 +187,7 @@ class CartDocLister extends CustomLangDocLister
 
             $this->config->setConfig([
                 'selectFields' => $this->getCFGDef('selectFields', 'c.*') . ', c.id AS docid, hashes.hash AS id',
-                'groupBy'      => 'hashes.hash',
+                'groupBy'      => 'hashes.hash, hashes.id',
             ]);
         }
 
