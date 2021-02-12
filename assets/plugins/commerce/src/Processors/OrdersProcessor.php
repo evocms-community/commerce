@@ -121,7 +121,7 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
         
             $values['status_id'] = $defaultStatus;
 
-            if (!$db->begin(0, 'Commerce')) {
+            if (!$db->begin()) {
                 throw new Exception("Cannot begin transaction!");
             }
 
@@ -198,7 +198,7 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
             $db = $this->modx->db;
 
             try {
-                if (!$db->begin(0, 'Commerce')) {
+                if (!$db->begin()) {
                     throw new Exception("Cannot begin transaction!");
                 }
 
@@ -327,7 +327,7 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
         $db = $this->modx->db;
 
         try {
-            if (!$db->begin(0, 'Commerce')) {
+            if (!$db->begin()) {
                 throw new Exception("Cannot begin transaction!");
             }
 
