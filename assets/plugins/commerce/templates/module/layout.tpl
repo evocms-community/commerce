@@ -36,7 +36,7 @@
     <div class="btn-group">
         <?= $this->block('buttons') ?>
 
-        <a class="btn btn-danger" href="<?= $managerPath ?>index.php?a=2" title="<?= $_lang['close'] ?>">
+        <a class="btn btn-danger" href="index.php?a=2" title="<?= $_lang['close'] ?>">
             <i class="fa fa-sign-out"></i>
             <span><?= $_lang['close'] ?></span>
         </a>

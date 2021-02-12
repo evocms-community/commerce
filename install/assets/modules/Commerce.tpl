@@ -5,7 +5,7 @@
  * Commerce solution
  *
  * @category    module
- * @version     0.6.13
+ * @version     0.6.14
  * @author      mnoskov
  * @internal    @modx_category Commerce
  * @internal    @installset base
@@ -25,7 +25,7 @@ if (!isset($_COOKIE['MODX_themeMode'])) {
 
 $manager = new Commerce\Module\Manager($modx, array_merge($modx->event->params, [
     'module_url' => 'index.php?a=112&id=' . $_GET['id'],
-    'stay' => $stay,
+    'stay' => '',
 ]));
 
 $route = filter_input(INPUT_GET, 'type', FILTER_VALIDATE_REGEXP, ['options' => [
