@@ -183,7 +183,7 @@ class CurrencyController extends Controller implements \Commerce\Module\Interfac
         }
 
         try {
-            if (!$db->begin(0, 'Commerce')) {
+            if ($db->begin(0, 'Commerce') === false) {
                 throw new Exception("Cannot begin transaction!");
             }
 
@@ -209,7 +209,7 @@ class CurrencyController extends Controller implements \Commerce\Module\Interfac
                 }
             }
 
-            if (!$db->commit()) {
+            if ($db->commit() === false) {
                 throw new Exception("Cannot commit transaction!");
             }
         } catch (Exception $e) {

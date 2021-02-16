@@ -121,7 +121,7 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
         
             $values['status_id'] = $defaultStatus;
 
-            if (!$db->begin(0, 'Commerce')) {
+            if ($db->begin(0, 'Commerce') === false) {
                 throw new Exception("Cannot begin transaction!");
             }
 
@@ -151,7 +151,7 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
                 }
             }
 
-            if (!$db->commit()) {
+            if ($db->commit() === false) {
                 throw new Exception("Cannot commit transaction!");
             }
         } catch (Exception $e) {
@@ -198,7 +198,7 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
             $db = $this->modx->db;
 
             try {
-                if (!$db->begin(0, 'Commerce')) {
+                if ($db->begin(0, 'Commerce') === false) {
                     throw new Exception("Cannot begin transaction!");
                 }
 
@@ -225,7 +225,7 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
                     throw new Exception("Cannot insert history record!\n" . print_r($fields, true));
                 }
 
-                if (!$db->commit()) {
+                if ($db->commit() === false) {
                     throw new Exception("Cannot commit transaction!");
                 }
             } catch (Exception $e) {
@@ -327,7 +327,7 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
         $db = $this->modx->db;
 
         try {
-            if (!$db->begin(0, 'Commerce')) {
+            if ($db->begin(0, 'Commerce') === false) {
                 throw new Exception("Cannot begin transaction!");
             }
 
@@ -412,7 +412,7 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
                 }
             }
 
-            if (!$db->commit()) {
+            if ($db->commit() === false) {
                 throw new Exception("Cannot commit transaction!");
             }
         } catch (Exception $e) {
