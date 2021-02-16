@@ -122,7 +122,7 @@ class StatusesController extends Controller implements \Commerce\Module\Interfac
         }
 
         try {
-            if (!$db->begin()) {
+            if (!$db->begin(0, 'Commerce')) {
                 throw new Exception("Cannot begin transaction!");
             }
 
