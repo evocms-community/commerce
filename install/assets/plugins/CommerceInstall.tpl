@@ -42,6 +42,7 @@ $modx->clearCache('full');
 $events = [
     'OnInitializeCommerce',
     'OnInitializeOrderProcessor',
+    'OnInitializeOrderForm',
     'OnCollectSubtotals',
     'OnRegisterDelivery',
     'OnRegisterPayments',
