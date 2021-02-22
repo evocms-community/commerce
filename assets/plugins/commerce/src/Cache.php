@@ -95,7 +95,7 @@ class Cache
     public function save($name, $content, $options = [])
     {
         $key  = $this->generateKey($name);
-        $path = MODX_BASE_PATH;
+        $path = rtrim(MODX_BASE_PATH,'/');
 
         $parts = explode('/', trim($this->path, '/ ') . '/' . $key);
         $filename = array_pop($parts);
