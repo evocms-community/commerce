@@ -555,6 +555,17 @@ class Commerce
 
                     break;
                 }
+                    
+                case 'cart/addmultiple': {
+                    $row = $cart->addMultiple($data);
+
+                    if ($row !== false) {
+                        $response['status'] = 'success';
+                        $response['row']    = $row;
+                    }
+
+                    break;
+                }
 
                 case 'cart/update': {
                     if (!empty($data['row']) && !empty($data['attributes']) && $cart->update($data['row'], $data['attributes'])) {
