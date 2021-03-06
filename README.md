@@ -53,6 +53,15 @@ Add product to cart:
 <a href="#" data-commerce-action="remove" data-row="[*row*]">Remove from cart by row hash</a>
 
 <a href="#" data-commerce-action="remove" data-id="[*id*]">Remove from cart by ID</a>
+
+<!-- batch adding -->
+<form action="#" data-commerce-action="add">
+    <input type="checkbox" name="batch[1][id]" value="1">
+    <input type="hidden" name="batch[1][count]" value="1">
+    <input type="checkbox" name="batch[2][id]" value="2">
+    <input type="hidden" name="batch[2][count]" value="1">
+    <button type="submit">Add to cart</button>
+</form>
 ```
 
 Show cart:
