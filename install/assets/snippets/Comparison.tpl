@@ -5,7 +5,7 @@
  * Comparison snippet, DocLister based
  *
  * @category    snippet
- * @version     0.6.11
+ * @version     0.7.0
  * @author      mnoskov
  * @internal    @modx_category Commerce
  * @internal    @installset base
@@ -27,9 +27,16 @@ if (!defined('COMMERCE_INITIALIZED')) {
     return;
 }
 
-$items = array_map(function($item) {
-    return $item['id'];
-}, ci()->carts->getCart('comparison')->getItems());
+if (isset($ids)) {
+    if (!is_array($ids)) {
+        $ids = array_map('trim', explode(',', $ids));
+    }
+    $items = $ids;
+} else {
+    $items = array_map(function($item) {
+        return $item['id'];
+    }, ci()->carts->getCart('comparison')->getItems());
+}
 
 if (empty($items)) {
     return;
