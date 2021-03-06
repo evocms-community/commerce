@@ -15,7 +15,7 @@ class Commerce
 {
     use SettingsTrait;
 
-    const VERSION = '0.6.14';
+    const VERSION = '0.7.0';
 
     public $currency;
 
@@ -551,6 +551,25 @@ class Commerce
                     if ($row !== false) {
                         $response['status'] = 'success';
                         $response['row']    = $row;
+                    }
+
+                    break;
+                }
+
+                case 'cart/addmultiple': {
+                    if (isset($data['batch']) && is_array($data['batch'])) {
+                        $response['rows'] = $cart->addMultiple($data['batch']);
+
+                        $successful = array_filter($response['rows'], function($res) {
+                            return $res !== false;
+                        });
+                        $count = count($successful);
+
+                        if ($count == count($response['rows'])) {
+                            $response['status'] = 'success';
+                        } else if ($count) {
+                            $response['status'] = 'ambiguous';
+                        }
                     }
 
                     break;
