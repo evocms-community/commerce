@@ -19,7 +19,7 @@ Payment methods:
 <a href="https://github.com/autogen-travel/commerce-tinkoff" target="_blank">Tinkoff</a><br>
 <a href="https://github.com/dzhuryn/commerce-payment-ckassa" target="_blank">Центральная касса (нужен тестовый аккаунт для проверки)</a><br>
 <a href="https://github.com/dzhuryn/commerce-payment-wayforpay" target="_blank">WayForPay</a><br>
-<a href="https://github.com/mnoskov/commerce-payment-yandexkassa" target="_blank">Яндекс.Касса</a><br>
+<a href="https://github.com/mnoskov/commerce-payment-yookassa" target="_blank">ЮKassa (Яндекс.Касса)</a><br>
 
 Delivery:
 
