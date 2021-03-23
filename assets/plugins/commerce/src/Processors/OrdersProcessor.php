@@ -187,6 +187,7 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
         $preventChange = false;
 
         $this->modx->invokeEvent('OnBeforeOrderHistoryUpdate', [
+            'order'     => $order,
             'order_id'  => $order_id,
             'status_id' => &$status_id,
             'comment'   => &$comment,
