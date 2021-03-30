@@ -10,6 +10,8 @@ class WishlistDocLister extends CartDocLister
         $cfg['tvList']    = $this->priceField . (!empty($cfg['tvList']) ? ',' . $cfg['tvList'] : '');
         $this->priceField = (isset($cfg['tvPrefix']) ? $cfg['tvPrefix'] : 'tv.') . $this->priceField;
 
+        $cfg = $this->initializePrepare($cfg);
+
         $cfg['prepare'][] = [$this, 'prepareRow'];
 
         parent::__construct($modx, $cfg, $startTime);
