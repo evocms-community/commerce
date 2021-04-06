@@ -164,6 +164,17 @@ class ProductsCart extends StoreCart implements \Commerce\Interfaces\Cart
             return false;
         }
 
+        $templates = array_filter(\APIhelpers::cleanIDs($this->modx->commerce->getSetting('product_templates', '')));
+
+        if (!empty($templates)) {
+            $doc = $this->modx->getDocument($item['id']);
+
+            if (empty($doc) || !in_array($doc['template'], $templates)) {
+                $this->modx->logEvent(0, 3, 'Item not added, template mismatch.<br><pre>Request: ' . htmlentities(print_r($item, true)) . '<br>Product: ' . htmlentities(print_r($doc, true)) . '<br>Allowed templates: ' . htmlentities(print_r($templates, true)) . '</pre>', 'Commerce Cart');
+                return false;
+            }
+        }
+
         return true;
     }
 
