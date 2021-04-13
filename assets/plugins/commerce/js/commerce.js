@@ -190,20 +190,32 @@ var Commerce = (function() {
         out = out || {};
 
         for (var i = 1; i < arguments.length; i++) {
-            var obj = arguments[i];
+            var obj = arguments[i], key;
 
             if (!obj) {
                 continue;
             }
 
-            for (var key in obj) {
-                if (obj.hasOwnProperty(key)) {
+            if (obj instanceof Array == true) {
+                for (key = 0; key < obj.length; key++) {
+                    if (typeof obj[key] == 'undefined') {
+                        continue;
+                    }
+
                     if (typeof obj[key] === 'object') {
-                        if (obj[key] instanceof Array == true) {
-                            out[key] = obj[key].slice(0);
-                        } else {
-                            out[key] = extendObject(out[key], obj[key]);
-                        }
+                        out[key] = extendObject(out[key], obj[key]);
+                    } else {
+                        out[key] = obj[key];
+                    }
+                }
+            } else {
+                for (key in obj) {
+                    if (!obj.hasOwnProperty(key)) {
+                        continue;
+                    }
+
+                    if (typeof obj[key] === 'object') {
+                        out[key] = extendObject(out[key], obj[key]);
                     } else {
                         out[key] = obj[key];
                     }
@@ -412,6 +424,12 @@ var Commerce = (function() {
         }
     }
 
+    function handleOrderChange(e) {
+        if (['delivery_method', 'payment_method'].indexOf(e.target.name) !== -1) {
+            Commerce.updateOrderData(this);
+        }
+    }
+
     function delegateEvent(events, selector, handler) {
         if (!(events instanceof Array)) {
             events = [events];
@@ -444,13 +462,19 @@ var Commerce = (function() {
         .then(callback);
     }
 
-    delegateEvent(['submit', 'click', 'change'], '[data-commerce-action]', handleActionEvent);
+    if (window.jQuery) {
+        jQuery(document).on('submit click change', '[data-commerce-action]', function(e) {
+            handleActionEvent.call(this, e);
+        });
 
-    delegateEvent('change', '[data-commerce-order]', function(e) {
-        if (['delivery_method', 'payment_method'].indexOf(e.target.name) !== -1) {
-            Commerce.updateOrderData(this);
-        }
-    });
+        jQuery(document).on('change', '[data-commerce-order]', function(e) {
+            handleOrderChange.call(this, e);
+        });
+    } else {
+        delegateEvent(['submit', 'click', 'change'], '[data-commerce-action]', handleActionEvent);
+
+        delegateEvent('change', '[data-commerce-order]', handleOrderChange);
+    }
 
     delegateEvent('cart-remove-complete.commerce', '.comparison-table, .wishlist-table', function(e) {
         window.location.reload();
