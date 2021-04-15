@@ -39,7 +39,7 @@ class Renderer
     public function render($template, array $data = [])
     {
         $this->templateLevels[] = $template;
-        $fullTemplate = rtrim($this->getSetting('path', MODX_BASE_PATH . 'assets/plugins/commerce/templates/module'), '/') . '/' . $template;
+        $fullTemplate = rtrim($this->getSetting('path', COMMERCE_PATH . 'templates/module'), '/') . '/' . $template;
 
         if (!is_readable($fullTemplate)) {
             throw new \Exception('Template "' . $fullTemplate . '" is not readable!');

@@ -2,7 +2,7 @@
 
 use Commerce\Controllers\Traits;
 
-class CartDocLister extends CustomLangDocLister
+class CustomTableCartDocLister extends CustomTableLangDocLister
 {
     use Traits\CommonCartTrait, Traits\PrepareTrait;
 
@@ -17,41 +17,7 @@ class CartDocLister extends CustomLangDocLister
 
     public function getDocs($tvlist = '')
     {
-        if ($tvlist == '') {
-            $tvlist = $this->getCFGDef('tvList', '');
-        }
-
-        $this->extTV->getAllTV_Name();
-
-        /**
-         * @var $multiCategories multicategories_DL_Extender
-         */
-        $multiCategories = $this->getCFGDef('multiCategories', 0) ? $this->getExtender('multicategories', true) : null;
-        if ($multiCategories) {
-            $multiCategories->init($this);
-        }
-
-        if ($this->extPaginate = $this->getExtender('paginate')) {
-            $this->extPaginate->init($this);
-        }
-
-        $this->_docs = $this->getDocList();
-
-        if ($tvlist != '' && count($this->_docs) > 0) {
-            $tv = $this->extTV->getTVList(array_column($this->_docs, 'docid'), $tvlist);
-
-            if (!is_array($tv)) {
-                $tv = array();
-            }
-
-            foreach ($this->_docs as $hash => $doc) {
-                if (isset($tv[$doc['docid']])) {
-                    $this->_docs[$hash] = array_merge($doc, $tv[$doc['docid']]);
-                }
-            }
-        }
-
-        $this->_docs = $this->mixinCartItems($this->_docs);
+        $this->_docs = $this->mixinCartItems(parent::getDocs($tvList));
 
         return $this->_docs;
     }

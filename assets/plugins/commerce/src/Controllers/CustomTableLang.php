@@ -2,7 +2,7 @@
 
 use Commerce\Controllers\Traits;
 
-class CustomLangDocLister extends site_contentDocLister
+class CustomTableLangDocLister extends onetableDocLister
 {
     use Traits\CustomTemplatesPathTrait, Traits\CustomLangTrait;
 

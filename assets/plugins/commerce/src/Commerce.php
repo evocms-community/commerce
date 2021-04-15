@@ -13,9 +13,11 @@ use bLang\bLang;
 
 class Commerce
 {
-    use SettingsTrait;
+    use SettingsTrait {
+        setSettings as public;
+    }
 
-    const VERSION = '0.8.0';
+    const VERSION = '0.9.0';
 
     public $currency;
 
@@ -53,6 +55,7 @@ class Commerce
     public function initializeCommerce()
     {
         define('COMMERCE_INITIALIZED', true);
+        define('COMMERCE_PATH', dirname(__DIR__) . '/');
 
         $this->modx->invokeEvent('OnInitializeCommerce');
 

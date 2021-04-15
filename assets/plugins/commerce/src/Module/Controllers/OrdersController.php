@@ -148,9 +148,9 @@ class OrdersController extends Controller implements \Commerce\Module\Interfaces
 
         $cart = $this->modx->commerce->loadProcessor()->getCart();
 
-        $products = $this->modx->runSnippet('DocLister', array_merge($config, [
-            'controller' => 'Cart',
-            'dir'        => 'assets/plugins/commerce/src/Controllers/',
+        $products = $this->modx->runSnippet('DocLister', array_merge([
+            'controller' => $this->modx->commerce->getSetting('cart_controller'),
+        ], $config, [
             'idType'     => 'documents',
             'documents'  => array_column($cart->getItems(), 'id'),
             'instance'   => 'order',
@@ -237,9 +237,9 @@ class OrdersController extends Controller implements \Commerce\Module\Interfaces
         $columns = $this->sortFields($columns);
         $config  = $this->injectPrepare($config, $columns);
 
-        $products = $this->modx->runSnippet('DocLister', array_merge($config, [
-            'controller' => 'Cart',
-            'dir'        => 'assets/plugins/commerce/src/Controllers/',
+        $products = $this->modx->runSnippet('DocLister', array_merge([
+            'controller' => $this->modx->commerce->getSetting('cart_controller'),
+        ], $config, [
             'sortType'   => 'doclist',
             'idType'     => 'documents',
             'documents'  => array_column($cart->getItems(), 'id'),

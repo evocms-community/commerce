@@ -5,7 +5,7 @@
  * Cart contents, DocLister based
  *
  * @category    snippet
- * @version     0.6.13
+ * @version     0.9.0
  * @author      mnoskov
  * @internal    @modx_category Commerce
  * @internal    @installset base
@@ -18,8 +18,7 @@ if (defined('COMMERCE_INITIALIZED')) {
 
     if (!is_null($cart)) {
         return $modx->runSnippet('DocLister', array_merge([
-            'controller'        => 'Cart',
-            'dir'               => 'assets/plugins/commerce/src/Controllers/',
+            'controller'        => $modx->commerce->getSetting('cart_controller'),
             'tpl'               => '@FILE:' . $theme . 'cart_row',
             'optionsTpl'        => '@FILE:' . $theme . 'cart_row_options_row',
             'ownerTPL'          => '@FILE:' . $theme . 'cart_wrap',
