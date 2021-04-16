@@ -14,6 +14,7 @@ spl_autoload_register(function ($class) {
             'FormLister\\Core'         => '/../../snippets/FormLister/core/FormLister.abstract.php',
             'site_contentDocLister'    => '/../../snippets/DocLister/core/controller/site_content.php',
             'onetableDocLister'        => '/../../snippets/DocLister/core/controller/onetable.php',
+            'DocLister'                => '/../../snippets/DocLister/core/DocLister.abstract.php',
             'DLTemplate'               => '/../../snippets/DocLister/lib/DLTemplate.class.php',
             'FormLister\\Validator'    => '/../../snippets/FormLister/lib/Validator.php',
             'Helpers\\Mailer'          => '/../../lib/Helpers/Mailer.php',
