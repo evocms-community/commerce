@@ -15,7 +15,7 @@ if (defined('COMMERCE_INITIALIZED')) {
     $instance = isset($instance) ? $instance : 'products';
     $theme    = !empty($theme) ? $theme : '';
     $cart     = ci()->carts->getCart($instance);
-
+	$langDir  = isset($langDir) ? $langDir : 'assets/plugins/commerce/lang/';
     if (!is_null($cart)) {
         return $modx->runSnippet('DocLister', array_merge([
             'controller'        => 'Cart',
@@ -26,7 +26,7 @@ if (defined('COMMERCE_INITIALIZED')) {
             'subtotalsRowTpl'   => '@FILE:' . $theme . 'cart_subtotals_row',
             'subtotalsTpl'      => '@FILE:' . $theme . 'cart_subtotals',
             'noneTPL'           => '@FILE:' . $theme . 'cart_empty',
-            'langDir'           => 'assets/plugins/commerce/lang/',
+            'langDir'           =>  $langDir,
             'customLang'        => 'cart',
             'noneWrapOuter'     => 0,
         ], $params, [
