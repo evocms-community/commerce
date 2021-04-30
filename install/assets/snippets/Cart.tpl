@@ -5,7 +5,7 @@
  * Cart contents, DocLister based
  *
  * @category    snippet
- * @version     0.9.0
+ * @version     0.9.1
  * @author      mnoskov
  * @internal    @modx_category Commerce
  * @internal    @installset base
@@ -25,7 +25,6 @@ if (defined('COMMERCE_INITIALIZED')) {
             'subtotalsRowTpl'   => '@FILE:' . $theme . 'cart_subtotals_row',
             'subtotalsTpl'      => '@FILE:' . $theme . 'cart_subtotals',
             'noneTPL'           => '@FILE:' . $theme . 'cart_empty',
-            'langDir'           => 'assets/plugins/commerce/lang/',
             'customLang'        => 'cart',
             'noneWrapOuter'     => 0,
         ], $params, [

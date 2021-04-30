@@ -29,11 +29,22 @@ trait CustomLangTrait
                 $lang = explode(',', $lang);
             }
 
+            $userLangDir = $this->getCFGDef('langDir', '');
+
+            if (!empty($userLangDir)) {
+                $userLangDir = MODX_BASE_PATH . trim($userLangDir, '/') . '/';
+            }
+
             $files = [];
 
             foreach ($lang as $item) {
                 $files[] = COMMERCE_PATH . "lang/$dir/$item.inc.php";
                 $files[] = MODX_BASE_PATH . 'assets/' . $item;
+
+                if (!empty($userLangDir)) {
+                    $files[] = $userLangDir . "$item.inc.php";
+                    $files[] = $userLangDir . "$dir/$item.inc.php";
+                }
             }
 
             foreach ($files as $file) {
