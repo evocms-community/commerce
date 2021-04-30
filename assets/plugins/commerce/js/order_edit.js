@@ -3,7 +3,13 @@ var popup;
 (function($) {
     var parseTemplate = function(tpl, data) {
         for (var key in data) {
-            tpl = tpl.replace(new RegExp('\{%' + key + '%\}', 'g'), data[key]);
+			var value = data[key];
+			if (typeof value === 'string') value = value
+				.replace(/&/g, '&amp;')
+				.replace(/</g, '&lt;')
+				.replace(/>/g, '&gt;')
+				.replace(/"/g, '&quot;');
+            tpl = tpl.replace(new RegExp('\{%' + key + '%\}', 'g'),value);
         }
 
         return tpl;
