@@ -31,47 +31,15 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
         $this->tablePayments = $modx->getFullTablename($this->tablePayments);
     }
 
-    protected function prepareOrderProduct($order_id, $position, $item)
-    {
-        $fields = [
-            'order_id'   => $order_id,
-            'product_id' => (int)$item['id'],
-            'title'      => $this->modx->db->escape(trim(isset($item['title']) ? $item['title'] : $item['name'])),
-            'price'      => $this->normalizePrice($item['price']),
-            'count'      => $this->normalizePrice($item['count']),
-            'position'   => $position,
-        ];
-
-        if (isset($item['options'])) {
-            $fields['options'] = $this->modx->db->escape(json_encode($item['options'], JSON_UNESCAPED_UNICODE));
-        }
-
-        if (isseT($item['meta'])) {
-            $fields['meta'] = $this->modx->db->escape(json_encode($item['meta'], JSON_UNESCAPED_UNICODE));
-        }
-
-        return $fields;
-    }
-
-    protected function prepareOrderSubtotal($order_id, $position, $item)
-    {
-        return [
-            'order_id' => $order_id,
-            'title'    => $this->modx->db->escape($item['title']),
-            'price'    => $this->normalizePrice($item['price']),
-            'position' => $position,
-        ];
-    }
-
-    public function createOrder(array $items, array $fields)
+    protected function prepareOrderValues(array &$items, array &$fields, array &$subtotals)
     {
         $total = 0;
+        $db = $this->modx->db;
 
         foreach ($items as $item) {
             $total += (float)$item['price'] * (float)$item['count'];
         }
 
-        $subtotals = [];
         $this->modx->invokeEvent('OnCollectSubtotals', [
             'rows'     => &$subtotals,
             'total'    => &$total,
@@ -103,10 +71,58 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
             'subtotals' => &$subtotals,
         ]);
 
+        $values['fields'] = json_encode($fields, JSON_UNESCAPED_UNICODE);
+
+        foreach ($values as $key => $value) {
+            $values[$key] = $db->escape($value);
+        }
+
+        return $values;
+    }
+
+    protected function prepareOrderProduct($order_id, $position, $item)
+    {
         $db = $this->modx->db;
 
-        
-        $values['fields'] = $db->escape(json_encode($fields, JSON_UNESCAPED_UNICODE));
+        $fields = [
+            'order_id'   => $order_id,
+            'product_id' => (int)$item['id'],
+            'title'      => trim(isset($item['title']) ? $item['title'] : $item['name']),
+            'price'      => $this->normalizePrice($item['price']),
+            'count'      => $this->normalizePrice($item['count']),
+            'position'   => $position,
+        ];
+
+        if (isset($item['options'])) {
+            $fields['options'] = json_encode($item['options'], JSON_UNESCAPED_UNICODE);
+        }
+
+        if (isseT($item['meta'])) {
+            $fields['meta'] = json_encode($item['meta'], JSON_UNESCAPED_UNICODE);
+        }
+
+        foreach ($fields as $key => $field) {
+            $fields[$key] = $db->escape($field);
+        }
+
+        return $fields;
+    }
+
+    protected function prepareOrderSubtotal($order_id, $position, $item)
+    {
+        return [
+            'order_id' => $order_id,
+            'title'    => $this->modx->db->escape($item['title']),
+            'price'    => $this->normalizePrice($item['price']),
+            'position' => $position,
+        ];
+    }
+
+    public function createOrder(array $items, array $fields)
+    {
+        $db = $this->modx->db;
+        $subtotals = [];
+        $values = $this->prepareOrderValues($items, $fields, $subtotals);
 
         try {
             $defaultStatus = ci()->cache->getOrCreate('default_status', function() use ($db) {
@@ -118,7 +134,7 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
 
                 return $db->getValue($query);
             });
-        
+
             $values['status_id'] = $defaultStatus;
 
             if ($db->begin(0, 'Commerce') === false) {
