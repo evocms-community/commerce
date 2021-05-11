@@ -144,8 +144,8 @@ $modx->db->query("
 ");
 
 $modx->db->query("
-    ALTER TABLE {$table} 
-        ADD CONSTRAINT `commerce_order_products_ibfk_1` 
+    ALTER TABLE {$table}
+        ADD CONSTRAINT `commerce_order_products_ibfk_1`
         FOREIGN KEY (`order_id`)
         REFERENCES {$orders_table} (`id`)
         ON DELETE CASCADE
@@ -170,8 +170,8 @@ $modx->db->query("
 ");
 
 $modx->db->query("
-    ALTER TABLE {$table} 
-        ADD CONSTRAINT `commerce_order_history_ibfk_1` 
+    ALTER TABLE {$table}
+        ADD CONSTRAINT `commerce_order_history_ibfk_1`
         FOREIGN KEY (`order_id`)
         REFERENCES {$orders_table} (`id`)
         ON DELETE CASCADE
@@ -202,8 +202,8 @@ $modx->db->query("ALTER TABLE {$table} ADD `original_order_id` VARCHAR(255) NOT 
 $modx->db->query("ALTER TABLE {$table} ADD INDEX (`original_order_id`);", false);
 
 $modx->db->query("
-    ALTER TABLE {$table} 
-        ADD CONSTRAINT `commerce_order_payments_ibfk_1` 
+    ALTER TABLE {$table}
+        ADD CONSTRAINT `commerce_order_payments_ibfk_1`
         FOREIGN KEY (`order_id`)
         REFERENCES {$orders_table} (`id`)
         ON DELETE CASCADE
@@ -291,6 +291,8 @@ if (!tableExists($modx, $table)) {
 }
 
 $modx->db->query("ALTER TABLE {$table} ADD `lang` VARCHAR(8) NOT NULL DEFAULT '' AFTER `default`;", false);
+$modx->db->query("ALTER TABLE {$table} CHANGE `left` `left` VARCHAR(32) NOT NULL DEFAULT '';", false);
+$modx->db->query("ALTER TABLE {$table} CHANGE `right` `right` VARCHAR(32) NOT NULL DEFAULT '';", false);
 
 $id = $modx->db->getValue($modx->db->select('MAX(id)', $tablePlugins, "`name` = 'Commerce'"));
 $modx->db->update(['disabled' => 0], $tablePlugins, "`id` = '$id'");
