@@ -59,8 +59,9 @@ class StoreCart extends SimpleCart implements Cart
 
     public function clean()
     {
-        parent::clean();
+        $result = parent::clean();
         $this->store->save($this->items);
+        return $result;
     }
 
     public function setCurrency($code)

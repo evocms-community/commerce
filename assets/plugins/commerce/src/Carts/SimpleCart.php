@@ -177,6 +177,7 @@ class SimpleCart implements \Commerce\Interfaces\Cart
     public function clean()
     {
         $this->items = [];
+        return true;
     }
 
     public function setCurrency($code)

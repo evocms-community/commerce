@@ -17,7 +17,7 @@ class Commerce
         setSettings as public;
     }
 
-    const VERSION = '0.9.1';
+    const VERSION = '0.10.0';
 
     public $currency;
 
@@ -605,8 +605,10 @@ class Commerce
                 }
 
                 case 'cart/clean': {
-                    $cart->clean();
-                    $response['status'] = 'success';
+                    if ($cart->clean()) {
+                        $response['status'] = 'success';
+                    }
+
                     break;
                 }
             }

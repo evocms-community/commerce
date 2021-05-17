@@ -145,6 +145,18 @@ class CustomTableCart extends StoreCart implements Cart
 
     public function remove($row)
     {
+        $isPrevented = false;
+
+        $this->modx->invokeEvent('OnBeforeCartItemRemoving', [
+            'by'      => 'row',
+            'row'     => &$row,
+            'prevent' => &$isPrevented,
+        ]);
+
+        if ($isPrevented) {
+            return false;
+        }
+
         $result = parent::remove($row);
 
         if ($result) {
@@ -158,6 +170,18 @@ class CustomTableCart extends StoreCart implements Cart
 
     public function removeById($id)
     {
+        $isPrevented = false;
+
+        $this->modx->invokeEvent('OnBeforeCartItemRemoving', [
+            'by'      => 'id',
+            'id'      => &$id,
+            'prevent' => &$isPrevented,
+        ]);
+
+        if ($isPrevented) {
+            return false;
+        }
+
         $result = parent::removeById($id);
 
         if ($result) {
@@ -171,11 +195,24 @@ class CustomTableCart extends StoreCart implements Cart
 
     public function clean()
     {
-        parent::clean();
+        $isPrevented = false;
+
+        $this->modx->invokeEvent('OnBeforeCartCleaning', [
+            'instance' => $this->instance,
+            'prevent'  => &$isPrevented,
+        ]);
+
+        if ($isPrevented) {
+            return false;
+        }
+
+        $result = parent::clean();
 
         $this->modx->invokeEvent('OnCartChanged', [
             'instance' => $this->instance,
         ]);
+
+        return $result;
     }
 
     public function setTitleField($field)
