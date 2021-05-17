@@ -583,6 +583,7 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
                         ]]);
                     } else {
                         $successTpl .= $redirect['markup'];
+                        $FL->config->setConfig(['redirectTo' => '']);
                     }
                 } else {
                     $params = [
