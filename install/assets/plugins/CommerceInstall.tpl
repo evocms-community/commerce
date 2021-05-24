@@ -61,6 +61,7 @@ $events = [
     'OnBeforeOrderSending',
     'OnOrderSaved',
     'OnOrderDeleted',
+    'OnOrderPaid',
     'OnOrderProcessed',
     'OnBeforeOrderHistoryUpdate',
     'OnBeforeCustomerNotifySending',

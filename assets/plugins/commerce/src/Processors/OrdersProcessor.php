@@ -837,6 +837,15 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
 
         $this->changeStatus($order_id, $status, $comment, true);
 
+        $this->modx->invokeEvent('OnOrderPaid', [
+            'order_id'   => $order_id,
+            'order'      => $order,
+            'status_id'  => $status,
+            'payment'    => $payment,
+            'total'      => $total,
+            'fully_paid' => $total >= $order['amount'],
+        ]);
+
         $this->getCart();
         $template = $commerce->getSetting('order_paid', $commerce->getUserLanguageTemplate('order_paid'));
 
