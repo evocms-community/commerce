@@ -217,19 +217,19 @@ class CustomTableCart extends StoreCart implements Cart
 
     public function setTitleField($field)
     {
-        if (is_string($field) && preg_match('/^[A-Za-z0-9_]+$/', $field)) {
+        if (is_string($field) && preg_match('/^[A-Za-z0-9_-]+$/', $field)) {
             $this->titleField = $field;
         } else {
-            throw new \Exception('Name "' . print_r($field, true) . '" must be valid field name!');
+            $this->modx->logEvent(0, 3, 'Name "' . print_r($field, true) . '" must be valid field name!', 'Commerce Cart - cannot set title field');
         }
     }
 
     public function setPriceField($field)
     {
-        if (is_string($field) && preg_match('/^[A-Za-z0-9_]+$/', $field)) {
+        if (is_string($field) && preg_match('/^[A-Za-z0-9_-]+$/', $field)) {
             $this->priceField = $field;
         } else {
-            throw new \Exception('Name "' . print_r($field, true) . '" must be valid field name!');
+            $this->modx->logEvent(0, 3, 'Name "' . print_r($field, true) . '" must be valid field name!', 'Commerce Cart - cannot set price field');
         }
     }
 
