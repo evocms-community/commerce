@@ -492,10 +492,12 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
 
     public function loadOrderByHash($order_hash)
     {
-        $query = $this->modx->db->select('*', $this->tableOrders, "`hash` = '" . $db->escape((string)$order_hash) . "'");
+        $db = $this->modx->db;
 
-        if ($this->modx->db->getRecordCount($query)) {
-            $this->order = $this->modx->db->getRow($query);
+        $query = $db->select('*', $this->tableOrders, "`hash` = '" . $db->escape((string)$order_hash) . "'");
+
+        if ($db->getRecordCount($query)) {
+            $this->order = $db->getRow($query);
             $this->order['fields'] = json_decode($this->order['fields'], true);
             $this->order_id = $this->order['id'];
             return $this->order;
