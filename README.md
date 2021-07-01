@@ -30,6 +30,7 @@ Other:
 
 <a href="https://github.com/mnoskov/commerce-options" target="_blank">Product Options</a><br>
 <a href="https://github.com/webber12/CommerceCoupons" target="_blank">Coupons</a><br>
+<a href="https://github.com/DDAProduction/evocms-commerce-coupons" target="_blank">Coupons (3.x)</a><br>
 <a href="https://github.com/webber12/CommerceDiscounts" target="_blank">Discounts</a><br>
 <a href="https://github.com/mnoskov/commerce-cbr-currency-updater" target="_blank">CBR Currency Updater</a><br>
 <a href="https://github.com/mnoskov/commerce-dashboard" target="_blank">Dashboard</a><br>
