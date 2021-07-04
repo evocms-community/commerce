@@ -101,6 +101,8 @@ class Commerce
             $currencyCode = $this->currency->getLangCurrencyCode($bLang->lang);
             $this->currency->setCurrency($currencyCode);
         }
+
+        $this->modx->invokeEvent('OnCommerceInitialized');
     }
 
     public function getCart()
