@@ -17,7 +17,15 @@ trait CustomLangTrait
     public function getCustomLang($lang = '')
     {
         if (!empty($this->lexicon)) {
-            $this->_customLang = parent::getCustomLang($lang);
+            $this->_customLang = [];
+
+            if (!is_array($lang)) {
+                $lang = array_map('trim', explode(',', $lang));
+            }
+
+            foreach ($lang as $l) {
+                $this->_customLang += parent::getCustomLang($l);
+            }
         } else {
             if (empty($lang)) {
                 return [];
