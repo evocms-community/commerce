@@ -99,7 +99,15 @@ class ComparisonDocLister extends CustomLangDocLister
             $where = "($where) OR `name` IN ('" . implode("','", $includeTV) . "')";
         }
 
-        $query  = $this->modx->db->select('*', $this->modx->getFullTablename('site_tmplvars'), $where);
+        $where = 'WHERE (' . $where . ')';
+
+        $templates = array_filter(\APIhelpers::cleanIDs($this->modx->commerce->getSetting('product_templates', '')));
+        $templates = array_filter($templates, 'is_numeric');
+        if (!empty($templates)) {
+            $where = 'LEFT JOIN ' . $this->modx->getFullTablename('site_tmplvar_templates') . ' tt ON tt.tmplvarid = t.id AND tt.templateid = ' . $templates[0] . ' ' . $where . ' ORDER BY tt.rank' ;
+        }
+
+        $query  = $this->modx->db->query('SELECT * FROM ' . $this->modx->getFullTablename('site_tmplvars') . ' t ' . $where);
         $result = [];
 
         while ($row = $this->modx->db->getRow($query)) {
