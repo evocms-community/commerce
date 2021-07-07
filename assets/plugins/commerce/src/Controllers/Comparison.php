@@ -240,6 +240,7 @@ class ComparisonDocLister extends CustomLangDocLister
 
                 foreach ($this->compareTV as $tvID => $tvRow) {
                     $cells['values'][$tvID][] = $this->parseChunk($valueTpl, array_merge($item, [
+                        'tv'    => $tvRow,
                         'value' => $item[$tvPrefix . $tvRow['name']],
                     ]));
                 }
