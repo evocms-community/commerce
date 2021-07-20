@@ -5,7 +5,7 @@
  * Comparison snippet, DocLister based
  *
  * @category    snippet
- * @version     0.7.0
+ * @version     0.11.1
  * @author      mnoskov
  * @internal    @modx_category Commerce
  * @internal    @installset base
@@ -38,13 +38,9 @@ if (isset($ids)) {
     }, ci()->carts->getCart('comparison')->getItems());
 }
 
-if (empty($items)) {
-    return;
-}
-
 $showCategories = isset($params['showCategories']) ? $params['showCategories'] : 1;
 
-if ($showCategories) {
+if (!empty($items) && $showCategories) {
     $table   = $modx->getFullTablename('site_content');
     $parents = $modx->db->getColumn('parent', $modx->db->select('parent', $table, "`id` IN (" . implode(',', $items) . ")"));
     $parents = array_unique($parents);
