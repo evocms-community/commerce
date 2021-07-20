@@ -459,7 +459,10 @@ var Commerce = (function() {
         .then(function(response) {
             return response.json();
         })
-        .then(callback);
+        .then(function(response) {
+            Commerce.serverResponse = response;
+            callback.call(Commerce, response);
+        });
     }
 
     if (window.jQuery) {
