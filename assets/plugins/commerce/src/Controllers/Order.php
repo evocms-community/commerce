@@ -9,8 +9,8 @@ class Order extends Form
 {
     use Traits\CustomTemplatesPathTrait;
 
-    private $order;
-    private $cart;
+    protected $order;
+    protected $cart;
 
     public function __construct (\DocumentParser $modx, $cfg = array())
     {
