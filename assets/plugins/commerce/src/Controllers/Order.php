@@ -105,7 +105,7 @@ class Order extends Form
                 $markup .= isset($method['markup']) && is_scalar($method['markup']) ? $method['markup'] : '';
             }
 
-            if (!empty($output) || $this->getCFGDef('noneWrap' . ucfirst($type), false)) {
+            if (!empty($output) || $this->getCFGDef('wrapEmpty' . ucfirst($type), false)) {
                 $output = $this->DLTemplate->parseChunk($this->getCFGDef($type . 'Tpl'), array_merge($fields, [
                     'wrap'   => $output,
                     'markup' => $markup,
