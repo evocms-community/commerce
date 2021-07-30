@@ -713,7 +713,7 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
         $hash = ci()->commerce->generateRandomString(16);
 
         $paid = $this->getOrderPaymentsAmount($order_id);
-        $diff = $amount - $paid;
+        $diff = number_format($amount - $paid, 2, '.', '');
         $meta = [];
 
         $this->modx->invokeEvent('OnBeforePaymentCreate', [
