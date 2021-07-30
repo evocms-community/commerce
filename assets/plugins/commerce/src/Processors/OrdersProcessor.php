@@ -7,7 +7,7 @@ use Exception;
 
 class OrdersProcessor implements \Commerce\Interfaces\Processor
 {
-    private $modx;
+    protected $modx;
 
     protected $cart;
     protected $order_id;
