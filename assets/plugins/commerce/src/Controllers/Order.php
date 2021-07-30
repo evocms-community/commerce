@@ -127,17 +127,19 @@ class Order extends Form
         $items = ci()->carts->getCart($cartName)->getItems();
 
         if (empty($items)) {
-            return false;
-        }
+            $this->redirect('exitTo');
+            $this->renderTpl = $this->getCFGDef('skipTpl', '');
+            $this->setValid(false);
+        } else {
+            $this->setPlaceholder('form_hash', $this->getCFGDef('form_hash'));
 
-        $this->setPlaceholder('form_hash', $this->getCFGDef('form_hash'));
+            foreach ($this->getPaymentsAndDelivery() as $type => $markup) {
+                $this->setPlaceholder($type, $markup);
+            }
 
-        foreach ($this->getPaymentsAndDelivery() as $type => $markup) {
-            $this->setPlaceholder($type, $markup);
-        }
-
-        if ($this->isSubmitted()) {
-            $this->modx->commerce->loadProcessor()->updateRawData($_POST);
+            if ($this->isSubmitted()) {
+                $this->modx->commerce->loadProcessor()->updateRawData($_POST);
+            }
         }
 
         return parent::render();
