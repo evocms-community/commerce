@@ -67,12 +67,13 @@ class Order extends Form
 
         foreach (['delivery' => $currentDelivery, 'payments' => $currentPayment] as $type => $default) {
             $output = '';
-            $rows   = $$type;
+            $methods = $$type;
             $index  = 0;
             $markup = '';
             $defaultValid = false;
+            $rows = [];
 
-            foreach (array_keys($rows) as $code) {
+            foreach (array_keys($methods) as $code) {
                 if ($code == $default) {
                     $defaultValid = true;
                     break;
@@ -80,30 +81,35 @@ class Order extends Form
             }
 
             if (!$defaultValid) {
-                reset($rows);
-                $default = key($rows);
+                reset($methods);
+                $default = key($methods);
             }
 
-            foreach ($rows as $code => $row) {
+            foreach ($methods as $code => $method) {
                 $active = $default == $code;
-                $output .= $this->DLTemplate->parseChunk($this->getCFGDef($type . 'RowTpl'), [
-                    'code'   => $code,
-                    'title'  => $row['title'],
-                    'price'  => isset($row['price']) ? $row['price'] : '',
-                    'markup' => isset($row['markup']) ? $row['markup'] : '',
-                    'active' => (int)$active,
-                    'selected' => $active ? ' selected' : '',
-                    'checked' => $active ? ' checked' : '',
-                    'index'  => $index++,
-                ]);
 
-                $markup .= isset($row['markup']) && is_scalar($row['markup']) ? $row['markup'] : '';
+                $row = [
+                    'code'     => $code,
+                    'title'    => $method['title'],
+                    'price'    => isset($method['price']) ? $method['price'] : '',
+                    'markup'   => isset($method['markup']) ? $method['markup'] : '',
+                    'active'   => (int)$active,
+                    'selected' => $active ? ' selected' : '',
+                    'checked'  => $active ? ' checked' : '',
+                    'index'    => $index++,
+                ];
+                $rows[$code] = $row;
+
+                $output .= $this->DLTemplate->parseChunk($this->getCFGDef($type . 'RowTpl'), $row);
+
+                $markup .= isset($method['markup']) && is_scalar($method['markup']) ? $method['markup'] : '';
             }
 
-            if (!empty($output)) {
+            if (!empty($output) || $this->getCFGDef('noneWrap' . ucfirst($type), false)) {
                 $output = $this->DLTemplate->parseChunk($this->getCFGDef($type . 'Tpl'), array_merge($fields, [
                     'wrap'   => $output,
                     'markup' => $markup,
+                    'rows'   => $rows,
                 ]));
             }
 
