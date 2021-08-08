@@ -65,6 +65,10 @@ class Commerce
 
         $carts = ci()->carts;
 
+        if (!$carts->hasStore('instant')) {
+            $carts->registerStore('instant', InstantCartStore::class);
+        }
+
         if (!$carts->hasStore('session')) {
             $carts->registerStore('session', SessionCartStore::class);
         }
