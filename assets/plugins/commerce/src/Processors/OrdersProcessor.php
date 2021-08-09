@@ -93,11 +93,11 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
             'position'   => $position,
         ];
 
-        if (isset($item['options'])) {
+        if (isset($item['options']) && is_array($item['options'])) {
             $fields['options'] = json_encode($item['options'], JSON_UNESCAPED_UNICODE);
         }
 
-        if (isseT($item['meta'])) {
+        if (isset($item['meta']) && is_array($item['meta'])) {
             $fields['meta'] = json_encode($item['meta'], JSON_UNESCAPED_UNICODE);
         }
 

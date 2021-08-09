@@ -69,8 +69,13 @@ class SimpleCart implements \Commerce\Interfaces\Cart
 
     public function prepareItem(array $item)
     {
-        $item = array_filter(array_merge($this->defaults, $item), function($key) {
-            return isset($this->defaults[$key]);
+        $item = array_filter(array_merge($this->defaults, $item), function($key) use ($item) {
+            $result = isset($this->defaults[$key]);
+            if ($key === 'options' || $key === 'meta') {
+                $result = $result && is_array($item[$key]);
+            }
+
+            return $result;
         }, ARRAY_FILTER_USE_KEY);
 
         return $item;
@@ -135,8 +140,13 @@ class SimpleCart implements \Commerce\Interfaces\Cart
     public function update($row, array $attributes = [], $isAdded = false)
     {
         if (isset($this->items[$row])) {
-            $new = array_merge($this->items[$row], array_filter($attributes, function($key) {
-                return isset($this->defaults[$key]);
+            $new = array_merge($this->items[$row], array_filter($attributes, function($key) use ($attributes) {
+                $result = isset($this->defaults[$key]);
+                if ($key === 'options' || $key === 'meta') {
+                    $result = $result && is_array($attributes[$key]);
+                }
+
+                return $result;
             }, ARRAY_FILTER_USE_KEY));
 
             if ($this->validateItem($new) && $this->beforeItemUpdating($new, $row, $isAdded)) {
