@@ -38,6 +38,7 @@ Other:
 <a href="https://github.com/webber12/CommerceDiscounts" target="_blank">Discounts</a><br>
 <a href="https://github.com/mnoskov/commerce-cbr-currency-updater" target="_blank">CBR Currency Updater</a><br>
 <a href="https://github.com/mnoskov/commerce-dashboard" target="_blank">Dashboard</a><br>
+<a href="https://github.com/Pathologic/commerce-arendakass" target="_blank">Отправка чеков в arendakass.ru</a><br>
 
 Add product to cart:
 ```html
