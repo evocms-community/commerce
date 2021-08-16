@@ -39,6 +39,7 @@ Other:
 <a href="https://github.com/mnoskov/commerce-cbr-currency-updater" target="_blank">CBR Currency Updater</a><br>
 <a href="https://github.com/mnoskov/commerce-dashboard" target="_blank">Dashboard</a><br>
 <a href="https://github.com/Pathologic/commerce-arendakass" target="_blank">Отправка чеков в arendakass.ru</a><br>
+<a href="https://github.com/Pathologic/commerce-dbcart" target="_blank">Database storage for commerce carts</a><br>
 
 Add product to cart:
 ```html
