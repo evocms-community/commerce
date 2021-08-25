@@ -645,19 +645,26 @@ class Commerce
 
     public function storeParams(array $params)
     {
-        $hash = md5(json_encode($params));
-        $_SESSION['commerce.' . $hash] = serialize($params);
+        $hash = md5(serialize($params));
+        $key = 'commerce.' . $hash;
+        $cache = ci()->cache;
+        if (!$cache->has($key)) {
+            $cache->save($key, $params);
+        }
 
         return $hash;
     }
 
     public function restoreParams($hash)
     {
-        if (!empty($_SESSION['commerce.' . $hash])) {
-            return unserialize($_SESSION['commerce.' . $hash]);
+        $key = 'commerce.' . $hash;
+        $cache = ci()->cache;
+        try {
+            return $cache->get($key);
+        } catch (\Exception $e)
+        {
+            return false;
         }
-
-        return false;
     }
 
     protected function prepareResponse($response)
