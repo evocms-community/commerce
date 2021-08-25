@@ -11,6 +11,7 @@ class Cache
     protected $path = 'assets/cache/commerce';
     protected $salt = 'i_LjFSmtLz9i5zQ_KWCB';
 
+    /** @var \Helpers\FS */
     protected $filesystem = null;
 
     public static function getInstance()
@@ -34,6 +35,12 @@ class Cache
     private function __clone() {}
     private function __wakeup() {}
 
+    /**
+     * @param $name
+     * @param callable $callback
+     * @param  array  $options
+     * @return false|mixed
+     */
     public function getOrCreate($name, $callback, $options = [])
     {
         try {
@@ -46,17 +53,31 @@ class Cache
         return $content;
     }
 
+    /**
+     * @param $name
+     * @return string
+     */
     protected function generateKey($name)
     {
         $path = md5($name . $this->salt);
+        
         return substr($path, 0, 1) . '/' . substr($path, 1, 2) . '/' . $path . '.cache';
     }
 
+    /**
+     * @param $key
+     * @return string
+     */
     protected function getKeyPath($key)
     {
         return MODX_BASE_PATH . trim($this->path, '/ ') . '/' . $key;
     }
 
+    /**
+     * @param $name
+     * @param  false  $isPath
+     * @return bool
+     */
     public function has($name, $isPath = false)
     {
         if (!$isPath) {
@@ -64,7 +85,7 @@ class Cache
             $name = $this->getKeyPath($name);
         }
 
-        if (is_readable($name)) {
+        if ($this->filesystem->checkFile($name)) {
             $handle = fopen($name, 'r');
             $time = fread($handle, 10);
             fclose($handle);
@@ -79,6 +100,11 @@ class Cache
         return false;
     }
 
+    /**
+     * @param $name
+     * @return mixed
+     * @throws \Exception
+     */
     public function get($name)
     {
         $key  = $this->generateKey($name);
@@ -92,21 +118,17 @@ class Cache
         throw new \Exception('Key "' . print_r($name, true) . '" not found in cache!');
     }
 
+    /**
+     * @param $name
+     * @param $content
+     * @param  array  $options
+     */
     public function save($name, $content, $options = [])
     {
         $key  = $this->generateKey($name);
-        $path = rtrim(MODX_BASE_PATH,'/');
+        $path = $this->path . '/' . $key;
 
-        $parts = explode('/', trim($this->path, '/ ') . '/' . $key);
-        $filename = array_pop($parts);
-
-        foreach ($parts as $part) {
-            $path .= '/' . $part;
-
-            if (!file_exists($path)) {
-                mkdir($path);
-            }
-        }
+        $this->filesystem->makeDir(preg_replace('/[a-z0-9.]*$/', '', $path));
 
         if (isset($options['seconds'])) {
             $time = time() + $options['seconds'];
@@ -114,9 +136,12 @@ class Cache
             $time = 0;
         }
 
-        file_put_contents($path . '/' . $filename, sprintf("%'.010d", $time) . serialize($content));
+        file_put_contents(MODX_BASE_PATH . $path, sprintf("%'.010d", $time) . serialize($content));
     }
 
+    /**
+     * @param $name
+     */
     public function forget($name)
     {
         $this->filesystem->unlink(MODX_BASE_PATH . trim($this->path, '/ ') . '/' . $this->generateKey($name));
