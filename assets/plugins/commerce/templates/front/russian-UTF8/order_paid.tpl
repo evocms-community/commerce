@@ -1,6 +1,6 @@
 <p>Заказ #[+order.id+] на сайте [(site_url)] оплачен!</p>
 
-<p>Размер оплаты: [[PriceFormat? &price=`[+amount+]`]]</p>
+<p>Размер оплаты: [[PriceFormat? &price=`[+amount+]` &convert=`0`]]</p>
 
 <h4>Данные покупателя:</h4>
 

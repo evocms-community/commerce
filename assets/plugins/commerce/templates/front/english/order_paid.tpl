@@ -1,6 +1,6 @@
 <p>Order #[+order.id+] paid!</p>
 
-<p>Payment amount: [[PriceFormat? &price=`[+amount+]`]]</p>
+<p>Payment amount: [[PriceFormat? &price=`[+amount+]` &convert=`0`]]</p>
 
 <h4>Buyer data:</h4>
 

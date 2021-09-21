@@ -1,6 +1,6 @@
 <p>Bestelnummer #[+order_id+] betaald!</p>
 
-<p>Bedrag van de uitkering: [[PriceFormat? &price=`[+amount+]`]]</p>
+<p>Bedrag van de uitkering: [[PriceFormat? &price=`[+amount+]` &convert=`0`]]</p>
 
 <h4>Gegevens van de klant:</h4>
 
