@@ -88,16 +88,17 @@ class Order extends Form
             foreach ($methods as $code => $method) {
                 $active = $default == $code;
 
-                $row = [
+                $row = array_merge([
                     'code'     => $code,
                     'title'    => $method['title'],
-                    'price'    => isset($method['price']) ? $method['price'] : '',
-                    'markup'   => isset($method['markup']) ? $method['markup'] : '',
+                    'price'    => '',
+                    'markup'   => '',
                     'active'   => (int)$active,
                     'selected' => $active ? ' selected' : '',
                     'checked'  => $active ? ' checked' : '',
                     'index'    => $index++,
-                ];
+                ], $method);
+
                 $rows[$code] = $row;
 
                 $output .= $this->DLTemplate->parseChunk($this->getCFGDef($type . 'RowTpl'), $row);
