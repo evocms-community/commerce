@@ -982,6 +982,14 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
         return null;
     }
 
+    public function setCurrentDelivery($delivery)
+    {
+        $this->startOrder();
+        $old = $_SESSION[$this->sessionKey]['delivery_method'] ?? null;
+        $_SESSION[$this->sessionKey]['delivery_method'] = $delivery;
+        return $old;
+    }
+
     public function getCurrentPayment()
     {
         if (isset($_SESSION[$this->sessionKey]['payment_method'])) {
@@ -1007,6 +1015,14 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
         }
 
         return null;
+    }
+
+    public function setCurrentPayment($payment)
+    {
+        $this->startOrder();
+        $old = $_SESSION[$this->sessionKey]['payment_method'] ?? null;
+        $_SESSION[$this->sessionKey]['payment_method'] = $payment;
+        return $old;
     }
 
     private function normalizePrice($price)
