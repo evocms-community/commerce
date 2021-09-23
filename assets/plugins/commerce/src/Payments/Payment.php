@@ -80,26 +80,33 @@ class Payment implements \Commerce\Interfaces\Payment
         return null;
     }
 
+    /**
+     * Формирование массива товаров из корзины, распределение скидки
+     *
+     * @param  \Commerce\Interfaces\Cart $cart
+     * @return array
+     */
     protected function prepareItems($cart)
     {
         $items = [];
-
+        $total = 0;
         $discount = 0;
         $items_price = 0;
 
         foreach ($cart->getItems() as $item) {
-            $items_price += $item['price'] * $item['count'];
-            $items[] = [
+            $item = [
                 'id'      => $item['id'],
                 'name'    => mb_substr($item['name'], 0, 255),
                 'count'   => number_format($item['count'], 3, '.', ''),
-                'price'   => number_format($item['price'], 2, '.', ''),
                 'total'   => number_format($item['price'] * $item['count'], 2, '.', ''),
                 'product' => true,
             ];
+
+            $item['price'] = number_format($item['total'] / $item['count'], 2, '.', '');
+            $items[] = $item;
+            $items_price += $item['total'];
         }
 
-        $total = 0;
         $subtotals = [];
         $cart->getSubtotals($subtotals, $total);
 
@@ -107,8 +114,7 @@ class Payment implements \Commerce\Interfaces\Payment
             if ($item['price'] < 0) {
                 $discount -= $item['price'];
             } else if ($item['price'] > 0) {
-                $items_price += $item['price'];
-                $items[] = [
+                $item = [
                     'id'      => 0,
                     'name'    => mb_substr($item['title'], 0, 255),
                     'count'   => 1,
@@ -116,37 +122,77 @@ class Payment implements \Commerce\Interfaces\Payment
                     'total'   => number_format($item['price'], 2, '.', ''),
                     'product' => false,
                 ];
+
+                $items[] = $item;
+                $items_price += $item['total'];
             }
         }
 
-        // Если в заказе присутствует скидка,
-        // нужно пропорционально разделить ее на все товары
-        if ($discount > 0) {
-            $items = $this->decreaseItemsAmount($items, $items_price, $items_price - $discount);
-        }
+        $items = $this->decreaseItemsAmount($items, $items_price, $items_price - $discount);
 
         return $items;
     }
 
+    /**
+     * Корректировка цен всех товаров таким образом,
+     * чтобы все цены были с двумя знаками после запятой,
+     * а их сумма была равна значению $to.
+     * В цикле считается сумма всех товаров кроме последнего,
+     * а для последнего задается цена с необходимой корректировкой
+     *
+     * @param  array $items Массив товаров
+     * @param  float $from  Начальная стоимость всех товаров
+     * @param  float $to    Конечная стоимость
+     * @return array
+     */
     protected function decreaseItemsAmount($items, $from, $to)
     {
-        if ($from > 0) {
-            $total = 0;
-            $ratio = $to / $from;
-            $last  = count($items) - 1;
-
-            foreach ($items as $i => $item) {
-                if ($i < $last) {
-                    $items[$i]['price'] = number_format($item['price'] * $ratio, 2, '.', '');
-                } else {
-                    $items[$i]['price'] = number_format(($to - $total) / $items[$i]['count'], 2, '.', '');
-                }
-
-                $items[$i]['total'] = number_format($items[$i]['price'] * $items[$i]['count'], 2, '.', '');
-                $total += $items[$i]['total'];
-            }
+        if (!$from) {
+            return $items;
         }
 
-        return $items;
+        $total = 0;
+        $ratio = $to / $from;
+        $last  = count($items) - 1;
+        $result = [];
+
+        foreach ($items as $i => $item) {
+            if ($i < $last) {
+                $item['total'] = number_format($item['total'] * $ratio, 2, '.', '');
+                $item['price'] = number_format($item['price'] * $ratio, 2, '.', '');
+            } else {
+                $item['total'] = number_format($to - $total, 2, '.', '');
+                $item['price'] = number_format($item['total'] / $item['count'], 2, '.', '');
+            }
+
+            $total += $item['total'];
+
+            // Если после форматирования цен товаров получилось так,
+            // что стоимость позиции не равна произведению его цена на кол-во,
+            // нужно, если товар в позиции один, откорректировать цену товара,
+            // либо если их больше одного, вынести один товар в новую позицию
+            // с необходимой корректировкой цены
+            if (abs($item['price'] * $item['count'] - $item['total']) > 0.0001) {
+                if ($item['count'] == 1) {
+                    $item['price'] = $item['total'];
+                } else if (intval($item['count']) == $item['count']) {
+                    $newItem = array_merge([], $item);
+                    $newItem['count'] = 1;
+                    $newItem['price'] += $item['total'] - $item['price'] * $item['count'];
+                    $newItem['price'] = number_format($newItem['price'], 2, '.', '');
+                    $newItem['total'] = $newItem['price'];
+
+                    $item['count']--;
+                    $item['total'] -= $newItem['total'];
+                    $item['total'] = number_format($item['total'], 2, '.', '');
+
+                    $result[] = $newItem;
+                }
+            }
+
+            $result[] = $item;
+        }
+
+        return $result;
     }
 }
