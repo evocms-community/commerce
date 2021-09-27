@@ -84,16 +84,22 @@ class Payment implements \Commerce\Interfaces\Payment
      * Формирование массива товаров из корзины, распределение скидки
      *
      * @param  \Commerce\Interfaces\Cart $cart
+     * @param  string $currency
      * @return array
      */
-    protected function prepareItems($cart)
+    protected function prepareItems($cart, $orderCurrency = null, $paymentCurrency = null)
     {
         $items = [];
         $total = 0;
         $discount = 0;
         $items_price = 0;
+        $currency = ci()->currency;
 
         foreach ($cart->getItems() as $item) {
+            if ($paymentCurrency) {
+                $item['price'] = $currency->convert($item['price'], $orderCurrency, $paymentCurrency);
+            }
+
             $item = [
                 'id'      => $item['id'],
                 'name'    => mb_substr($item['name'], 0, 255),
@@ -111,6 +117,10 @@ class Payment implements \Commerce\Interfaces\Payment
         $cart->getSubtotals($subtotals, $total);
 
         foreach ($subtotals as $item) {
+            if ($paymentCurrency) {
+                $item['price'] = $currency->convert($item['price'], $orderCurrency, $paymentCurrency);
+            }
+
             if ($item['price'] < 0) {
                 $discount -= $item['price'];
             } else if ($item['price'] > 0) {
