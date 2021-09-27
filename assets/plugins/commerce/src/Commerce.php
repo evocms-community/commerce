@@ -6,6 +6,7 @@ use Commerce\Interfaces\Cart;
 use Commerce\Interfaces\Processor;
 use Commerce\Carts\SessionCartStore;
 use Commerce\Carts\CookiesCartStore;
+use Commerce\Carts\InstantCartStore;
 use Commerce\Carts\ProductsCart;
 use Commerce\Carts\ProductsList;
 use Commerce\Lexicon;
