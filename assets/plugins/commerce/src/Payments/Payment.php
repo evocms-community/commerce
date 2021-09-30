@@ -100,6 +100,8 @@ class Payment implements \Commerce\Interfaces\Payment
                 $item['price'] = $currency->convert($item['price'], $orderCurrency, $paymentCurrency);
             }
 
+            $items_price += $item['price'] * $item['count'];
+
             $item = [
                 'id'      => $item['id'],
                 'name'    => mb_substr($item['name'], 0, 255),
@@ -110,7 +112,6 @@ class Payment implements \Commerce\Interfaces\Payment
 
             $item['price'] = number_format($item['total'] / $item['count'], 2, '.', '');
             $items[] = $item;
-            $items_price += $item['total'];
         }
 
         $subtotals = [];
@@ -124,6 +125,8 @@ class Payment implements \Commerce\Interfaces\Payment
             if ($item['price'] < 0) {
                 $discount -= $item['price'];
             } else if ($item['price'] > 0) {
+                $items_price += $item['price'];
+
                 $item = [
                     'id'      => 0,
                     'name'    => mb_substr($item['title'], 0, 255),
@@ -134,7 +137,6 @@ class Payment implements \Commerce\Interfaces\Payment
                 ];
 
                 $items[] = $item;
-                $items_price += $item['total'];
             }
         }
 
