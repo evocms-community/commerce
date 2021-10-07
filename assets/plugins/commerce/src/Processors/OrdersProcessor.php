@@ -636,7 +636,7 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
             $amount = $this->getOrderPaymentsAmount($order['id']);
 
             // Если сумма предыдущих оплат больше суммы заказа, отменяем оплату
-            if ($amount >= $order['amount']) {
+            if ($amount >= $order['amount'] || abs($amount - $order['amount']) < 0.01) {
                 return false;
             }
 
@@ -810,6 +810,7 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
 
         $db->update(['paid' => 1], $this->tablePayments, "`id` = '" . intval($payment_id) . "'");
         $total = $this->getOrderPaymentsAmount($order_id);
+        $fullyPaid = $total >= $order['amount'] || abs($total - $order['amount']) < 0.01;
 
         $tpl = ci()->tpl;
 
@@ -819,7 +820,7 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
 
         $lang = $commerce->getUserLanguage('order');
 
-        if ($total >= $order['amount']) {
+        if ($fullyPaid) {
             $history = $lang['order.order_full_paid'];
         } else {
             $history = $lang['order.order_paid'];
@@ -846,7 +847,7 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
             'status_id'  => $status,
             'payment'    => $payment,
             'total'      => $total,
-            'fully_paid' => $total >= $order['amount'],
+            'fully_paid' => $fullyPaid,
         ]);
 
         $this->getCart();
