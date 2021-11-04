@@ -34,8 +34,12 @@
                         <table class="table data group-fields">
                             <?php foreach ($group['fields'] as $field): ?>
                                 <tr>
+                                <?php if (!empty($field['title'])): ?>
                                     <td><?= $field['title'] ?>:</td>
                                     <td><?= $field['value'] ?></td>
+                                <?php else: ?>
+                                    <td colspan="2"><?= $field['value'] ?></td>
+                                <?php endif; ?>
                                 </tr>
                             <?php endforeach; ?>
                         </table>
