@@ -321,7 +321,7 @@ var Commerce = (function() {
         }
 
         var cart   = {
-            instance: self.getAttribute('data-instance') || 'products',
+            instance: self.getAttribute('data-instance') || (cartContainer ? cartContainer.getAttribute('data-instance') : null) || 'products',
             hash: cartContainer ? cartContainer.getAttribute('data-commerce-cart') : null
         };
 
@@ -412,9 +412,9 @@ var Commerce = (function() {
 
                     if (count >= 0) {
                         if (!count && !min) {
-                            Commerce.action('cart/remove', {row: row, data: data}, self);
+                            Commerce.action('cart/remove', {row: row, cart: cart, data: data}, self);
                         } else if (count >= min && count <= max) {
-                            Commerce.action('cart/update', {row: row, data: data, attributes: {count: count}}, self);
+                            Commerce.action('cart/update', {row: row, cart: cart, data: data, attributes: {count: count}}, self);
                         }
                     }
 
