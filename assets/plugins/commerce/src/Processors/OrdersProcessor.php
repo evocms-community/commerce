@@ -484,6 +484,7 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
             $this->order = $this->modx->db->getRow($query);
             $this->order['fields'] = json_decode($this->order['fields'], true);
             $this->order_id = $this->order['id'];
+            $this->cart = null;
             return $this->order;
         }
 
