@@ -484,6 +484,8 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
             $this->order = $this->modx->db->getRow($query);
             $this->order['fields'] = json_decode($this->order['fields'], true);
             $this->order_id = $this->order['id'];
+            $this->cart = null;
+            
             return $this->order;
         }
 
@@ -500,6 +502,8 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
             $this->order = $db->getRow($query);
             $this->order['fields'] = json_decode($this->order['fields'], true);
             $this->order_id = $this->order['id'];
+            $this->cart = null;
+            
             return $this->order;
         }
 
@@ -511,10 +515,13 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
         $order = $this->getOrder();
 
         if (is_null($this->cart) && !is_null($order)) {
-            $this->cart = new OrderCart($this->modx);
+            if (!ci()->carts->has('order')) {
+                $cart = new OrderCart($this->modx);
+                ci()->carts->addCart('order', $cart);
+            }
+            $this->cart = ci()->carts->getCart('order');
             $this->cart->setCurrency($order['currency']);
-
-            ci()->carts->addCart('order', $this->cart);
+            $this->cart->clean();
 
             $query = $this->modx->db->select('*', $this->tableProducts, "`order_id` = '{$this->order_id}'", "`position`");
             $items = [];
