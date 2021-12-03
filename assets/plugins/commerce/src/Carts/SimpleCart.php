@@ -69,7 +69,8 @@ class SimpleCart implements \Commerce\Interfaces\Cart
 
     public function prepareItem(array $item)
     {
-        $item = array_filter(array_merge($this->defaults, $item), function($key) use ($item) {
+        $item = array_merge($this->defaults, $item);
+        $item = array_filter($item, function($key) use ($item) {
             $result = isset($this->defaults[$key]);
             if ($key === 'options' || $key === 'meta') {
                 $result = $result && is_array($item[$key]);
