@@ -29,8 +29,9 @@
                             <td style="width: 1%; text-align: center;">#</td>
                             <td><?= $lang['module.name_field'] ?></td>
                             <td><?= $lang['module.status_alias'] ?></td>
-                            <td style="white-space: nowrap;"><?= $lang['module.default_field'] ?></td>
-                            <td style="white-space: nowrap;"><?= $lang['module.notify_field'] ?></td>
+                            <td style="white-space: pre-wrap; text-align: center;"><?= $lang['module.default_field'] ?></td>
+                            <td style="white-space: pre-wrap; text-align: center;"><?= $lang['module.notify_field'] ?></td>
+                            <td style="white-space: pre-wrap; text-align: center;"><?= $lang['module.canbepaid_field'] ?></td>
                             <td style="width: 1%;"></td>
                         </tr>
                     </thead>
@@ -39,11 +40,11 @@
                         <?php foreach ($list as $row): ?>
                             <tr>
                                 <td style="width: 1%; text-align: center;"><?= $row['id'] ?></td>
-                                <td><i class="status-color fa fa-circle" style="color:#<?= !empty($row['color']) ? $row['color'] : 'FFFFFF' ?>"></i> <?= $row['title'] ?></td>
+                                <td style="white-space: nowrap;"><i class="status-color fa fa-circle" style="color:#<?= !empty($row['color']) ? $row['color'] : 'FFFFFF' ?>"></i> <?= $row['title'] ?></td>
                                 <td><?= $row['alias'] ?></td>
-                                <td style="white-space: nowrap;"><strong><?= !empty($row['default']) ? $lang['module.default_field'] : '' ?></strong></td>
-                                <td style="white-space: nowrap;"><?= !empty($row['notify']) ? $lang['module.notify'] : '' ?></td>
-                
+                                <td style="text-align: center;"><strong><?= !empty($row['default']) ? '<i class="fa fa-check-circle"></i>' : '' ?></strong></td>
+                                <td style="text-align: center;"><?= !empty($row['notify']) ? '<i class="fa fa-check"></i>' : '' ?></td>
+                                <td style="text-align: center;"><?= !empty($row['canbepaid']) ? '<i class="fa fa-check"></i>' : '' ?></td>
                                 <td style="white-space: nowrap;">
                                     <a href="<?= $this->module->makeUrl('statuses/edit', 'status_id=' . $row['id']) ?>" class="btn btn-primary btn-sm">
                                         <?= $lang['module.edit_status_btn'] ?>

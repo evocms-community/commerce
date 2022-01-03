@@ -7,6 +7,7 @@ use Exception;
 class StatusesController extends Controller implements \Commerce\Module\Interfaces\Controller
 {
     protected $lang;
+
     protected $table = 'commerce_order_statuses';
 
     protected $icon = 'fa fa-play-circle';
@@ -15,7 +16,7 @@ class StatusesController extends Controller implements \Commerce\Module\Interfac
     {
         parent::__construct($modx, $module);
         $this->lang = $this->modx->commerce->getUserLanguage('module');
-        $this->table = $this->modx->getFullTablename($this->table);
+        $this->table = $this->modx->getFullTableName($this->table);
     }
 
     public function registerRoutes()
@@ -30,8 +31,7 @@ class StatusesController extends Controller implements \Commerce\Module\Interfac
 
     public function index()
     {
-        $query = $this->modx->db->select('*', $this->table, '', 'id ASC');
-        $list  = $this->modx->db->makeArray($query);
+        $list = ci()->statuses->getStatuses();
 
         return $this->view->render('statuses_list.tpl', [
             'list'   => $list,
@@ -46,16 +46,14 @@ class StatusesController extends Controller implements \Commerce\Module\Interfac
         $status_id = filter_input(INPUT_GET, 'status_id', FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
 
         if (!empty($status_id)) {
-            $query  = $this->modx->db->select('*', $this->table, "`id` = '$status_id'");
-            $status = $this->modx->db->getRow($query);
-
-            if (empty($status)) {
-                $this->module->sendRedirect('statuses', ['error' => $this->lang['module.error.status_not_found']]);
-            } else {
+            try {
+                $status = ci()->statuses->getStatus($status_id);
                 $status['color'] = !empty($status['color']) ? $status['color'] : 'FFFFFF';
+            } catch (Exception $e) {
+                $this->module->sendRedirect('statuses', ['error' => $this->lang['module.error.status_not_found']]);
             }
         } else {
-            $status = [];
+            $status = ['color' => 'FFFFFF'];
         }
 
         return $this->view->render('status.tpl', [
@@ -72,10 +70,9 @@ class StatusesController extends Controller implements \Commerce\Module\Interfac
         $status_id = filter_input(INPUT_POST, 'status_id', FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
 
         if (!empty($status_id)) {
-            $query  = $db->select('*', $this->table, "`id` = '$status_id'");
-            $status = $db->getRow($query);
-
-            if (empty($status)) {
+            try {
+                $status = ci()->statuses->getStatus($status_id);
+            } catch (Exception $e) {
                 $this->module->sendRedirect('statuses', ['error' => $this->lang['module.error.status_not_found']]);
             }
         } else {
@@ -83,7 +80,8 @@ class StatusesController extends Controller implements \Commerce\Module\Interfac
         }
 
         $data = $_POST;
-        $data['color'] = !empty($data['color']) && is_scalar($data['color']) && preg_match('/^[0-9a-fA-F]{6}$/', $data['color']) ? $data['color'] : '';
+        $data['color'] = !empty($data['color']) && is_scalar($data['color']) && preg_match('/^[0-9a-fA-F]{6}$/',
+            $data['color']) ? $data['color'] : 'FFFFFF';
 
         $result = $this->modx->commerce->validate($data, [
             'title' => [
@@ -114,7 +112,8 @@ class StatusesController extends Controller implements \Commerce\Module\Interfac
         ];
 
         if ($fields['default'] == 0) {
-            $query = $db->select('*', $this->table, "`default` = 1" . (!empty($status['id']) ? " AND `id` != '" . $status['id'] . "'" : ''));
+            $query = $db->select('*', $this->table,
+                "`default` = 1" . (!empty($status['id']) ? " AND `id` != '" . $status['id'] . "'" : ''));
 
             if (!$db->getRecordCount($query)) {
                 $this->module->sendRedirectBack(['error' => 'default status should be defined']);
@@ -128,7 +127,8 @@ class StatusesController extends Controller implements \Commerce\Module\Interfac
 
             if (!empty($status['id'])) {
                 if (!$db->update($fields, $this->table, "`id` = '" . $status['id'] . "'")) {
-                    throw new Exception("Cannot update status [" . print_r($status['id'], true) . "]!\n" . print_r($fields, true));
+                    throw new Exception("Cannot update status [" . print_r($status['id'],
+                            true) . "]!\n" . print_r($fields, true));
                 }
             } else {
                 $status['id'] = $db->insert($fields, $this->table);
@@ -137,6 +137,7 @@ class StatusesController extends Controller implements \Commerce\Module\Interfac
                     throw new Exception("Cannot insert status row!\n" . print_r($fields, true));
                 }
             }
+            ci()->cache->forget('statuses');
 
             if ($fields['default'] == 1) {
                 if (!$db->update(['default' => 0], $this->table, "`id` != '" . $status['id'] . "'")) {
@@ -163,24 +164,23 @@ class StatusesController extends Controller implements \Commerce\Module\Interfac
         $status_id = filter_input(INPUT_GET, 'status_id', FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
 
         if (!empty($status_id)) {
+            $db = ci()->db;
             try {
-                $db = ci()->db;
-                $row = $db->getRow($db->select('*', $this->table, "`id` = '$status_id'"));
-
+                $row = ci()->statuses->getStatus($status_id);
                 if (!empty($row)) {
                     if ($row['default'] == 1) {
-                        $this->module->sendRedirect('statuses', ['error' => $this->lang['module.error.default_status_cannot_delete']]);
+                        $this->module->sendRedirect('statuses',
+                            ['error' => $this->lang['module.error.default_status_cannot_delete']]);
                     }
 
                     if ($db->delete($this->table, "`id` = '$status_id'")) {
+                        ci()->cache->forget('statuses');
                         $this->module->sendRedirect('statuses', ['success' => $this->lang['module.status_deleted']]);
                     }
                 }
             } catch (Exception $e) {
-                $this->module->sendRedirect('statuses', ['error' => $e->getMessage()]);
+                $this->module->sendRedirect('statuses', ['error' => $this->lang['module.error.status_not_found']]);
             }
         }
-
-        $this->module->sendRedirect('statuses', ['error' => $this->lang['module.error.status_not_found']]);
     }
 }

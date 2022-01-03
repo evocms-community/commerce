@@ -683,16 +683,7 @@ class OrdersController extends Controller implements \Commerce\Module\Interfaces
     protected function getStatuses()
     {
         if (is_null($this->statuses)) {
-            $query = $this->modx->db->select('id, title, notify, color', $this->modx->getFullTablename('commerce_order_statuses'));
-            $this->statuses = [];
-
-            while ($row = $this->modx->db->getRow($query)) {
-                $this->statuses[$row['id']] = [
-                    'title'  => $row['title'],
-                    'notify' => $row['notify'],
-                    'color'  => !empty($row['color']) ? $row['color'] : 'FFFFFF'
-                ];
-            }
+            $this->statuses = ci()->statuses->getStatuses();
         }
 
         return $this->statuses;
