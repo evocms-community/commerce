@@ -51,6 +51,10 @@ if (!class_exists('Commerce\\Commerce')) {
     $ci->set('flash', function($ci) {
         return new Commerce\Module\FlashMessages;
     });
+
+    $ci->set('statuses', function($ci) use ($modx) {
+        return new Commerce\Statuses($modx);
+    });
 }
 
 if ($modx instanceof \Illuminate\Container\Container) {

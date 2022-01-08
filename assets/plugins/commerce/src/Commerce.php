@@ -455,6 +455,10 @@ class Commerce
                 if (!empty($_GET['hash']) && is_scalar($_GET['hash']) && $this->loadProcessor()->payOrderByHash($_GET['hash'])) {
                     exit;
                 }
+                
+                if ($docid = $this->getSetting('payment_failed_page_id')) {
+                    $this->modx->sendRedirect($this->modx->makeUrl($docid));
+                };
 
                 return;
             }

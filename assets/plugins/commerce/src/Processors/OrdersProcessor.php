@@ -125,16 +125,7 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
         $values = $this->prepareOrderValues($items, $fields, $subtotals);
 
         try {
-            $defaultStatus = ci()->cache->getOrCreate('default_status', function() use ($db) {
-                $query = $db->select('id', $this->tableStatuses, "`default` = 1");
-
-                if (!$db->getRecordCount($query)) {
-                    throw new Exception('Default status not found');
-                }
-
-                return $db->getValue($query);
-            });
-
+            $defaultStatus = ci()->statuses->getDefaultStatus();
             $values['status_id'] = $defaultStatus;
 
             if ($db->begin(0, 'Commerce') === false) {
@@ -235,6 +226,8 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
 
                     if (!$result) {
                         throw new Exception("Cannot update status [" . print_r($status_id, true) . "] for order [" . print_r($order_id, true) . "]!");
+                    } else {
+                        $this->order['status_id'] = $status_id;
                     }
                 }
 
@@ -287,7 +280,7 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
             }
 
             $lang = $commerce->getUserLanguage('order');
-            $status = $this->modx->db->getRow($this->modx->db->select('*', $this->tableStatuses, "`id` = '" . intval($status_id) . "'"));
+            $status = ci()->statuses->getStatus($status_id);
 
             $statusText = $commerce->getUserLexicon($status['alias'], $status['title']);
 
@@ -495,6 +488,8 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
             $this->order = $this->modx->db->getRow($query);
             $this->order['fields'] = json_decode($this->order['fields'], true);
             $this->order_id = $this->order['id'];
+            $this->cart = null;
+
             return $this->order;
         }
 
@@ -511,6 +506,8 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
             $this->order = $db->getRow($query);
             $this->order['fields'] = json_decode($this->order['fields'], true);
             $this->order_id = $this->order['id'];
+            $this->cart = null;
+            
             return $this->order;
         }
 
@@ -522,11 +519,14 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
         $order = $this->getOrder();
 
         if (is_null($this->cart) && !is_null($order)) {
-            $this->cart = new OrderCart($this->modx);
+            if (!ci()->carts->has('order')) {
+                $cart = new OrderCart($this->modx);
+                ci()->carts->addCart('order', $cart);
+            }
+            $this->cart = ci()->carts->getCart('order');
             $this->cart->setCurrency($order['currency']);
-
-            ci()->carts->addCart('order', $this->cart);
-
+            $this->cart->clean();
+            
             $query = $this->modx->db->select('*', $this->tableProducts, "`order_id` = '{$this->order_id}'", "`position`");
             $items = [];
             $subtotals = [];
@@ -560,8 +560,7 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
     public function postProcessForm($FL)
     {
         $order = $this->getOrder();
-
-        if (!empty($order['fields']['payment_method'])) {
+        if (!empty($order['fields']['payment_method']) && ci()->statuses->canBePaid($order['status_id'])) {
             $payment = $this->modx->commerce->getPayment($order['fields']['payment_method']);
 
             $redirectText     = '';
@@ -638,9 +637,9 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
         $order = $db->getRow($db->select('*', $this->tableOrders, "`hash` = '" . $db->escape($hash) . "'"));
 
         if (!empty($order)) {
-            $statusCanBePaid = $this->modx->db->getValue($this->modx->db->select('canbepaid', $this->tableStatuses, "`id` = '" . intval($order['status_id']) . "'"));
+            $statusCanBePaid = ci()->statuses->canBePaid($order['status_id']);
 
-            if (empty($statusCanBePaid)) {
+            if (!$statusCanBePaid) {
                 return false;
             }
 
@@ -813,9 +812,9 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
             throw new Exception('Order ' . print_r($order_id, true) . ' not found!');
         }
 
-        $statusCanBePaid = $this->modx->db->getValue($this->modx->db->select('canbepaid', $this->tableStatuses, "`id` = '" . intval($order['status_id']) . "'"));
+        $statusCanBePaid = ci()->statuses->canBePaid($order['status_id']);
 
-        if (empty($statusCanBePaid)) {
+        if (!$statusCanBePaid) {
             throw new Exception('Order ' . print_r($order_id, true) . ' cannot be paid by status restriction!');
         }
 
