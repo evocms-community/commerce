@@ -18,7 +18,7 @@ class Commerce
         setSettings as public;
     }
 
-    const VERSION = '0.11.1';
+    const VERSION = '0.12.0';
 
     public $currency;
 
