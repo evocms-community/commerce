@@ -192,6 +192,17 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
         return $order;
     }
 
+    public function addOrderHistoryText($order_id, $comment, $notify = false)
+    {
+        $order = $this->loadOrder($order_id);
+
+        if (empty($order)) {
+            return false;
+        }
+
+        return $this->addOrderHistory($order_id, $order['status_id'], $comment, $notify);
+    }
+
     public function addOrderHistory($order_id, &$status_id, &$comment = '', &$notify = false)
     {
         $order = $this->loadOrder($order_id);
