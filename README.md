@@ -18,6 +18,7 @@ Payment methods:
 <a href="https://github.com/Pathologic/commerce-payment-payneteasy" target="_blank">PaynetEasy</a><br>
 <a href="https://github.com/mnoskov/commerce-payment-paypal" target="_blank">PayPal</a><br>
 <a href="https://github.com/mnoskov/commerce-payment-robokassa" target="_blank">Robokassa</a><br>
+<a href="https://github.com/pathologic/commerce-payment-alfabank" target="_blank">Альфа-Банк</a><br>
 <a href="https://github.com/mnoskov/commerce-payment-sberbank" target="_blank">Сбербанк</a><br>
 <a href="https://github.com/mnoskov/commerce-payment-pokupay" target="_blank">Сбербанк кредит "Покупай со Сбербанком"</a><br>
 <a href="https://github.com/DDAProduction/commerce-payment-stripe" target="_blank">Stripe</a><br>
