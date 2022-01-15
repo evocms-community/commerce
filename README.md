@@ -14,6 +14,7 @@ Payment methods:
 <a href="https://github.com/mnoskov/commerce-payment-bill" target="_blank">Bill</a><br>
 <a href="https://github.com/mnoskov/commerce-payment-cloudpayments" target="_blank">CloudPayments</a><br>
 <a href="https://github.com/dzhuryn/commerce-payment-liqpay" target="_blank">LiqPay</a><br>
+<a href="https://github.com/Pathologic/commerce-payment-mollie" target="_blank">Mollie</a><br>
 <a href="https://github.com/mnoskov/commerce-payment-paymaster" target="_blank">Paymaster</a><br>
 <a href="https://github.com/Pathologic/commerce-payment-payneteasy" target="_blank">PaynetEasy</a><br>
 <a href="https://github.com/mnoskov/commerce-payment-paypal" target="_blank">PayPal</a><br>
