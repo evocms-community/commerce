@@ -73,10 +73,6 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
 
         $values['fields'] = json_encode($fields, JSON_UNESCAPED_UNICODE);
 
-        foreach ($values as $key => $value) {
-            $values[$key] = $db->escape($value);
-        }
-
         return $values;
     }
 
@@ -101,10 +97,6 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
             $fields['meta'] = json_encode($item['meta'], JSON_UNESCAPED_UNICODE);
         }
 
-        foreach ($fields as $key => $field) {
-            $fields[$key] = $db->escape($field);
-        }
-
         return $fields;
     }
 
@@ -112,7 +104,7 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
     {
         return [
             'order_id' => $order_id,
-            'title'    => $this->modx->db->escape($item['title']),
+            'title'    => $item['title'],
             'price'    => $this->normalizePrice($item['price']),
             'position' => $position,
         ];
@@ -132,7 +124,7 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
                 throw new Exception("Cannot begin transaction!");
             }
 
-            $order_id = $db->insert($values, $this->tableOrders);
+            $order_id = $db->insert($db->escape($values), $this->tableOrders);
 
             if (!$order_id) {
                 throw new Exception("Cannot insert order record!\n" . print_r($values, true));
@@ -145,7 +137,7 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
             foreach ($items as $item) {
                 $itemValues = $this->prepareOrderProduct($order_id, $position++, $item);
 
-                if (!$db->insert($itemValues, $this->tableProducts)) {
+                if (!$db->insert($db->escape($itemValues), $this->tableProducts)) {
                     throw new Exception("Cannot insert order product!\n" . print_r($itemValues, true));
                 }
             }
@@ -153,7 +145,7 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
             foreach ($subtotals as $item) {
                 $itemValues = $this->prepareOrderSubtotal($order_id, $position++, $item);
 
-                if (!$db->insert($itemValues, $this->tableProducts)) {
+                if (!$db->insert($db->escape($itemValues), $this->tableProducts)) {
                     throw new Exception("Cannot insert order subtotal!\n" . print_r($itemValues, true));
                 }
             }
@@ -363,13 +355,13 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
                     $item = $this->prepareOrderProduct($order_id, $position++, $item);
 
                     if (!empty($row_id)) {
-                        if (!$db->update($item, $this->tableProducts, "id = '$row_id'")) {
+                        if (!$db->update($db->escape($item), $this->tableProducts, "id = '$row_id'")) {
                             throw new Exception("Cannot update order product [" . print_r($row_id, true) . "]!\n" . print_r($item, true));
                         }
 
                         $exists[] = $row_id;
                     } else {
-                        $row_id = $db->insert($item, $this->tableProducts);
+                        $row_id = $db->insert($db->escape($item), $this->tableProducts);
 
                         if (!$row_id) {
                             throw new Exception("Cannot insert new order product!\n" . print_r($item, true));
@@ -394,13 +386,13 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
                     $item = $this->prepareOrderSubtotal($order_id, $position++, $item);
 
                     if (!empty($row_id)) {
-                        if (!$db->update($item, $this->tableProducts, "id = '$row_id'")) {
+                        if (!$db->update($db->escape($item), $this->tableProducts, "id = '$row_id'")) {
                             throw new Exception("Cannot update order subtotal [" . print_r($row_id, true) . "]!\n" . print_r($item, true));
                         }
 
                         $exists[] = $row_id;
                     } else {
-                        $row_id = $db->insert($item, $this->tableProducts);
+                        $row_id = $db->insert($db->escape($item), $this->tableProducts);
 
                         if (!$row_id) {
                             throw new Exception("Cannot insert new order subtotal!\n" . print_r($item, true));
@@ -420,7 +412,7 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
             if (!empty($params['values'])) {
                 $order = $this->loadOrder($order_id);
                 $params['values'] = array_replace_recursive($order, $params['values']);
-                $params['values']['fields'] = $db->escape(json_encode($params['values']['fields'], JSON_UNESCAPED_UNICODE));
+                $params['values']['fields'] = json_encode($params['values']['fields'], JSON_UNESCAPED_UNICODE);
                 unset($params['values']['created_at']);
                 unset($params['values']['updated_at']);
 
@@ -428,7 +420,7 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
                     $params['values']['amount'] = $totalPrice;
                 }
 
-                if (!$db->update($params['values'], $this->tableOrders, "id = '" . $order['id'] . "'")) {
+                if (!$db->update($db->escape($params['values']), $this->tableOrders, "id = '" . $order['id'] . "'")) {
                     throw new Exception("Cannot update order [" . print_r($order['id'], true) . "]!\n" . print_r($params['values'], true));
                 }
             }
