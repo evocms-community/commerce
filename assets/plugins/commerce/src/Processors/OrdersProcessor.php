@@ -115,7 +115,10 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
         $db = $this->modx->db;
         $subtotals = [];
         $values = $this->prepareOrderValues($items, $fields, $subtotals);
-
+        $_fields = $values['fields'];
+        unset($values['fields']);
+        $fields = $values['fields'] = $_fields;
+        
         try {
             $defaultStatus = ci()->statuses->getDefaultStatus();
             $values['status_id'] = $defaultStatus;
