@@ -169,6 +169,7 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
         $this->addOrderHistory($order_id, $defaultStatus);
 
         $this->modx->invokeEvent('OnOrderSaved', [
+            'mode'      => 'new',
             'order_id'  => $order_id,
             'values'    => &$values,
             'items'     => &$items,
@@ -440,7 +441,8 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
             $this->modx->logEvent(0, 3, 'Cannot update order:<br><pre>' . $e->getMessage() . '<br>' . htmlentities(print_r($order, true)) . '</pre>', 'Commerce');
             return false;
         }
-
+        
+        $params['mode'] = 'upd';
         $this->modx->invokeEvent('OnOrderSaved', $params);
 
         return true;
