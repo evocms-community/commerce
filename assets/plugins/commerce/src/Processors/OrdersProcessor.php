@@ -118,6 +118,10 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
         $_fields = $values['fields'];
         unset($values['fields']);
         $fields = $values['fields'] = $_fields;
+        $_values = $values;
+        unset($values);
+        $values = $_values;
+        unset($_fields, $_values);
         
         try {
             $defaultStatus = ci()->statuses->getDefaultStatus();
