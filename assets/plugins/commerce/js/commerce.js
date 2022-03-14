@@ -261,18 +261,20 @@ var Commerce = (function() {
     function reloadMarkupFromResponse(markup) {
         if (typeof markup.carts == 'object') {
             for (var hash in markup.carts) {
-                var cart = document.querySelector('[data-commerce-cart="' + hash + '"]');
+                var carts = document.querySelectorAll('[data-commerce-cart="' + hash + '"]');
 
-                if (cart) {
-                    var newCart = markupToElement(markup.carts[hash]),
-                        event = triggerEvent(cart, 'cart-reload.commerce', {newCart: newCart});
+                if (carts.length) {
+                    for (var i = 0; i < carts.length; i++) {
+                        var newCart = markupToElement(markup.carts[hash]),
+                            event = triggerEvent(carts[i], 'cart-reload.commerce', {newCart: newCart});
 
-                    if (event.isPrevented()) {
-                        return;
+                        if (event.isPrevented()) {
+                            return;
+                        }
+
+                        carts[i].replaceWith(newCart);
+                        triggerEvent(newCart, 'cart-reloaded.commerce');
                     }
-
-                    cart.replaceWith(newCart);
-                    triggerEvent(newCart, 'cart-reloaded.commerce');
                 }
             }
         }
