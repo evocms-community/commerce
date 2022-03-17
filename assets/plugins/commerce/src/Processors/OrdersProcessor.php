@@ -923,11 +923,9 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
         $order = $this->loadOrder($order_id);
 
         if (!empty($order)) {
+            $placeholder = ['commerce_order' => $order];
             $this->modx->setPlaceholder('commerce_order', $order);
-
-            foreach ($order as $key => $value) {
-                $this->modx->setPlaceholder('commerce_order.' . $key, $value);
-            }
+            $this->modx->toPlaceholders($placeholder);
         }
 
         $this->modx->invokeEvent('OnOrderPlaceholdersPopulated', [
@@ -940,11 +938,9 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
         $payment = $this->loadPayment($payment_id);
 
         if (!empty($payment) && $payment['paid'] == 1) {
+            $placeholder = ['commerce_payment' => $payment];
             $this->modx->setPlaceholder('commerce_payment', $payment);
-
-            foreach ($payment as $key => $value) {
-                $this->modx->setPlaceholder('commerce_payment.' . $key, $value);
-            }
+            $this->modx->toPlaceholders($placeholder);
         }
     }
 
