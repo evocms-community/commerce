@@ -6,6 +6,8 @@ interface Cart
 {
     public function getItems();
 
+    public function getItemsCount();
+
     public function getTotal();
 
     public function get($row);

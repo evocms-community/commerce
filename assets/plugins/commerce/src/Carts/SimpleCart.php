@@ -32,13 +32,22 @@ class SimpleCart implements \Commerce\Interfaces\Cart
     {
         $total = 0;
 
-        if (!empty($this->items)) {
-            foreach ($this->items as $item) {
-                $total += $item['price'] * $item['count'];
-            }
+        foreach ($this->items as $item) {
+            $total += $item['price'] * $item['count'];
         }
 
         return $total;
+    }
+
+    public function getItemsCount()
+    {
+        $count = 0;
+
+        foreach ($this->items as $item) {
+            $count += $item['count'];
+        }
+
+        return $count;
     }
 
     public function getItems()
@@ -70,7 +79,7 @@ class SimpleCart implements \Commerce\Interfaces\Cart
     public function prepareItem(array $item)
     {
         $item = array_merge($this->defaults, $item);
-        $item = array_filter($item, function($key) use ($item) {
+        $item = array_filter($item, function ($key) use ($item) {
             $result = isset($this->defaults[$key]);
             if ($key === 'options' || $key === 'meta') {
                 $result = $result && is_array($item[$key]);
@@ -112,7 +121,8 @@ class SimpleCart implements \Commerce\Interfaces\Cart
 
             foreach ($this->items as $row => $item) {
                 if ($item['hash'] == $new['hash']) {
-                    $this->update($row, ['count' => $item['count'] + (!empty($new['count']) ? $new['count'] : 1)], true);
+                    $this->update($row, ['count' => $item['count'] + (!empty($new['count']) ? $new['count'] : 1)],
+                        true);
                     return $row;
                 }
             }
@@ -141,7 +151,7 @@ class SimpleCart implements \Commerce\Interfaces\Cart
     public function update($row, array $attributes = [], $isAdded = false)
     {
         if (isset($this->items[$row])) {
-            $new = array_merge($this->items[$row], array_filter($attributes, function($key) use ($attributes) {
+            $new = array_merge($this->items[$row], array_filter($attributes, function ($key) use ($attributes) {
                 $result = isset($this->defaults[$key]);
                 if ($key === 'options' || $key === 'meta') {
                     $result = $result && is_array($attributes[$key]);
@@ -173,12 +183,10 @@ class SimpleCart implements \Commerce\Interfaces\Cart
     {
         $result = false;
 
-        if (!empty($this->items)) {
-            foreach ($this->items as $row => $item) {
-                if (!empty($item['id']) && $item['id'] == $id) {
-                    unset($this->items[$row]);
-                    $result = true;
-                }
+        foreach ($this->items as $row => $item) {
+            if (!empty($item['id']) && $item['id'] == $id) {
+                unset($this->items[$row]);
+                $result = true;
             }
         }
 
