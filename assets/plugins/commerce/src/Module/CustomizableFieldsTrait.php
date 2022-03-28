@@ -50,7 +50,7 @@ trait CustomizableFieldsTrait
         $index = 0;
 
         $config['prepare'][] = function($data, $modx, $DL, $eDL) use ($fields, &$index) {
-            $data['fields']    = json_decode($data['fields'], true);
+            $data['fields']    = isset($data['fields']) ? json_decode($data['fields'], true) : [];
             $data['index']     = $index;
             $data['iteration'] = ++$index;
             $data['cells']     = $this->processFields($fields, compact('data', 'DL', 'eDL'));

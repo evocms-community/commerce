@@ -485,8 +485,9 @@ class OrdersController extends Controller implements \Commerce\Module\Interfaces
                 ]);
 
                 $mailer->send($body);
-
-                $processor->addOrderHistory($order['id'], $order['status_id'], $description, $notify = true);
+                
+                $notify = true;
+                $processor->addOrderHistory($order['id'], $order['status_id'], $description, $notify);
             }
         }
 
@@ -1169,7 +1170,7 @@ class OrdersController extends Controller implements \Commerce\Module\Interfaces
                 'title'   => $lang['cart.item_title'],
                 'content' => function($data, $DL, $eDL) {
                     return '
-                        <input type="hidden" name="order[cart][' . $data['iteration'] . '][order_row_id]" value="' . htmlentities($data['order_row_id']) . '">
+                        <input type="hidden" name="order[cart][' . $data['iteration'] . '][order_row_id]" value="' . htmlentities($data['order_row_id'] ?? '') . '">
                         <input type="hidden" name="order[cart][' . $data['iteration'] . '][id]" value="' . htmlentities($data['id']) . '">
                         <input type="text" class="form-control" name="order[cart][' . $data['iteration'] . '][title]" value="' . htmlentities($data['pagetitle']) . '">
                     ';
