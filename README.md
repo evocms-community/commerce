@@ -30,6 +30,7 @@ Payment methods:
 <a href="https://github.com/mnoskov/commerce-payment-yookassa" target="_blank">ЮKassa (Яндекс.Касса)</a><br>
 <a href="https://github.com/DDAProduction/commerce-payment-authorizenet" target="_blank">Authorize.net</a><br>
 <a href="https://github.com/Pathologic/commerce-payment-webpay" target="_blank">Webpay</a><br>
+<a href="https://github.com/Pathologic/commerce-payment-przelewy24" target="_blank">Przelewy24</a><br>
 
 Delivery:
 
