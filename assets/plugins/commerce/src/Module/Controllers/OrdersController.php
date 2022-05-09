@@ -79,8 +79,11 @@ class OrdersController extends Controller implements \Commerce\Module\Interfaces
 
         $columns   = $this->sortFields($columns);
         $config    = $this->injectPrepare($config, $columns);
-        $ordersUrl = $this->module->makeUrl('orders') . '&' . http_build_query(['filters' => $filtersData]);
-
+        $ordersUrl = $this->module->makeUrl('orders');
+        if (isset($filtersData)) {
+            $ordersUrl .= '&' . http_build_query(['filters' => $filtersData]);
+        }
+        
         $list = $this->modx->runSnippet('DocLister', array_merge($config, [
             'controller'      => 'onetable',
             'table'           => 'commerce_orders',
