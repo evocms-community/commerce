@@ -1,6 +1,6 @@
 <?php
 
-setlocale(LC_ALL, 'ru_RU.UTF-8');
+setlocale(LC_ALL, 'pl_PL.UTF-8');
 
 return [
     'delivery.caption' => 'Rodzaj dostawy',
