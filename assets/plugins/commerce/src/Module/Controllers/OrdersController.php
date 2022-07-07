@@ -1216,7 +1216,7 @@ class OrdersController extends Controller implements \Commerce\Module\Interfaces
                 },
                 'rules'   => [
                     'required' => $this->lang['module.error.productprice_required'],
-                    'greater' => [
+                    'min' => [
                         'params'  => 0,
                         'message' => $this->lang['module.error.productprice_positive'],
                     ],
