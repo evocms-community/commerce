@@ -7,7 +7,7 @@ E-commerce solution for Evolution CMS.
 Documentation:
 
 https://docs.evo.im/04_extras/commerce.html<br>
-https://github.com/evolution-cms/docs/tree/master/ru/04_%D0%9A%D0%BE%D0%BC%D0%BF%D0%BE%D0%BD%D0%B5%D0%BD%D1%82%D1%8B/Commerce
+https://github.com/evocms-community/docs/tree/master/ru/04_%D0%9A%D0%BE%D0%BC%D0%BF%D0%BE%D0%BD%D0%B5%D0%BD%D1%82%D1%8B/Commerce
 
 Payment methods:
 
