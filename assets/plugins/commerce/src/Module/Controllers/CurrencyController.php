@@ -36,7 +36,8 @@ class CurrencyController extends Controller implements \Commerce\Module\Interfac
         return $this->view->render('currency_list.tpl', [
             'list'   => $list,
             'custom' => $this->module->invokeTemplateEvent('OnManagerCurrencyListRender', [
-                'list' => $list,
+                'controller' => $this,
+                'list'       => $list,
             ]),
         ]);
     }
@@ -60,7 +61,8 @@ class CurrencyController extends Controller implements \Commerce\Module\Interfac
         return $this->view->render('currency.tpl', [
             'currency' => $currency,
             'custom' => $this->module->invokeTemplateEvent('OnManagerCurrencyRender', [
-                'currency' => $currency,
+                'controller' => $this,
+                'currency'   => $currency,
             ]),
         ]);
     }
@@ -167,9 +169,10 @@ class CurrencyController extends Controller implements \Commerce\Module\Interfac
                 $preventChange = false;
 
                 $result = $this->modx->invokeEvent('OnManagerBeforeDefaultCurrencyChange', [
-                    'old'     => $old,
-                    'new'     => &$fields,
-                    'prevent' => &$preventChange,
+                    'controller' => $this,
+                    'old'        => $old,
+                    'new'        => &$fields,
+                    'prevent'    => &$preventChange,
                 ]);
 
                 if ($preventChange) {

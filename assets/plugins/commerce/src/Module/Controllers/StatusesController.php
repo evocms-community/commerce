@@ -36,7 +36,8 @@ class StatusesController extends Controller implements \Commerce\Module\Interfac
         return $this->view->render('statuses_list.tpl', [
             'list'   => $list,
             'custom' => $this->module->invokeTemplateEvent('OnManagerStatusesListRender', [
-                'list' => $list,
+                'controller' => $this,
+                'list'       => $list,
             ]),
         ]);
     }
@@ -59,7 +60,8 @@ class StatusesController extends Controller implements \Commerce\Module\Interfac
         return $this->view->render('status.tpl', [
             'status' => $status,
             'custom' => $this->module->invokeTemplateEvent('OnManagerStatusRender', [
-                'status' => $status,
+                'controller' => $this,
+                'status'     => $status,
             ]),
         ]);
     }

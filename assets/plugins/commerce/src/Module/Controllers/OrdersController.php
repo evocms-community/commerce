@@ -48,9 +48,10 @@ class OrdersController extends Controller implements \Commerce\Module\Interfaces
         ];
 
         $this->modx->invokeEvent('OnManagerBeforeOrdersListRender', [
-            'config'  => &$config,
-            'columns' => &$columns,
-            'filters' => &$filters,
+            'controller' => $this,
+            'config'     => &$config,
+            'columns'    => &$columns,
+            'filters'    => &$filters,
         ]);
 
         $where = !empty($config['addWhereList']) ? ['(' . $config['addWhereList'] . ')'] : [];
@@ -108,7 +109,8 @@ class OrdersController extends Controller implements \Commerce\Module\Interfaces
             'orders'  => $list,
             'filters' => $filters,
             'custom'  => $this->module->invokeTemplateEvent('OnManagerOrdersListRender', [
-                'orders' => $list,
+                'controller' => $this,
+                'orders'     => $list,
             ]),
         ]);
     }
@@ -127,6 +129,7 @@ class OrdersController extends Controller implements \Commerce\Module\Interfaces
         $subcolumns = $this->getOrderSubtotalsColumns();
 
         $this->modx->invokeEvent('OnManagerBeforeOrderRender', [
+            'controller' => $this,
             'order'      => &$order,
             'groups'     => &$groups,
             'config'     => &$config,
@@ -198,9 +201,10 @@ class OrdersController extends Controller implements \Commerce\Module\Interfaces
             'history'    => $history,
             'users'      => $users,
             'custom'     => $this->module->invokeTemplateEvent('OnManagerOrderRender', [
-                'order'     => $order,
-                'products'  => $products,
-                'subtotals' => $subtotals,
+                'controller' => $this,
+                'order'      => $order,
+                'products'   => $products,
+                'subtotals'  => $subtotals,
             ]),
         ]);
     }
@@ -222,6 +226,7 @@ class OrdersController extends Controller implements \Commerce\Module\Interfaces
         $subcolumns = $this->getOrderSubtotalsEditableColumns();
 
         $this->modx->invokeEvent('OnManagerBeforeOrderEditRender', [
+            'controller' => $this,
             'order'      => &$order,
             'fields'     => &$fields,
             'config'     => &$config,
@@ -306,9 +311,10 @@ class OrdersController extends Controller implements \Commerce\Module\Interfaces
             'subtotalBlank' => $subtotalBlank,
             'documents'     => $documents,
             'custom'        => $this->module->invokeTemplateEvent('OnManagerOrderEditRender', [
-                'order'     => $order,
-                'products'  => $products,
-                'subtotals' => $subtotals,
+                'controller' => $this,
+                'order'      => $order,
+                'products'   => $products,
+                'subtotals'  => $subtotals,
             ]),
         ]);
     }
@@ -366,8 +372,9 @@ class OrdersController extends Controller implements \Commerce\Module\Interfaces
         ];
 
         $this->modx->invokeEvent('OnManagerBeforeOrderValidating', [
-            'order' => $order,
-            'data'  => &$data,
+            'controller' => $this,
+            'order'      => $order,
+            'data'       => &$data,
         ]);
 
         $errors = [];
@@ -393,9 +400,10 @@ class OrdersController extends Controller implements \Commerce\Module\Interfaces
         }
 
         $this->modx->invokeEvent('OnManagerOrderValidated', [
-            'order'  => $order,
-            'data'   => &$data,
-            'errors' => &$errors,
+            'controller' => $this,
+            'order'      => $order,
+            'data'       => &$data,
+            'errors'     => &$errors,
         ]);
 
         if (!empty($errors)) {
@@ -460,12 +468,13 @@ class OrdersController extends Controller implements \Commerce\Module\Interfaces
             ];
 
             $this->modx->invokeEvent('OnBeforeCustomerNotifySending', [
-                'reason'  => 'order_changed',
-                'order'   => &$order,
-                'subject' => &$subjectTpl,
-                'body'    => &$template,
-                'data'    => &$templateData,
-                'prevent' => &$preventSending,
+                'controller' => $this,
+                'reason'     => 'order_changed',
+                'order'      => &$order,
+                'subject'    => &$subjectTpl,
+                'body'       => &$template,
+                'data'       => &$templateData,
+                'prevent'    => &$preventSending,
             ]);
 
             if (!empty($_POST['history_description'])) {
@@ -550,8 +559,9 @@ class OrdersController extends Controller implements \Commerce\Module\Interfaces
         ];
 
         $this->modx->invokeEvent('OnManagerBeforeSelectorLevelRender', [
-            'config' => &$config,
-            'order'  => $order,
+            'controller' => $this,
+            'config'     => &$config,
+            'order'      => $order,
         ]);
 
         if (!isset($config['prepare'])) {

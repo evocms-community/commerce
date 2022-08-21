@@ -34,4 +34,9 @@ class Controller implements \Commerce\Module\Interfaces\Controller
     {
         return $this->icon;
     }
+
+    public function getModule()
+    {
+        return $this->module;
+    }
 }
