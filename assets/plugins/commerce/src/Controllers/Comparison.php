@@ -38,7 +38,7 @@ class ComparisonDocLister extends CustomLangDocLister
     protected function getCompareTV()
     {
         foreach (['tvCategory', 'includeTV', 'excludeTV'] as $param) {
-            $val = trim($this->getCFGDef($param), " \t,");
+            $val = trim($this->getCFGDef($param, ''), " \t,");
 
             if (!empty($val)) {
                 $$param = array_map('trim', explode(',', $val));

@@ -16,7 +16,7 @@ trait CustomTemplatesPathTrait
     public function initializeCustomTemplatesPath($cfg)
     {
         if (!isset($cfg['templatePath'])) {
-            $templatePath = trim(ci()->commerce->getSetting('templates_path'), '/ ');
+            $templatePath = trim(ci()->commerce->getSetting('templates_path', ''), '/ ');
 
             if (!empty($templatePath)) {
                 $cfg['templatePath'] = $templatePath . '/';
