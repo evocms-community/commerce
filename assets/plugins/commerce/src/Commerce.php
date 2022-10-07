@@ -255,7 +255,7 @@ class Commerce
         $lang = $forceDefaultLanguage ? $this->backendLang : $this->lang;
 
         $defaultPath = 'assets/plugins/commerce/templates/front/';
-        $customPath  = trim($this->getSetting('templates_path'), '/ ');
+        $customPath  = trim($this->getSetting('templates_path', ''), '/ ');
 
         $filenames = empty($customPath) ? [] : [
             ['B_CODE', $customPath . '/' . $lang . '/' . $name . '.blade.php'],
