@@ -12,6 +12,7 @@ https://github.com/evocms-community/docs/tree/master/ru/04_%D0%9A%D0%BE%D0%BC%D0
 Payment methods:
 
 <a href="https://github.com/mnoskov/commerce-payment-bill" target="_blank">Bill</a><br>
+<a href="https://github.com/Pathologic/commerce-payment-bepaid" target="_blank">Bepaid</a><br>
 <a href="https://github.com/mnoskov/commerce-payment-cloudpayments" target="_blank">CloudPayments</a><br>
 <a href="https://github.com/Pathologic/commerce-payment-interkassa" target="_blank">Interkassa</a><br>
 <a href="https://github.com/dzhuryn/commerce-payment-liqpay" target="_blank">LiqPay</a><br>
