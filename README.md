@@ -35,6 +35,7 @@ Payment methods:
 <a href="https://github.com/DDAProduction/commerce-payment-authorizenet" target="_blank">Authorize.net</a><br>
 <a href="https://github.com/Pathologic/commerce-payment-webpay" target="_blank">Webpay</a><br>
 <a href="https://github.com/Pathologic/commerce-payment-przelewy24" target="_blank">Przelewy24</a><br>
+<a href="https://github.com/express-pay/modx_evo_2.0.x_commerce_erip" target="_blank">Экспресс Платежи (ЕРИП)</a>
 
 Delivery:
 
