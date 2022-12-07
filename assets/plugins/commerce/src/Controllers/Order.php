@@ -26,7 +26,7 @@ class Order extends Form
         $this->lexicon = new Lexicon($modx, array(
             'langDir' => 'assets/snippets/FormLister/core/lang/',
             'lang'    => $this->getCFGDef('lang', $this->modx->getConfig('manager_language')),
-            'handler' => $this->getCFGDef('lexiconHandler'),
+            'handler' => $this->getCFGDef('lexiconHandler', '\\Helpers\\Lexicon\\EvoBabelLexiconHandler')
         ));
 
         $lang = $this->lexicon->loadLang('form');
