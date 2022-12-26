@@ -309,6 +309,7 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
                 'prevent'    => &$preventSending,
             ]);
 
+            $mailResult = true;
             if (!$preventSending) {
                 $body    = $tpl->parseChunk($template, $templateData, true);
                 $subject = $tpl->parseChunk($subjectTpl, $templateData, true);
