@@ -13,6 +13,7 @@ trait CommonCartTrait
     {
         return [
             'hash'        => $this->getCFGDef('hash'),
+            'instance'    => $this->getCFGDef('instance', 'products'),
             'items_price' => $this->priceTotal,
             'subtotals'   => $this->renderSubtotals(),
             'total'       => $this->priceTotal,
