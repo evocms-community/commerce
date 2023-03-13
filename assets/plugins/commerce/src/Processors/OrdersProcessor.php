@@ -853,6 +853,7 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
 
         $this->changeStatus($order_id, $status, $comment, true);
 
+        $notify = true;
         $this->modx->invokeEvent('OnOrderPaid', [
             'order_id'   => $order_id,
             'order'      => $order,
@@ -860,27 +861,29 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
             'payment'    => $payment,
             'total'      => $total,
             'fully_paid' => $fullyPaid,
+            'notify'     => &$notify
         ]);
+        if($notify) {
+            $this->getCart();
+            $template = $commerce->getSetting('order_paid', $commerce->getUserLanguageTemplate('order_paid'));
 
-        $this->getCart();
-        $template = $commerce->getSetting('order_paid', $commerce->getUserLanguageTemplate('order_paid'));
+            $body = $tpl->parseChunk($template, [
+                'payment' => $payment,
+                'amount'  => $amount,
+                'order'   => $order,
+            ], true);
 
-        $body = $tpl->parseChunk($template, [
-            'payment' => $payment,
-            'amount'  => $amount,
-            'order'   => $order,
-        ], true);
+            $subject = $tpl->parseChunk($lang['order.subject_order_paid'], [
+                'order' => $order,
+            ], true);
 
-        $subject = $tpl->parseChunk($lang['order.subject_order_paid'], [
-            'order' => $order,
-        ], true);
+            $mailer = new \Helpers\Mailer($this->modx, [
+                'to'      => $commerce->getSetting('email', $this->modx->getConfig('emailsender')),
+                'subject' => $subject,
+            ]);
 
-        $mailer = new \Helpers\Mailer($this->modx, [
-            'to'      => $commerce->getSetting('email', $this->modx->getConfig('emailsender')),
-            'subject' => $subject,
-        ]);
-
-        $mailer->send($body);
+            $mailer->send($body);
+        }
 
         return true;
     }
