@@ -4,6 +4,9 @@ namespace Commerce\Controllers\Traits;
 
 trait CustomLangTrait
 {
+    
+    protected $_customLang;
+    
     protected function handleCustomLang()
     {
         if (empty($this->lexicon)) {
