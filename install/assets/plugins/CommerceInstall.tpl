@@ -115,7 +115,7 @@ $modx->db->query("
         `name` varchar(255) DEFAULT NULL,
         `phone` varchar(255) DEFAULT NULL,
         `email` varchar(255) DEFAULT NULL,
-        `amount` decimal(16,2) NOT NULL,
+        `amount` decimal(15,6) NOT NULL,
         `currency` varchar(8) NOT NULL,
         `fields` text,
         `status_id` tinyint(3) unsigned NOT NULL,
@@ -128,7 +128,6 @@ $modx->db->query("
 $modx->db->query("ALTER TABLE {$orders_table} ADD `hash` VARCHAR(32) NOT NULL AFTER `status_id`, ADD INDEX (`hash`);", false);
 $modx->db->query("ALTER TABLE {$orders_table} ADD `customer_id` INT UNSIGNED NULL DEFAULT NULL AFTER `id`, ADD INDEX (`customer_id`);", false);
 $modx->db->query("ALTER TABLE {$orders_table} ADD `lang` VARCHAR(32) NOT NULL AFTER `currency`;", false);
-$modx->db->query("ALTER TABLE {$orders_table} CHANGE `amount` `amount` DECIMAL(12,6) NOT NULL;", false);
 
 $table = $modx->getFullTablename('commerce_order_products');
 
@@ -138,7 +137,7 @@ $modx->db->query("
         `order_id` int(10) unsigned NOT NULL,
         `product_id` int(10) unsigned DEFAULT NULL,
         `title` varchar(255) NOT NULL,
-        `price` decimal(16,2) NOT NULL,
+        `price` decimal(15,6) NOT NULL,
         `count` float unsigned NOT NULL DEFAULT 1,
         `options` text,
         `meta` text,
@@ -157,7 +156,7 @@ $modx->db->query("
         ON UPDATE CASCADE
 ", false);
 
-$modx->db->query("ALTER TABLE {$table} CHANGE `price` `price` DECIMAL(12,6) NOT NULL;", false);
+//$modx->db->query("ALTER TABLE {$table} CHANGE `price` `price` DECIMAL(12,6) NOT NULL;", false);
 
 $table = $modx->getFullTablename('commerce_order_history');
 
@@ -191,7 +190,7 @@ $modx->db->query("
     CREATE TABLE IF NOT EXISTS {$table} (
         `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
         `order_id` int(10) unsigned NOT NULL,
-        `amount` decimal(16,2) NOT NULL,
+        `amount` decimal(15,6) NOT NULL,
         `paid` tinyint(1) unsigned NOT NULL DEFAULT '0',
         `hash` varchar(16) NOT NULL,
         `created_at` timestamp NULL DEFAULT NULL,
@@ -207,7 +206,6 @@ $modx->db->query("ALTER TABLE {$table} ADD `meta` TEXT NOT NULL AFTER `hash`;", 
 $modx->db->query("ALTER TABLE {$table} ADD `payment_method` VARCHAR(255) NOT NULL DEFAULT '' AFTER `hash`;", false);
 $modx->db->query("ALTER TABLE {$table} ADD `original_order_id` VARCHAR(255) NOT NULL DEFAULT '' AFTER `payment_method`;", false);
 $modx->db->query("ALTER TABLE {$table} ADD INDEX (`original_order_id`);", false);
-$modx->db->query("ALTER TABLE {$table} CHANGE `amount` `amount` DECIMAL(12,6) NOT NULL;", false);
 
 $modx->db->query("
     ALTER TABLE {$table}
