@@ -28,6 +28,7 @@ Payment methods:
 <a href="https://github.com/sahar-08/commerce-payment-psbank" target="_blank">ПСБ</a><br>
 <a href="https://github.com/mnoskov/commerce-payment-sberbank" target="_blank">Сбербанк</a><br>
 <a href="https://github.com/mnoskov/commerce-payment-pokupay" target="_blank">Сбербанк кредит "Покупай со Сбербанком"</a><br>
+<a href="https://github.com/pathologic/commerce-payment-portmone" target="_blank">Portmone</a><br>
 <a href="https://github.com/DDAProduction/commerce-payment-stripe" target="_blank">Stripe</a><br>
 <a href="https://github.com/DDAProduction/commerce-payment-stripe-embed" target="_blank">Stripe Embed</a><br>
 <a href="https://github.com/autogen-travel/commerce-tinkoff" target="_blank">Tinkoff</a><br>
