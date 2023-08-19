@@ -656,7 +656,7 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
             // был не больше указанного в настройках плагина
             if (!$amount) {
                 $hours = 24 * $this->modx->commerce->getSetting('payment_wait_time', 3);
-                $diff  = (new \DateTime())->diff(new \DateTime($order['created_at']));
+                $diff  = (new \DateTime())->diff(new \DateTime($order['updated_at'] ?? $order['created_at']));
 
                 if ($diff->days * 24 + $diff->h > $hours) {
                     return false;
