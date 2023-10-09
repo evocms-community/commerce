@@ -4,9 +4,9 @@ namespace Commerce\Controllers\Traits;
 
 trait CustomLangTrait
 {
-    
+
     protected $_customLang;
-    
+
     protected function handleCustomLang()
     {
         if (empty($this->lexicon)) {
@@ -23,7 +23,7 @@ trait CustomLangTrait
             $this->_customLang = [];
 
             if (!is_array($lang)) {
-                $lang = array_map('trim', explode(',', $lang));
+                $lang = array_map('trim', explode(',', $lang ?? ''));
             }
 
             foreach ($lang as $l) {
