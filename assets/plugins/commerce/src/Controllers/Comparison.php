@@ -212,7 +212,7 @@ class ComparisonDocLister extends CustomLangDocLister
                         $_date = $_date + $this->modx->config['server_offset_time'];
                         $dateFormat = $this->getCFGDef('dateFormat', '%d.%b.%y %H:%M');
                         if ($dateFormat) {
-                            $item['date'] = strftime($dateFormat, $_date);
+                            $item['date'] = date($dateFormat, $_date);
                         }
                     }
                 }
