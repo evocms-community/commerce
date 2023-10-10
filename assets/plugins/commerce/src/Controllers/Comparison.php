@@ -210,7 +210,7 @@ class ComparisonDocLister extends CustomLangDocLister
                     $_date = is_numeric($item[$date]) && $item[$date] == (int)$item[$date] ? $item[$date] : strtotime($item[$date]);
                     if ($_date !== false) {
                         $_date = $_date + $this->modx->config['server_offset_time'];
-                        $dateFormat = $this->getCFGDef('dateFormat', '%d.%b.%y %H:%M');
+                        $dateFormat = $this->getCFGDef('dateFormat', 'd.m.Y H:i');
                         if ($dateFormat) {
                             $item['date'] = date($dateFormat, $_date);
                         }
