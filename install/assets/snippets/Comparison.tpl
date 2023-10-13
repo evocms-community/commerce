@@ -39,6 +39,7 @@ if (isset($ids)) {
 }
 
 $showCategories = isset($params['showCategories']) ? $params['showCategories'] : 1;
+$categories = '';
 
 if (!empty($items) && $showCategories) {
     $table   = $modx->getFullTablename('site_content');
@@ -63,8 +64,6 @@ if (!empty($items) && $showCategories) {
     if (empty($currentCategory)) {
         $currentCategory = reset($parents);
     }
-
-    $categories = '';
 
     if (count($parents) > 1) {
         $categoryParams = array_merge([
