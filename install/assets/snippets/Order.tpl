@@ -35,6 +35,7 @@ if (defined('COMMERCE_INITIALIZED')) {
         'ccSenderField'         => 'email',
         'ccSenderTpl'           => $commerce->getUserLanguageTemplate('order_reportback'),
         'subjectTpl'            => $adminLang['order.subject'],
+        'ccSubjectTpl'          => $adminLang['order.subject'],
         'successTpl'            => $userLang['order.success'],
         'rules'                 => [
             'name' => [
