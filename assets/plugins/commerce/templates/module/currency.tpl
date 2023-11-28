@@ -29,6 +29,7 @@
 
         <div class="sectionBody">
             <form action="<?= $module->makeUrl('currency/save') ?>" method="post" id="currency_form">
+                <?= csrf_field() ?>
                 <table class="table">
                     <tr>
                         <td width="25%"><?= $lang['module.name_field'] ?></td>

@@ -147,6 +147,7 @@
 
         <div class="sectionBody">
             <form action="<?= $module->makeUrl('orders/change-status') ?>" method="post">
+                <?= csrf_field() ?>
                 <table class="table">
                     <tr>
                         <td><?= $lang['module.status_title'] ?></td>

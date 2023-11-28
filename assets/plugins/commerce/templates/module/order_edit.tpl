@@ -24,6 +24,7 @@
         </script>
 
         <form action="<?= $module->makeUrl('orders/save') ?>" method="post" id="order_form">
+            <?= csrf_field() ?>
             <input type="hidden" name="order_id" value="<?= $order['id'] ?>">
 
             <div class="editable-order">
