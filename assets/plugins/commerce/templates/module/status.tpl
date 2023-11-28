@@ -29,6 +29,7 @@
 
         <div class="sectionBody">
             <form action="<?= $module->makeUrl('statuses/save') ?>" method="post" id="status_form">
+                <?= csrf_field() ?>
                 <table class="table">
                     <tr>
                         <td><?= $lang['module.status_title'] ?></td>
