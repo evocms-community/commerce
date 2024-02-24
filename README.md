@@ -61,6 +61,7 @@ Other:
 <a href="https://github.com/Pathologic/Invoice" target="_blank">A plugin to list order data in a separate page</a><br>
 <a href="https://github.com/Pathologic/commerce-filesales" target="_blank">A plugin to sell files</a><br>
 <a href="https://github.com/Pathologic/Promocodes" target="_blank">Промокоды</a><br>
+<a href="https://github.com/Pathologic/commerce-booking" target="_blank">Посуточное бронирование</a><br>
 
 Add product to cart:
 ```html
