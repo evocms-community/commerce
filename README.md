@@ -22,6 +22,7 @@ Payment methods:
 <a href="https://github.com/Pathologic/commerce-payment-nowpayments" target="_blank">Nowpayments</a><br>
 <a href="https://github.com/mnoskov/commerce-payment-paymaster" target="_blank">Paymaster</a><br>
 <a href="https://github.com/Pathologic/commerce-payment-payneteasy" target="_blank">PaynetEasy</a><br>
+<a href="https://github.com/Pathologic/commerce-payment-payok" target="_blank">Payok</a><br>
 <a href="https://github.com/mnoskov/commerce-payment-paypal" target="_blank">PayPal</a><br>
 <a href="https://github.com/mnoskov/commerce-payment-robokassa" target="_blank">Robokassa</a><br>
 <a href="https://github.com/pathologic/commerce-payment-alfabank" target="_blank">Альфа-Банк</a><br>
