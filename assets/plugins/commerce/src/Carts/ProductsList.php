@@ -43,4 +43,13 @@ class ProductsList extends ProductsCart implements \Commerce\Interfaces\Cart
 
         return parent::update($row, $attributes, $isAdded);
     }
+
+    public function add(array $item, $isMultiple = false)
+    {
+        if(!$this->has($item['id'])) {
+            return parent::add($item, $isMultiple);
+        } else {
+            return true;
+        }
+    }
 }
