@@ -50,7 +50,7 @@ class Commerce
             'langDir' => $this->langDir,
         ]);
 
-        $this->backendLang = $this->lexicon->getAlias($modx->getConfig('manager_language'));
+        $this->backendLang = $modx->getConfig('lang_code');
     }
 
     public function initializeCommerce()
@@ -99,9 +99,7 @@ class Commerce
         if ($this->modx->isFrontend() && $this->isBLangEnabled()) {
             $bLang = bLang::GetInstance($this->modx);
 
-            if (isset($this->langRelated[$bLang->lang])) {
-                $this->setLang($this->langRelated[$bLang->lang]);
-            }
+            $this->setLang($bLang->lang);
 
             $currencyCode = $this->currency->getLangCurrencyCode($bLang->lang);
             $this->currency->setCurrency($currencyCode);
@@ -197,14 +195,14 @@ class Commerce
     public function setLang($code)
     {
         if ($code != $this->lang) {
-            $this->lang = $this->lexicon->getAlias($code);
+            $this->lang = $code;
 
             $this->lexicon->config->setConfig([
                 'lang' => $this->lang,
             ]);
 
             if (!isset($this->langData[$this->lang])) {
-                $this->langData[$this->lang] = $this->lexicon->loadLang($this->langKeys);
+                $this->langData[$this->lang] = $this->lexicon->fromFile($this->langKeys);
             }
         }
 
@@ -229,14 +227,14 @@ class Commerce
         $usedLangCode = $forceDefaultLanguage ? $this->backendLang : $this->lang;
 
         if (!isset($this->langData[$usedLangCode])) {
-            $this->langData[$usedLangCode] = $this->lexicon->loadLang($this->langKeys);
+            $this->langData[$usedLangCode] = $this->lexicon->fromFile($this->langKeys);
         }
 
         if (!isset($this->langKeys[$instance])) {
             $this->langKeys[$instance] = $instance;
 
             foreach ($this->langData as $code => $data) {
-                $this->langData[$code] = array_merge($data, $this->lexicon->loadLang($instance, $code));
+                $this->langData[$code] = array_merge($data, $this->lexicon->fromFile($instance, $code));
             }
         }
 
@@ -257,14 +255,20 @@ class Commerce
         $defaultPath = 'assets/plugins/commerce/templates/front/';
         $customPath  = trim($this->getSetting('templates_path', ''), '/ ');
 
+        $alias = $this->lexicon->getAlias($lang);
+
         $filenames = empty($customPath) ? [] : [
             ['B_CODE', $customPath . '/' . $lang . '/' . $name . '.blade.php'],
             ['B_CODE', $defaultPath . $lang . '/' . $name . '.blade.php'],
+            ['B_CODE', $customPath . '/' . $alias . '/' . $name . '.blade.php'],
+            ['B_CODE', $defaultPath . $alias . '/' . $name . '.blade.php'],
         ];
 
         $filenames = array_merge($filenames, [
             ['CODE', $customPath . '/' . $lang . '/' . $name . '.tpl'],
             ['CODE', $defaultPath . $lang . '/' . $name . '.tpl'],
+            ['CODE', $customPath . '/' . $alias . '/' . $name . '.tpl'],
+            ['CODE', $defaultPath . $alias . '/' . $name . '.tpl'],
         ]);
 
         foreach ($filenames as list($type, $filename)) {
@@ -455,7 +459,7 @@ class Commerce
                 if (!empty($_GET['hash']) && is_scalar($_GET['hash']) && $this->loadProcessor()->payOrderByHash($_GET['hash'])) {
                     exit;
                 }
-                
+
                 if ($docid = $this->getSetting('payment_failed_page_id')) {
                     $this->modx->sendRedirect($this->modx->makeUrl($docid));
                 };

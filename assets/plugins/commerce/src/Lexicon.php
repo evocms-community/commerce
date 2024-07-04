@@ -4,15 +4,11 @@ namespace Commerce;
 
 class Lexicon extends \Helpers\Lexicon
 {
-    public function loadLang($name = 'core', $lang = '', $langDir = '')
+    public function fromFile($name = 'core', $lang = '', $langDir = '')
     {
-        parent::loadLang($name, $lang, $langDir);
+        parent::fromFile($name, $lang, $langDir);
         setlocale(LC_NUMERIC, 'C');
 
-        if (is_callable([$this, 'getLexicon'])) {
-            return $this->getLexicon();
-        }
-
-        return $this->_lang;
+        return $this->getLexicon();
     }
 }
