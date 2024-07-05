@@ -7,11 +7,11 @@
 <?php $this->block('buttons'); ?>
     <a href="<?= $this->module->makeUrl('orders/edit', 'order_id=' . $order['id']) ?>" class="btn btn-primary">
         <i class="fa fa-pencil"></i>
-        <span><?= $_lang['edit'] ?></span>
+        <span><?= $lang['module.edit_btn'] ?></span>
     </a>
-    <a href="<?= $this->module->makeUrl('orders') ?>" class="btn btn-secondary" title="<?= $_lang['cancel'] ?>">
+    <a href="<?= $this->module->makeUrl('orders') ?>" class="btn btn-secondary" title="<?= $lang['cancel_btn'] ?>">
         <i class="fa fa-times-circle"></i>
-        <span><?= $_lang['cancel'] ?></span>
+        <span><?= $lang['module.cancel_btn'] ?></span>
     </a>
 <?php $this->endBlock(); ?>
 
@@ -132,7 +132,7 @@
                             <?php else: ?>
                                 <td style="white-space: nowrap;"></td>
                             <?php endif; ?>
-                            <td><?= !empty($row['notify']) ? $_lang['yes'] : $_lang['no'] ?></td>
+                            <td><?= !empty($row['notify']) ? $lang['module.yes_btn'] : $lang['module.no_btn'] ?></td>
                             <td><?= htmlentities($row['comment']) ?></td>
                             <td><?= $row['user_id'] > 0 ? htmlentities($users[$row['user_id']]) : '' ?></td>
                         </tr>
@@ -175,7 +175,7 @@
                 </table>
 
                 <input type="hidden" name="order_id" value="<?= $order['id'] ?>">
-                <button type="submit" class="btn btn-secondary"><?= $_lang['submit'] ?></button>
+                <button type="submit" class="btn btn-secondary"><?= $lang['module.submit_btn'] ?></button>
             </form>
         </div>
     </div>

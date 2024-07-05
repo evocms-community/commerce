@@ -7,11 +7,11 @@
 <?php $this->block('buttons'); ?>
     <a href="javascript:;" class="btn btn-success" onclick="document.getElementById('order_form').submit();">
         <i class="fa fa-save"></i>
-        <span><?= $_lang['save'] ?></span>
+        <span><?= $lang['module.save_btn'] ?></span>
     </a>
     <a href="<?= $this->module->makeUrl('orders/view&order_id=' . $order['id']) ?>" class="btn btn-secondary">
         <i class="fa fa-times-circle"></i>
-        <span><?= $_lang['cancel'] ?></span>
+        <span><?= $lang['module.cancel_btn'] ?></span>
     </a>
 <?php $this->endBlock(); ?>
 
@@ -31,7 +31,7 @@
                 <div class="sectionHeader">
                     <?= $lang['order.order_info'] ?>
                 </div>
-                
+
                 <div class="sectionBody">
                     <div class="table-responsive">
                         <table class="table data">
@@ -47,7 +47,7 @@
                                 <td>
                                     <label>
                                         <input type="checkbox" name="notify" value="1" checked>
-                                        <?= $_lang['yes'] ?>
+                                        <?= $lang['module.yes_btn'] ?>
                                     </label>
                                 </td>
                             </tr>
@@ -62,12 +62,12 @@
                     </div>
                 </div>
             </div>
-            
+
             <div class="editable-cart">
                 <div class="sectionHeader">
                     <?= $lang['module.cart_contents_title'] ?>
                 </div>
-                
+
                 <div class="sectionBody">
                     <div class="table-responsive">
                         <table class="table data">
@@ -79,7 +79,7 @@
                                     <td style="width: 1%;"></td>
                                 </tr>
                             </thead>
-                
+
                             <tbody id="products">
                                 <?php foreach ($products as $row): ?>
                                     <?= $this->render('order_edit_product_row.tpl', [
@@ -89,11 +89,11 @@
                             </tbody>
                         </table>
                     </div>
-                
+
                     <div style="margin-top: 10px; margin-bottom: 20px; text-align: right;">
                         <a href="#" class="btn btn-sm btn-primary" id="add-product"><?= $lang['module.add_product'] ?></a>
                     </div>
-                
+
                     <div class="table-responsive">
                         <table class="table data">
                             <thead>
@@ -104,7 +104,7 @@
                                     <td style="width: 1%;"></td>
                                 </tr>
                             </thead>
-                
+
                             <tbody id="subtotals">
                                 <?php foreach ($subtotals as $row): ?>
                                     <?= $this->render('order_edit_subtotal_row.tpl', [
@@ -114,7 +114,7 @@
                             </tbody>
                         </table>
                     </div>
-                
+
                     <div style="margin-top: 10px; text-align: right;">
                         <a href="#" class="btn btn-sm btn-primary" id="add-subtotal"><?= $lang['module.add_subtotal'] ?></a>
                     </div>
@@ -126,7 +126,7 @@
     <div id="product-select" style="display: none;">
         <div class="evo-popup alert alert-default">
             <div class="evo-popup-close close">&times;</div>
-            
+
             <div class="evo-popup-header">
                 <?= $lang['module.products_selector_title'] ?>
             </div>

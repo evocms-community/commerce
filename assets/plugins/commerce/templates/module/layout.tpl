@@ -3,7 +3,7 @@
 <?= $this->block('head') ?>
 
 <h1>
-    <i class="<?= $module->getControllerIcon() ?>"></i><?= $this->block('title', $lang['module.orders_caption']) ?> 
+    <i class="<?= $module->getControllerIcon() ?>"></i><?= $this->block('title', $lang['module.orders_caption']) ?>
 </h1>
 
 <?php if ($module->flash->has('error')): ?>
@@ -35,10 +35,9 @@
 <div id="actions">
     <div class="btn-group">
         <?= $this->block('buttons') ?>
-
-        <a class="btn btn-danger" href="index.php?a=2" title="<?= $_lang['close'] ?>">
+        <a class="btn btn-danger" href="index.php?a=2" title="<?= $lang['module.close_btn'] ?>">
             <i class="fa fa-sign-out"></i>
-            <span><?= $_lang['close'] ?></span>
+            <span><?= $lang['module.close_btn'] ?></span>
         </a>
     </div>
 </div>
@@ -47,7 +46,7 @@
     <div class="tab-pane" id="commercePane_<?= $module->getCurrentRouteName() ?>">
         <script type="text/javascript">
             var tpCommerce = new WebFXTabPane(document.getElementById('commercePane_<?= $module->getCurrentRouteName() ?>'), <?= ($modx->getConfig('remember_last_tab') == 1 ? 'true' : 'false') ?> );
-        </script> 
+        </script>
 
         <?= $this->block('content') ?>
     </div>

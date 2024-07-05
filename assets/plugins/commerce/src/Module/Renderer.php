@@ -45,8 +45,6 @@ class Renderer
             throw new \Exception('Template "' . $fullTemplate . '" is not readable!');
         }
 
-        global $_style, $_lang, $lastInstallTime, $modx_manager_charset, $modx_lang_attribute;
-
         $modx  = $this->modx;
         $lang  = $this->lang;
         $flash = $this->getSetting('flash', []);

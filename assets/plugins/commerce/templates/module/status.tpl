@@ -5,13 +5,13 @@
 <?php $this->endBlock(); ?>
 
 <?php $this->block('buttons'); ?>
-    <a href="javascript:;" class="btn btn-success" onclick="document.getElementById('status_form').submit();" title="<?= $_lang['save'] ?>">
+    <a href="javascript:;" class="btn btn-success" onclick="document.getElementById('status_form').submit();" title="<?= $lang['module.save_btn'] ?>">
         <i class="fa fa-floppy-o"></i>
-        <span><?= $_lang['save'] ?></span>
+        <span><?= $lang['module.save_btn'] ?></span>
     </a>
-    <a href="<?= $this->module->makeUrl('statuses') ?>" class="btn btn-secondary" title="<?= $_lang['cancel'] ?>">
+    <a href="<?= $this->module->makeUrl('statuses') ?>" class="btn btn-secondary" title="<?= $lang['module.cancel_btn'] ?>">
         <i class="fa fa-times-circle"></i>
-        <span><?= $_lang['cancel'] ?></span>
+        <span><?= $lang['module.cancel_btn'] ?></span>
     </a>
 <?php $this->endBlock(); ?>
 
@@ -85,7 +85,7 @@
                     <input type="hidden" name="status_id" value="<?= $status['id'] ?>">
                 <?php endif; ?>
 
-                <button type="submit" class="btn btn-secondary"><?= $_lang['save'] ?></button>
+                <button type="submit" class="btn btn-secondary"><?= $lang['module.save_btn'] ?></button>
             </form>
         </div>
     </div>
