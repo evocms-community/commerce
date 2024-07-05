@@ -29,7 +29,7 @@
                     <div class="sectionHeader">
                         <?= $group['title'] ?>
                     </div>
-                    
+
                     <div class="sectionBody">
                         <table class="table data group-fields">
                             <?php foreach ($group['fields'] as $field): ?>
@@ -128,7 +128,7 @@
                         <tr>
                             <td style="white-space: nowrap;"><?= (new \DateTime())->setTimestamp(strtotime($row['created_at']) + $modx->getConfig('server_offset_time'))->format('d.m.Y H:i:s') ?></td>
                             <?php if(!empty($statuses[$row['status_id']])): ?>
-                                <td style="white-space: nowrap;"><i class="status-color fa fa-circle" style="color:#<?= $statuses[$row['status_id']]['color'] ?>"></i> <?= $statuses[$row['status_id']]['title'] ?></td>
+                                <td style="white-space: nowrap;"><i class="status-color fa fa-circle" style="color:#<?= $statuses[$row['status_id']]['color'] ?>"></i> <?= ($lang[$statuses[$row['status_id']]['alias']] ?? $statuses[$row['status_id']]['title']) ?></td>
                             <?php else: ?>
                                 <td style="white-space: nowrap;"></td>
                             <?php endif; ?>
@@ -154,7 +154,7 @@
                         <td style="white-space: nowrap; vertical-align: baseline;">
                             <i class="status-color fa fa-circle" id="status_color"></i> <select name="status_id">
                                 <?php foreach ($statuses as $id => $status): ?>
-                                    <option value="<?= $id ?>"><?= $status['title'] ?></option>
+                                    <option value="<?= $id ?>"><?= $lang[$status['alias']] ?? $status['title'] ?></option>
                                 <?php endforeach; ?>
                             </select>
                         </td>

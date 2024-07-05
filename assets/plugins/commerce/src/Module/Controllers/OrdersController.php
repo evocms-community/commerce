@@ -84,7 +84,7 @@ class OrdersController extends Controller implements \Commerce\Module\Interfaces
         if (isset($filtersData)) {
             $ordersUrl .= '&' . http_build_query(['filters' => $filtersData]);
         }
-        
+
         $list = $this->modx->runSnippet('DocLister', array_merge($config, [
             'controller'      => 'onetable',
             'table'           => 'commerce_orders',
@@ -189,6 +189,9 @@ class OrdersController extends Controller implements \Commerce\Module\Interfaces
                 $users[$row['internalKey']] = $row['fullname'];
             }
         }
+
+        $lang = $this->modx->commerce->getUserLanguage('order');
+        $this->view->setLang($lang);
 
         return $this->view->render('order.tpl', [
             'order'      => $order,
@@ -497,7 +500,7 @@ class OrdersController extends Controller implements \Commerce\Module\Interfaces
                 ]);
 
                 $mailer->send($body);
-                
+
                 $notify = true;
                 $processor->addOrderHistory($order['id'], $order['status_id'], $description, $notify);
             }
@@ -790,7 +793,7 @@ class OrdersController extends Controller implements \Commerce\Module\Interfaces
                     $out = '';
 
                     foreach ($statuses as $id => $status) {
-                        $out .= '<option value="' . $id . '"' . ($id == $data['status_id'] ? ' selected' : '') . '>' . $status['title'] . '</option>';
+                        $out .= '<option value="' . $id . '"' . ($id == $data['status_id'] ? ' selected' : '') . '>' . ($this->lang[$status['alias']] ?? $status['title']) . '</option>';
                     }
 
                     $color = '<i class="status-color fa fa-circle" style="color:#' . (isset($statuses[$data['status_id']]) ? $statuses[$data['status_id']]['color'] : 'FFFFFF') . '"></i>&nbsp;';
@@ -861,7 +864,7 @@ class OrdersController extends Controller implements \Commerce\Module\Interfaces
                     $current = !empty($data['status_id']) ? $data['status_id'] : 0;
 
                     foreach ($statuses as $id => $status) {
-                        $out .= '<option value="' . $id . '"' . ($id == $current ? ' selected' : '') . '>' . $status['title'] . '</option>';
+                        $out .= '<option value="' . $id . '"' . ($id == $current ? ' selected' : '') . '>' . ($this->lang[$status['alias']] ?? $status['title']) . '</option>';
                     }
 
                     return '<select name="filters[status_id]">' . $out . '</select>';
@@ -906,7 +909,7 @@ class OrdersController extends Controller implements \Commerce\Module\Interfaces
                     'status' => [
                         'title'   => $this->lang['order.status_title'],
                         'content' => function ($data) use ($statuses) {
-                            return isset($statuses[$data['status_id']]) ? $statuses[$data['status_id']]['title'] : '';
+                            return isset($statuses[$data['status_id']]) ? ($this->lang[$statuses[$data['status_id']]['alias']] ?? $statuses[$data['status_id']]['title']) : '';
                         },
                         'sort' => 30,
                     ],
