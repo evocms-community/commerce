@@ -15,7 +15,7 @@ return [
     'order.subject' => '@CODE:Новая замова на сайце [(site_name)]',
     'order.subject_status_changed' => '@CODE:Статус замовы #[+order.id+] зьменены',
     'order.order_paid' => '@CODE:Атрыманая аплата ў памеры [+amount+]',
-    'order.order_full_paid' => '@CODE:Атрыманая аплата ў памеры [+amount+], замова #[+order.id+] аплачаная цалкам,
+    'order.order_full_paid' => '@CODE:Атрыманая аплата ў памеры [+amount+], замова #[+order.id+] аплачаная цалкам',
     'order.subject_order_paid' => '@CODE:Замова #[+order.id+] аплачаная!',
     'order.status.new' => 'Новы',
     'order.status.processing' => 'У апрацоўцы',
