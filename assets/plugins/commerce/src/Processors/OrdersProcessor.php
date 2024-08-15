@@ -107,6 +107,7 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
             'title'    => $item['title'],
             'price'    => $this->normalizePrice($item['price']),
             'position' => $position,
+            'meta'     => json_encode(isset($item['meta']) && is_array($item['meta']) ? $item['meta'] : [], JSON_UNESCAPED_UNICODE)
         ];
     }
 
