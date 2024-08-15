@@ -355,6 +355,7 @@ class OrdersController extends Controller implements \Commerce\Module\Interfaces
 
         if (!empty($_POST['order']['subtotals'])) {
             $orderSubtotals = $_POST['order']['subtotals'];
+            $this->injectSubtotalsMetadata($orderSubtotals);
         }
 
         $data = [
@@ -1283,5 +1284,26 @@ class OrdersController extends Controller implements \Commerce\Module\Interfaces
                 'style'   => 'width: 10%; text-align: right;',
             ],
         ];
+    }
+
+    protected function injectSubtotalsMetadata(&$subtotals)
+    {
+        $ids = [];
+        foreach ($subtotals as $subtotal) {
+            $ids[] = $subtotal['id'];
+        }
+        if($ids) {
+            $_ids = implode(',', $ids);
+            $table = $this->modx->getFullTableName('commerce_order_products');
+            $q = $this->modx->db->query("SELECT `id`, `meta` FROM {$table} WHERE `id` IN ({$_ids})");
+            while($row = $this->modx->db->getRow($q)) {
+                $meta[$row['id']] = $row['meta'];
+            }
+            foreach ($subtotals as &$subtotal) {
+                if(isset($meta[$subtotal['id']])) {
+                    $subtotal['meta'] = json_decode($meta[$subtotal['id']], true) ?? [];
+                }
+            }
+        }
     }
 }
