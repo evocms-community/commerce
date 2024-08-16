@@ -5,7 +5,7 @@
  * Order form, FormLister based
  *
  * @category    snippet
- * @version     0.6.11
+ * @version     0.13.1
  * @author      mnoskov
  * @internal    @modx_category Commerce
  * @internal    @installset base

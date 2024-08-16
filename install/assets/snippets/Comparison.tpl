@@ -5,7 +5,7 @@
  * Comparison snippet, DocLister based
  *
  * @category    snippet
- * @version     0.11.1
+ * @version     0.13.1
  * @author      mnoskov
  * @internal    @modx_category Commerce
  * @internal    @installset base

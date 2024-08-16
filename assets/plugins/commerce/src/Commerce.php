@@ -18,7 +18,7 @@ class Commerce
         setSettings as public;
     }
 
-    const VERSION = '0.12.1';
+    const VERSION = '0.13.1';
 
     public $currency;
 
@@ -50,7 +50,7 @@ class Commerce
             'langDir' => $this->langDir,
         ]);
 
-        $this->backendLang = $modx->getConfig('lang_code');
+        $this->backendLang = $modx->getLocale();
     }
 
     public function initializeCommerce()
