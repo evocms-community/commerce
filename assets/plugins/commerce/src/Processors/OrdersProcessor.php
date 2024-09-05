@@ -909,7 +909,6 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
             }
         }
 
-        $_SESSION[$this->sessionKey] = $data;
         $this->modx->invokeEvent('OnOrderRawDataChanged', ['data' => &$data]);
         $_SESSION[$this->sessionKey] = $data;
     }
