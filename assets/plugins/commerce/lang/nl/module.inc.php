@@ -90,4 +90,7 @@ return [
     'module.status_marker_color' => 'Kleur van de statusmarker',
     'module.canbepaid_field' => 'Bestellingen met deze status kunnen worden betaald',
     'module.error.status_not_saved' => 'Fout bij opslaan!',
+    'module.close_btn' => 'Sluiten',
+    'module.cancel_btn' => 'Annuleren',
+    'module.save_btn' => 'Opslaan'
 ];

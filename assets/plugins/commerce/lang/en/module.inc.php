@@ -90,4 +90,7 @@ return [
     'module.status_marker_color' => 'Status marker color',
     'module.canbepaid_field' => 'Orders with this status can be paid',
     'module.error.status_not_saved' => 'Saving error!',
+    'module.close_btn' => 'Close',
+    'module.cancel_btn' => 'Cancel',
+    'module.save_btn' => 'Save'
 ];

@@ -90,4 +90,7 @@ return [
     'module.status_marker_color' => 'Колер маркера',
     'module.canbepaid_field' => 'Замовы з гэтым статусмм могуць быць аплачаныя',
     'module.error.status_not_saved' => 'Памылка пры зьмене статусу!',
+    'module.close_btn' => 'Закрыць',
+    'module.cancel_btn' => 'Адмена',
+    'module.save_btn' => 'Захаваць'
 ];

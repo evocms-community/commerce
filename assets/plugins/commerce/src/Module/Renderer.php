@@ -49,6 +49,9 @@ class Renderer
         $lang  = $this->lang;
         $flash = $this->getSetting('flash', []);
         $module = $this->module;
+        $modx_lang_attribute = $modx->getLocale();
+        $lastInstallTime = 0;
+        $modx_manager_charset = $modx->getConfig('modx_charset', 'utf-8');
         extract($data);
         setlocale(LC_NUMERIC, 'C');
 

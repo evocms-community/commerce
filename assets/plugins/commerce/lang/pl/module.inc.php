@@ -100,4 +100,7 @@ return [
     'module.status_marker_color' => 'Kolor znacznika',
     'module.canbepaid_field' => 'Zamówienia o tym statusie mogą być opłącone',
     'module.error.status_not_saved' => 'Wystąpił błąd podczas zmiany statusu!',
+    'module.close_btn' => 'Zamknij',
+    'module.cancel_btn' => 'Anuluj',
+    'module.save_btn' => 'Zapisz'
 ];
