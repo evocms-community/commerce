@@ -104,7 +104,7 @@ foreach ($events as $event) {
 
 $lexicon = new \Helpers\Lexicon($modx, [
     'langDir' => 'assets/plugins/commerce/lang/',
-    'lang'    => $modx->getConfig('manager_language'),
+    'lang'    => $modx->getLocale(),
 ]);
 
 $orders_table = $modx->getFullTablename('commerce_orders');
