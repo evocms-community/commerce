@@ -333,7 +333,7 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
         return true;
     }
 
-    public function updateOrder($order_id, $data = [], $force = false)
+    public function updateOrder($order_id, $data = [], $invokeEvents = true)
     {
         $params = [
             'order_id' => $order_id,
@@ -345,7 +345,7 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
             }
         }
         
-        if (!$force) {
+        if ($invokeEvents !== false) {
             $this->modx->invokeEvent('OnBeforeOrderSaving', $params);    
         }
         
@@ -448,7 +448,7 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
         
         $params['mode'] = 'upd';
         
-        if (!$force) {
+        if ($invokeEvents !== false) {
             $this->modx->invokeEvent('OnOrderSaved', $params);
         }
 
