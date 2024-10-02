@@ -31,7 +31,7 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
         $this->tablePayments = $modx->getFullTablename($this->tablePayments);
     }
 
-    protected function prepareOrderValues(array &$items, array &$fields, array &$subtotals)
+    protected function prepareOrderValues(array &$items, array &$fields, array &$subtotals, $invokeEvents = true)
     {
         $total = 0;
         $db = $this->modx->db;
@@ -63,13 +63,15 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
         $values['hash']        = $this->modx->commerce->generateRandomString();
         $values['fields']      = &$fields;
 
-        $this->modx->invokeEvent('OnBeforeOrderSaving', [
-            'order_id'  => null,
-            'values'    => &$values,
-            'fields'    => &$fields,
-            'items'     => &$items,
-            'subtotals' => &$subtotals,
-        ]);
+        if ($invokeEvents) {
+            $this->modx->invokeEvent('OnBeforeOrderSaving', [
+                'order_id'  => null,
+                'values'    => &$values,
+                'fields'    => &$fields,
+                'items'     => &$items,
+                'subtotals' => &$subtotals,
+            ]);
+        }
 
         $values['fields'] = json_encode($fields, JSON_UNESCAPED_UNICODE);
 
@@ -111,11 +113,11 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
         ];
     }
 
-    public function createOrder(array $items, array $fields)
+    public function createOrder(array $items, array $fields, $invokeEvents = true)
     {
         $db = $this->modx->db;
         $subtotals = [];
-        $values = $this->prepareOrderValues($items, $fields, $subtotals);
+        $values = $this->prepareOrderValues($items, $fields, $subtotals, $invokeEvents);
         $_fields = $values['fields'];
         unset($values['fields']);
         $fields = $values['fields'] = $_fields;
@@ -169,14 +171,16 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
 
         $this->addOrderHistory($order_id, $defaultStatus);
 
-        $this->modx->invokeEvent('OnOrderSaved', [
-            'mode'      => 'new',
-            'order_id'  => $order_id,
-            'values'    => &$values,
-            'items'     => &$items,
-            'fields'    => &$fields,
-            'subtotals' => &$subtotals,
-        ]);
+        if($invokeEvents) {
+            $this->modx->invokeEvent('OnOrderSaved', [
+                'mode'      => 'new',
+                'order_id'  => $order_id,
+                'values'    => &$values,
+                'items'     => &$items,
+                'fields'    => &$fields,
+                'subtotals' => &$subtotals,
+            ]);
+        }
 
         $order = $this->loadOrder($order_id);
         $this->getCart();
@@ -333,7 +337,7 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
         return true;
     }
 
-    public function updateOrder($order_id, $data = [])
+    public function updateOrder($order_id, $data = [], $invokeEvents = true)
     {
         $params = [
             'order_id' => $order_id,
@@ -345,7 +349,9 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
             }
         }
 
-        $this->modx->invokeEvent('OnBeforeOrderSaving', $params);
+        if($invokeEvents) {
+            $this->modx->invokeEvent('OnBeforeOrderSaving', $params);
+        }
 
         $db = $this->modx->db;
 
@@ -445,21 +451,29 @@ class OrdersProcessor implements \Commerce\Interfaces\Processor
         }
         
         $params['mode'] = 'upd';
-        $this->modx->invokeEvent('OnOrderSaved', $params);
+        
+        if($invokeEvents) {
+            $this->modx->invokeEvent('OnOrderSaved', $params);
+        }
 
         return true;
     }
 
-    public function deleteOrder($order_id) {
+    public function deleteOrder($order_id, $invokeEvents = true) {
         $order_id = (int)$order_id;
         $params = [
             'order_id' => $order_id,
         ];
-
-        $this->modx->invokeEvent('OnBeforeOrderDeleting', $params);
+        
+        if($invokeEvents) {
+            $this->modx->invokeEvent('OnBeforeOrderDeleting', $params);
+        }
 
         if ($this->modx->db->delete($this->tableOrders, "`id` = {$order_id}")) {
-            $this->modx->invokeEvent('OnOrderDeleted', $params);
+            if($invokeEvents) {
+                $this->modx->invokeEvent('OnOrderDeleted', $params);
+            }
+            
             return true;
         }
 
