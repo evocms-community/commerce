@@ -12,10 +12,11 @@
 */
 
 if (defined('COMMERCE_INITIALIZED')) {
-    $commerce  = ci()->commerce;
-    $userLang  = $commerce->getUserLanguage('order');
-    $adminLang = $commerce->getUserLanguage('order', true);
-    $theme     = !empty($theme) ? $theme : '';
+    $commerce    = ci()->commerce;
+    $userLang    = $commerce->getUserLanguage('order');
+    $adminLang   = $commerce->getUserLanguage('order', true);
+    $theme       = !empty($theme) ? $theme : '';
+    $storeParams = !empty($storeParams) ? $storeParams : 1;
 
     $params = array_merge([
         'controller'            => 'Order',
@@ -51,7 +52,7 @@ if (defined('COMMERCE_INITIALIZED')) {
         ],
     ], $params);
 
-    $params['form_hash'] = $commerce->storeParams($params);
+    $params['form_hash'] = $storeParams ? $commerce->storeParams($params) : '';
 
     return $modx->runSnippet('FormLister', $params);
 }
