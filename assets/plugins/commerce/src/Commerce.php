@@ -262,6 +262,7 @@ class Commerce
             ['B_CODE', $defaultPath . $lang . '/' . $name . '.blade.php'],
             ['B_CODE', $customPath . '/' . $alias . '/' . $name . '.blade.php'],
             ['B_CODE', $defaultPath . $alias . '/' . $name . '.blade.php'],
+            ['B_CODE', $defaultPath . 'en/' . $name . '.blade.php'],
         ];
 
         $filenames = array_merge($filenames, [
@@ -269,6 +270,7 @@ class Commerce
             ['CODE', $defaultPath . $lang . '/' . $name . '.tpl'],
             ['CODE', $customPath . '/' . $alias . '/' . $name . '.tpl'],
             ['CODE', $defaultPath . $alias . '/' . $name . '.tpl'],
+            ['CODE', $defaultPath . 'en/' . $name . '.tpl'],
         ]);
 
         foreach ($filenames as list($type, $filename)) {
