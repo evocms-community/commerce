@@ -14,6 +14,7 @@ return [
     'module.order_contents' => 'Содержимое заказа',
     'module.cart_contents_title' => 'Содержимое корзины',
     'module.order_history_title' => 'История заказа',
+    'module.edit_btn' => 'Редактировать',
     'module.add_history' => 'Добавить статус',
     'module.status_title' => 'Статус',
     'module.status_change_notify' => 'Уведомить покупателя о смене статуса заказа',

@@ -14,6 +14,7 @@ return [
     'module.order_contents' => 'Szczegóły zamówienia',
     'module.cart_contents_title' => 'Koszyk',
     'module.order_history_title' => 'Historia zamówienia',
+    'module.edit_btn' => 'Edytuj',
     'module.add_history' => 'Dodać status',
     'module.status_title' => 'Status',
     'module.status_change_notify' => 'Powiadomić kupującego o zmianie statusu zamówienia',

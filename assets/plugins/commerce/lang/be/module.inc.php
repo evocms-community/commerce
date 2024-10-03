@@ -14,6 +14,7 @@ return [
     'module.order_contents' => 'Зьмесьціва замовы',
     'module.cart_contents_title' => 'Зьмесьціва кошыка',
     'module.order_history_title' => 'Гісторыя замовы',
+    'module.edit_btn' => 'Рэдагаваць',
     'module.add_history' => 'Дадаць статус',
     'module.status_title' => 'Статус',
     'module.status_change_notify' => 'Паведаміць пакупніку пра зьмену статусу замовы',

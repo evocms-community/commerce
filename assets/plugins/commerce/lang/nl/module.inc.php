@@ -14,6 +14,7 @@ return [
     'module.order_contents' => 'Inhoud bestelling',
     'module.cart_contents_title' => 'Prullenbak',
     'module.order_history_title' => 'Bestelgeschiedenis',
+    'module.edit_btn' => 'Bewerken',
     'module.add_history' => 'Status toevoegen',
     'module.status_title' => 'Status',
     'module.status_change_notify' => 'Informeer de klant over de verandering van de status van de bestelling',

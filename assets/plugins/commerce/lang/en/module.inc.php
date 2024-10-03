@@ -14,6 +14,7 @@ return [
     'module.order_contents' => 'Order description',
     'module.cart_contents_title' => 'Cart',
     'module.order_history_title' => 'Order history',
+    'module.edit_btn' => 'Edit',
     'module.add_history' => 'Add status',
     'module.status_title' => 'Status',
     'module.status_change_notify' => 'Notify the buyer about the change of order status',
