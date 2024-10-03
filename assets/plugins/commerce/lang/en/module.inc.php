@@ -12,7 +12,7 @@ return [
     'module.delete_order_btn' => 'Delete',
     'module.confirm_delete' => 'Are you sure you want to delete an order?',
     'module.order_contents' => 'Order description',
-    'module.cart_contents_title' => 'Recycle bin',
+    'module.cart_contents_title' => 'Cart',
     'module.order_history_title' => 'Order history',
     'module.add_history' => 'Add status',
     'module.status_title' => 'Status',
