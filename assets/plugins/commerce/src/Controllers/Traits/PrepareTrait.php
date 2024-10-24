@@ -8,10 +8,10 @@ trait PrepareTrait
     {
         foreach (['prepare', 'prepareWrap', 'prepareProcess', 'prepareBeforeProcess'] as $field) {
             if (isset($cfg[$field])) {
-                if (!is_array($cfg[$field])) {
-                    $cfg[$field] = explode(',', $cfg[$field]);
-                } else if (is_callable($cfg[$field])) {
+                if (is_callable($cfg[$field])) {
                     $cfg[$field] = [$cfg[$field]];
+                } else if (!is_array($cfg[$field])) {
+                    $cfg[$field] = explode(',', $cfg[$field]);
                 }
             } else {
                 $cfg[$field] = [];
