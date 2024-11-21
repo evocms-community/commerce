@@ -175,7 +175,7 @@
                 </table>
 
                 <input type="hidden" name="order_id" value="<?= $order['id'] ?>">
-                <button type="submit" class="btn btn-secondary"><?= $lang['module.submit_btn'] ?></button>
+                <button type="submit" class="btn btn-secondary"><?= $lang['module.save_btn'] ?></button>
             </form>
         </div>
     </div>
