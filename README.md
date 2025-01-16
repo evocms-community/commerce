@@ -20,6 +20,7 @@ Payment methods:
 <a href="https://github.com/Pathologic/commerce-payment-mollie" target="_blank">Mollie</a><br>
 <a href="https://github.com/Pathologic/commerce-payment-monobank" target="_blank">Monobank</a><br>
 <a href="https://github.com/Pathologic/commerce-payment-nowpayments" target="_blank">Nowpayments</a><br>
+<a href="https://github.com/Pathologic/commerce-payment-paykeeper" target="_blank">Paykeeper</a><br>
 <a href="https://github.com/mnoskov/commerce-payment-paymaster" target="_blank">Paymaster</a><br>
 <a href="https://github.com/Pathologic/commerce-payment-payneteasy" target="_blank">PaynetEasy</a><br>
 <a href="https://github.com/Pathologic/commerce-payment-payok" target="_blank">Payok</a><br>
