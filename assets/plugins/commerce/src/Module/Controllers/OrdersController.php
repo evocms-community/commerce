@@ -799,7 +799,7 @@ class OrdersController extends Controller implements \Commerce\Module\Interfaces
 
                     $color = '<i class="status-color fa fa-circle" style="color:#' . (isset($statuses[$data['status_id']]) ? $statuses[$data['status_id']]['color'] : 'FFFFFF') . '"></i>&nbsp;';
 
-                    return $color . '<select name="status_id" onchange="location = \'' . $this->module->makeUrl('orders/change-status', 'order_id=' . $data['id'] . '&status_id=') . '\' + jQuery(this).val();">' . $out . '</select>';
+                    return $color . '<select name="status_id" autocomplete="off" onchange="location = \'' . $this->module->makeUrl('orders/change-status', 'order_id=' . $data['id'] . '&status_id=') . '\' + jQuery(this).val();">' . $out . '</select>';
                 },
                 'style' => 'white-space: nowrap; vertical-align: baseline;',
                 'sort' => 80,
