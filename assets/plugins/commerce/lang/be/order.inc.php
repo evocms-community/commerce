@@ -12,7 +12,7 @@ return [
     'order.error.email_incorrect' => 'Увядзіце email правільна',
     'order.error.phone_required' => 'Увядзіце тэлефон',
     'order.success' => '@CODE:<div>Дзякуем за вашую замову</div>',
-    'order.subject' => '@CODE:Новая замова на сайце [(site_name)]',
+    'order.subject' => '@CODE:Новая замова #[+order.id+] на сайце [(site_name)]',
     'order.subject_status_changed' => '@CODE:Статус замовы #[+order.id+] зьменены',
     'order.order_paid' => '@CODE:Атрыманая аплата ў памеры [+amount+]',
     'order.order_full_paid' => '@CODE:Атрыманая аплата ў памеры [+amount+], замова #[+order.id+] аплачаная цалкам',
