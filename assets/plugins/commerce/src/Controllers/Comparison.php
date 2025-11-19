@@ -13,7 +13,7 @@ class ComparisonDocLister extends CustomLangDocLister
         $cfg = $this->initializePrepare($cfg);
 
         $this->priceField = $modx->commerce->getSetting('price_field', 'price');
-        $cfg['tvList']    = $this->priceField . (!empty($cfg['tvList']) ? ',' . $cfg['tvList'] : '');
+        $cfg['tvList'] = $this->priceField . (!empty($cfg['tvList']) ? ',' . $cfg['tvList'] : '');
         $this->priceField = (isset($cfg['tvPrefix']) ? $cfg['tvPrefix'] : 'tv.') . $this->priceField;
 
         $cfg['prepare'][] = [$this, 'prepareRow'];
@@ -59,8 +59,8 @@ class ComparisonDocLister extends CustomLangDocLister
             $query = $this->modx->db->select('id', $this->modx->getFullTablename('site_tmplvars'), "`name` = 'tovarparams'");
 
             if ($this->modx->db->getRecordCount($query)) {
-                $tvid    = $this->modx->db->getValue($query);
-                $docid   = $this->getCFGDef('category');
+                $tvid = $this->modx->db->getValue($query);
+                $docid = $this->getCFGDef('category');
                 $parents = $this->modx->getParentIds($docid);
                 array_unshift($parents, $docid);
                 $parents = array_values($parents);
@@ -104,10 +104,10 @@ class ComparisonDocLister extends CustomLangDocLister
         $templates = array_filter(\APIhelpers::cleanIDs($this->modx->commerce->getSetting('product_templates', '')));
         $templates = array_filter($templates, 'is_numeric');
         if (!empty($templates)) {
-            $where = 'LEFT JOIN ' . $this->modx->getFullTablename('site_tmplvar_templates') . ' tt ON tt.tmplvarid = t.id AND tt.templateid = ' . $templates[0] . ' ' . $where . ' ORDER BY tt.rank' ;
+            $where = 'LEFT JOIN ' . $this->modx->getFullTablename('site_tmplvar_templates') . ' tt ON tt.tmplvarid = t.id AND tt.templateid = ' . $templates[0] . ' ' . $where . ' ORDER BY tt.rank';
         }
 
-        $query  = $this->modx->db->query('SELECT * FROM ' . $this->modx->getFullTablename('site_tmplvars') . ' t ' . $where);
+        $query = $this->modx->db->query('SELECT * FROM ' . $this->modx->getFullTablename('site_tmplvars') . ' t ' . $where);
         $result = [];
 
         while ($row = $this->modx->db->getRow($query)) {
@@ -132,11 +132,11 @@ class ComparisonDocLister extends CustomLangDocLister
         if (count($this->_docs) > 0) {
             $headerTpl = $this->getCFGDef('headerTpl');
             $footerTpl = $this->getCFGDef('footerTpl');
-            $keyTpl    = $this->getCFGDef('keyTpl');
-            $valueTpl  = $this->getCFGDef('valueTpl');
-            $rowTpl    = $this->getCFGDef('rowTpl');
-            $tvPrefix  = $this->getCFGDef('tvPrefix', 'tv.');
-            $rows      = $this->getCFGDef('rows');
+            $keyTpl = $this->getCFGDef('keyTpl');
+            $valueTpl = $this->getCFGDef('valueTpl');
+            $rowTpl = $this->getCFGDef('rowTpl');
+            $tvPrefix = $this->getCFGDef('tvPrefix', 'tv.');
+            $rows = $this->getCFGDef('rows');
 
             $cells = [
                 'header' => [
@@ -158,7 +158,7 @@ class ComparisonDocLister extends CustomLangDocLister
              * @var $extUser user_DL_Extender
              */
             if ($extUser = $this->getExtender('user')) {
-                $extUser->init($this, array('fields' => $this->getCFGDef("userFields", "")));
+                $extUser->init($this, ['fields' => $this->getCFGDef("userFields", "")]);
             }
 
             /**
@@ -207,7 +207,7 @@ class ComparisonDocLister extends CustomLangDocLister
                     if (!$item[$date] && $date == 'pub_date' && isset($item['createdon'])) {
                         $date = 'createdon';
                     }
-                    $_date = is_numeric($item[$date]) && $item[$date] == (int)$item[$date] ? $item[$date] : strtotime($item[$date]);
+                    $_date = is_numeric($item[$date]) && $item[$date] == (int) $item[$date] ? $item[$date] : strtotime($item[$date]);
                     if ($_date !== false) {
                         $_date = $_date + $this->modx->config['server_offset_time'];
                         $dateFormat = $this->getCFGDef('dateFormat', 'd.m.Y H:i');
@@ -225,10 +225,10 @@ class ComparisonDocLister extends CustomLangDocLister
                 }
 
                 if ($extPrepare) {
-                    $item = $extPrepare->init($this, array(
-                        'data'      => $item,
-                        'nameParam' => 'prepare'
-                    ));
+                    $item = $extPrepare->init($this, [
+                        'data' => $item,
+                        'nameParam' => 'prepare',
+                    ]);
                     if ($item === false) {
                         $this->skippedDocs++;
                         continue;
@@ -240,7 +240,7 @@ class ComparisonDocLister extends CustomLangDocLister
 
                 foreach ($this->compareTV as $tvID => $tvRow) {
                     $cells['values'][$tvID][] = $this->parseChunk($valueTpl, array_merge($item, [
-                        'tv'    => $tvRow,
+                        'tv' => $tvRow,
                         'value' => $item[$tvPrefix . $tvRow['name']],
                     ]));
                 }
@@ -262,7 +262,7 @@ class ComparisonDocLister extends CustomLangDocLister
                 'row' => implode($cells['footer']),
             ]);
         } else {
-            $noneTPL = $this->getCFGDef('noneTPL', '');
+            $noneTPL = $this->getCFGDef('noneTpl', $this->getCFGDef('noneTPL', ''));
             $out = ($noneTPL != '') ? $this->parseChunk($noneTPL, $sysPlh) : '';
         }
 

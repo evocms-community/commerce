@@ -11,9 +11,9 @@
 <h4>Lista zamówień:</h4>
 
 [!Cart?
-    &instance=`order`
-    &tpl=`@FILE:order_report_items_row`
-    &ownerTPL=`@FILE:order_report_items`
-    &subtotalsRowTpl=`@FILE:order_report_subtotals_row`
-    &urlScheme=`full`
+&instance=`order`
+&tpl=`@FILE:order_report_items_row`
+&ownerTpl=`@FILE:order_report_items`
+&subtotalsRowTpl=`@FILE:order_report_subtotals_row`
+&urlScheme=`full`
 !]
