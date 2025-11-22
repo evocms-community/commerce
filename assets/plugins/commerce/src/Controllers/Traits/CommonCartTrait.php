@@ -1,5 +1,4 @@
 <?php
-
 namespace Commerce\Controllers\Traits;
 
 trait CommonCartTrait
@@ -12,14 +11,14 @@ trait CommonCartTrait
     protected function getCartAdditionals()
     {
         return [
-            'hash'        => $this->getCFGDef('hash'),
-            'instance'    => $this->getCFGDef('instance', 'products'),
+            'hash' => $this->getCFGDef('hash'),
+            'instance' => $this->getCFGDef('instance', 'products'),
             'items_price' => $this->priceTotal,
-            'subtotals'   => $this->renderSubtotals(),
-            'total'       => $this->priceTotal,
-            'count'       => $this->productsCount,
-            'rows_count'  => $this->rowsCount,
-            'settings'    => $this->modx->commerce->getSettings(),
+            'subtotals' => $this->renderSubtotals(),
+            'total' => $this->priceTotal,
+            'count' => $this->productsCount,
+            'rows_count' => $this->rowsCount,
+            'settings' => $this->modx->commerce->getSettings(),
         ];
     }
 
@@ -40,7 +39,7 @@ trait CommonCartTrait
     {
         if ($this->extPrepare) {
             $data = $this->extPrepare->init($this, [
-                'data'      => $data,
+                'data' => $data,
                 'nameParam' => 'prepareSubtotalsRow',
             ]);
         }
@@ -52,9 +51,9 @@ trait CommonCartTrait
     {
         if ($this->extPrepare) {
             $data = $this->extPrepare->init($this, [
-                'data'      => $data,
+                'data' => $data,
                 'nameParam' => 'prepareSubtotalsWrap',
-                'return'    => 'placeholders',
+                'return' => 'placeholders',
             ]);
         }
 
@@ -87,7 +86,7 @@ trait CommonCartTrait
             }
 
             $params = $this->prepareSubtotalsWrap([
-                'docs'         => $rows,
+                'docs' => $rows,
                 'placeholders' => [
                     'wrap' => $result,
                 ],
@@ -113,11 +112,11 @@ trait CommonCartTrait
             }
 
             $doc['hash'] = $doc['id'];
-            $doc['id']   = $doc['docid'];
+            $doc['id'] = $doc['docid'];
 
             if (!empty($doc['count'])) {
-                $doc['price'] = (float)$doc['price'];
-                $doc['count'] = (float)$doc['count'];
+                $doc['price'] = (float) $doc['price'];
+                $doc['count'] = (float) $doc['count'];
                 $doc['total'] = $doc['price'] * $doc['count'];
             }
 
@@ -128,7 +127,7 @@ trait CommonCartTrait
 
         foreach ($cartItems as $item) {
             $this->productsCount += $item['count'];
-            $this->priceTotal += (float)$item['price'] * $item['count'];
+            $this->priceTotal += (float) $item['price'] * $item['count'];
         }
 
         return $docs;
@@ -145,14 +144,14 @@ trait CommonCartTrait
                 if (isset($item['options']) && is_array($item['options'])) {
                     foreach ($item['options'] as $key => $option) {
                         $options .= ci()->tpl->parseChunk($optionsTpl, [
-                            'key'    => htmlentities($key),
+                            'key' => htmlentities($key),
                             'option' => nl2br(htmlentities(is_scalar($option) ? $option : json_encode($option, JSON_UNESCAPED_UNICODE))),
                         ]);
                     }
                 }
 
                 $item['_options'] = $item['options'];
-                $item['options']  = $options;
+                $item['options'] = $options;
                 $docs[$id] = $item;
             }
         }
@@ -174,8 +173,8 @@ trait CommonCartTrait
     protected function handleEmptyResult($docs)
     {
         if (!$this->getCFGDef('noneWrapOuter', '1') && !count($docs)) {
-            $this->ownerTPL = $this->getCFGDef('noneTPL');
-            $this->config->setConfig(['noneTPL' => '']);
+            $this->ownerTPL = $this->getCFGDef('noneTpl', $this->getCFGDef('noneTPL', ''));
+            $this->config->setConfig(['noneTpl' => '']);
         }
     }
 }

@@ -1,4 +1,5 @@
-//<?php
+//
+<?php
 /**
  * Wishlist
  *
@@ -16,7 +17,7 @@ if (defined('COMMERCE_INITIALIZED')) {
         'controller'        => 'Wishlist',
         'instance'          => 'wishlist',
         'tpl'               => '@FILE:wishlist_row',
-        'ownerTPL'          => '@FILE:wishlist_wrap',
+        'ownerTpl'          => '@FILE:wishlist_wrap',
         'customLang'        => 'common,cart',
     ], $params));
 }

@@ -1,4 +1,5 @@
-//<?php
+//
+<?php
 /**
  * Comparison
  *
@@ -68,7 +69,7 @@ if (!empty($items) && $showCategories) {
     if (count($parents) > 1) {
         $categoryParams = array_merge([
             'tpl'               => '@FILE:comparison_category',
-            'ownerTPL'          => '@FILE:comparison_categories',
+            'ownerTpl'          => '@FILE:comparison_categories',
             'itemClass'         => 'btn-secondary',
             'activeClass'       => 'btn-primary',
             'prepare'           => function($data, $modx, $DL, $eDL) {
@@ -94,7 +95,7 @@ if (!empty($items) && $showCategories) {
 }
 
 $params = array_merge([
-    'ownerTPL'          => '@FILE:comparison_table',
+    'ownerTpl'          => '@FILE:comparison_table',
     'headerTpl'         => '@FILE:comparison_table_header_cell',
     'footerTpl'         => '@FILE:comparison_table_footer_cell',
     'keyTpl'            => '@FILE:comparison_table_key_cell',
